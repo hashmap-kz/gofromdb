@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
-	"genpg-v5/internal/genpg"
 	"log"
 	"strings"
+
+	"genpg-v5/internal/genpg"
 )
 
 func capitalizeFirstLetter(s string) string {

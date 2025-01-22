@@ -21,6 +21,7 @@ type ColumnInfo struct {
 	NPrec      *int32
 	NScal      *int32
 	Def        *string
+	IsPK       bool
 }
 
 func GetDBInfo() map[string][]ColumnInfo {
@@ -60,6 +61,7 @@ func GetDBInfo() map[string][]ColumnInfo {
 			&row.NPrec,
 			&row.NScal,
 			&row.Def,
+			&row.IsPK,
 		); err != nil {
 			log.Fatalf("Failed to scan row: %v\n", err)
 		}

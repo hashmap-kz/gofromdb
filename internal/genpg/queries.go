@@ -3,15 +3,15 @@ package genpg
 var GetInfoQuery = `
 with ti as (select (select cls.relnamespace::regnamespace::text || '.' || cls.relname::text
                     from pg_class cls
-                    where cls.oid = c.oid)                          as relpath,
-                   c.oid                                            as reloid,
-                   a.attname                                        as attname,
-                   pg_catalog.format_type(a.atttypid, a.atttypmod)  as atttype,
-                   t.typname                                        as atttype2,
-                   a.attnum                                         as attnum,
+                    where cls.oid = c.oid)                             as relpath,
+                   c.oid                                               as reloid,
+                   a.attname                                           as attname,
+                   pg_catalog.format_type(a.atttypid, a.atttypmod)     as atttype,
+                   t.typname                                           as atttype2,
+                   a.attnum                                            as attnum,
                    (select max(ma.attnum)
                     from pg_attribute ma
-                    where ma.attrelid = a.attrelid)                 as max_attnum,
+                    where ma.attrelid = a.attrelid)                    as max_attnum,
                    (case
                         when a.attgenerated = 's' then
                             false
@@ -21,13 +21,23 @@ with ti as (select (select cls.relnamespace::regnamespace::text || '.' || cls.re
                                     true
                                 else false
                                 end
-                       end)                                         as attnotnull,
-                   a.attgenerated                                   as attgenerated,
-                   coalesce(obj_description(c.oid, 'pg_class'), '') as tab_desc,
+                       end)                                            as attnotnull,
+                   a.attgenerated                                      as attgenerated,
+                   coalesce(obj_description(c.oid, 'pg_class'), '')    as tab_desc,
                    coalesce((select d.description
                              from pg_description d
                              where d.objoid = c.oid
-                               and d.objsubid = a.attnum), '')      as col_desc
+                               and d.objsubid = a.attnum), '')         as col_desc,
+                   (select exists (select *
+                                   from pg_constraint cnested
+                                            join pg_class tnested on cnested.conrelid = tnested.oid
+                                            join pg_attribute anested on anested.attnum = any (cnested.conkey) and
+                                                                         anested.attrelid = tnested.oid
+                                   where cnested.contype = 'p'
+                                     and tnested.relnamespace = c.relnamespace
+                                     and tnested.relname = c.relname
+                                     and anested.attnum = a.attnum
+                                     and anested.attname = a.attname)) as is_pk
             from pg_class c,
                  pg_attribute a,
                  pg_type t
@@ -109,7 +119,8 @@ select ti.relpath,
        l.char_max_len,
        l.n_prec,
        l.n_scal,
-       def.def
+       def.def,
+       ti.is_pk
 from ti
          left join fk on fk.con_relpath = ti.relpath and fk.conkey_first = ti.attnum
          left join limits l on l.relpath = ti.relpath and l.attnum = ti.attnum
