@@ -7,6 +7,7 @@ with ti as (select (select cls.relnamespace::regnamespace::text || '.' || cls.re
                    c.oid                                            as reloid,
                    a.attname                                        as attname,
                    pg_catalog.format_type(a.atttypid, a.atttypmod)  as atttype,
+                   t.typname                                        as atttype2,
                    a.attnum                                         as attnum,
                    (select max(ma.attnum)
                     from pg_attribute ma
@@ -99,6 +100,7 @@ with ti as (select (select cls.relnamespace::regnamespace::text || '.' || cls.re
 select ti.relpath,
        ti.attname,
        ti.atttype,
+       ti.atttype2,
        coalesce(fk.con_frelpath, '') refto,
        ti.col_desc,
        ti.attnotnull,

@@ -2,14 +2,16 @@ package genpg
 
 import (
 	"context"
-	"github.com/jackc/pgx/v5"
 	"log"
+
+	"github.com/jackc/pgx/v5"
 )
 
 type ColumnInfo struct {
 	RelPath    string
 	AttName    string
 	AttType    string
+	AttType2   string
 	RefTo      string
 	ColDesc    string
 	AttNotNull bool
@@ -48,6 +50,7 @@ func GetDBInfo() map[string][]ColumnInfo {
 			&row.RelPath,
 			&row.AttName,
 			&row.AttType,
+			&row.AttType2,
 			&row.RefTo,
 			&row.ColDesc,
 			&row.AttNotNull,
