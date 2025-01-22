@@ -33,13 +33,13 @@ func getColType(t string) string {
 		"int2":        "int16",
 		"int4":        "int",
 		"int8":        "int64",
-		"float4":      "float32",
-		"float8":      "float64",
 		"numeric":     "string", // use string if you don't planning calculations. or external libs if you do.
 		"decimal":     "string", // use string if you don't planning calculations. or external libs if you do.
 		"serial":      "int",
 		"bigserial":   "int64",
 		"smallserial": "int16",
+		"float4":      "float32",
+		"float8":      "float64",
 
 		// Character types
 		"varchar": "string",
@@ -73,12 +73,13 @@ func getColType(t string) string {
 		"_int2":    "[]int16",
 		"_int4":    "[]int",
 		"_int8":    "[]int64",
+		"_numeric": "[]string", // use string if you don't planning calculations. or external libs if you do.
 		"_text":    "[]string",
 		"_uuid":    "[]string",
 		"_bool":    "[]bool",
+		"_varchar": "[]string",
 		"_float4":  "[]float32",
 		"_float8":  "[]float64",
-		"_varchar": "[]string",
 
 		// Other types
 		"xml":      "string",
