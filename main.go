@@ -2,10 +2,9 @@ package main
 
 import (
 	"fmt"
+	"genpg-v5/internal/genpg"
 	"log"
 	"strings"
-
-	"genpg-v5/internal/genpg"
 )
 
 func capitalizeFirstLetter(s string) string {
@@ -28,6 +27,8 @@ func makeName(from string) string {
 }
 
 func getColType(t string) string {
+	// TODO: range types (pgtype.Range[T])
+
 	postgresToGo := map[string]string{
 		// Numeric types
 		"int2":        "int16",
@@ -78,6 +79,7 @@ func getColType(t string) string {
 		"_uuid":    "[]string",
 		"_bool":    "[]bool",
 		"_varchar": "[]string",
+		"_date":    "[]time.Time",
 		"_float4":  "[]float32",
 		"_float8":  "[]float64",
 
