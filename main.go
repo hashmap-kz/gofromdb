@@ -129,6 +129,9 @@ type %s struct {
 	for _, c := range cols {
 		fieldName := makeName(c.AttName)
 		fieldType := getColType(c.AttType2)
+		if c.ColDesc != "" {
+			sbCols.WriteString(p("// " + c.ColDesc))
+		}
 		sbCols.WriteString(p(fieldName + " " + fieldType))
 	}
 
