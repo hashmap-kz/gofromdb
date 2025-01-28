@@ -115,34 +115,46 @@ func p(what string) string {
 	return fmt.Sprintf("\t%s\n", what)
 }
 
-func makeOneStruct(relPath string, cols []genpg.ColumnInfo) string {
-	template := strings.TrimSpace(`
-type %s struct { 
-	%s 
+type TableToStructFieldInfo struct {
+	FieldComment string
+	FieldName    string
+	FieldType    string
+	DbFieldName  string
+	DbIsNotNull  bool
 }
-`)
-	sbCols := strings.Builder{}
+
+type TableToStructInfo struct {
+	StructName string
+	Fields     []TableToStructFieldInfo
+}
+
+func makeOneStruct(relPath string, cols []genpg.ColumnInfo) TableToStructInfo {
+	fields := []TableToStructFieldInfo{}
 
 	_, table := getSchemaTable(relPath)
-	structName := makeName(table)
-
 	for _, c := range cols {
-		fieldName := makeName(c.AttName)
-		fieldType := getColType(c.AttType2)
-		if c.ColDesc != "" {
-			sbCols.WriteString(p("// " + c.ColDesc))
-		}
-		sbCols.WriteString(p(fieldName + " " + fieldType))
+		fields = append(fields, TableToStructFieldInfo{
+			FieldComment: c.ColDesc,
+			FieldName:    makeName(c.AttName),
+			FieldType:    getColType(c.AttType2),
+			DbFieldName:  c.AttName,
+			DbIsNotNull:  c.AttNotNull,
+		})
 	}
 
-	return fmt.Sprintf(template, structName, strings.TrimSpace(sbCols.String()))
+	return TableToStructInfo{
+		StructName: makeName(table),
+		Fields:     fields,
+	}
 }
 
 func main() {
 	dbInfo := genpg.GetDBInfo()
+	structs := []TableToStructInfo{}
 	for t := range dbInfo {
 		columnInfos := dbInfo[t]
 		oneStruct := makeOneStruct(t, columnInfos)
-		fmt.Println(oneStruct)
+		structs = append(structs, oneStruct)
 	}
+	fmt.Println(structs)
 }
