@@ -128,6 +128,14 @@ type TableToStructInfo struct {
 	Fields     []TableToStructFieldInfo
 }
 
+func (s *TableToStructInfo) getDbFieldsAsString() []string {
+	r := []string{}
+	for _, f := range s.Fields {
+		r = append(r, f.DbFieldName)
+	}
+	return r
+}
+
 func makeOneStruct(relPath string, cols []genpg.ColumnInfo) TableToStructInfo {
 	fields := []TableToStructFieldInfo{}
 
@@ -156,5 +164,8 @@ func main() {
 		oneStruct := makeOneStruct(t, columnInfos)
 		structs = append(structs, oneStruct)
 	}
-	fmt.Println(structs)
+	for _, s := range structs {
+		dbFieldsAsString := s.getDbFieldsAsString()
+		fmt.Println(strings.Join(dbFieldsAsString, ","))
+	}
 }
