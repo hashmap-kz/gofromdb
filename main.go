@@ -121,6 +121,7 @@ type TableToStructFieldInfo struct {
 	FieldType    string
 	DbFieldName  string
 	DbIsNotNull  bool
+	DbIsPk       bool
 }
 
 type TableToStructInfo struct {
@@ -128,9 +129,12 @@ type TableToStructInfo struct {
 	Fields     []TableToStructFieldInfo
 }
 
-func (s *TableToStructInfo) getDbFieldsAsString() []string {
+func (s *TableToStructInfo) getDbFieldsAsString(withPkeys bool) []string {
 	r := []string{}
 	for _, f := range s.Fields {
+		if !withPkeys && f.DbIsPk {
+			continue
+		}
 		r = append(r, f.DbFieldName)
 	}
 	return r
@@ -147,6 +151,7 @@ func makeOneStruct(relPath string, cols []genpg.ColumnInfo) TableToStructInfo {
 			FieldType:    getColType(c.AttType2),
 			DbFieldName:  c.AttName,
 			DbIsNotNull:  c.AttNotNull,
+			DbIsPk:       c.IsPK,
 		})
 	}
 
@@ -165,7 +170,7 @@ func main() {
 		structs = append(structs, oneStruct)
 	}
 	for _, s := range structs {
-		dbFieldsAsString := s.getDbFieldsAsString()
+		dbFieldsAsString := s.getDbFieldsAsString(false)
 		fmt.Println(strings.Join(dbFieldsAsString, ","))
 	}
 }
