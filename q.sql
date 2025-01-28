@@ -173,15 +173,20 @@ select ti.relpath,
        def.def,
        ti.is_pk,
        case
-           when not ti.attnotnull then
-               case
-                   when coalesce(tmt.go_type, '') ilike '%[]%' then
-                       replace(coalesce(tmt.go_type, ''), '[]', '[]*')
-                   else
-                       '*' || coalesce(tmt.go_type, '')
-                   end
+           when coalesce(tmt.go_type, '') = ''
+               then ''
            else
-               coalesce(tmt.go_type, '')
+               case
+                   when not ti.attnotnull then
+                       case
+                           when tmt.go_type ilike '%[]%' then
+                               replace(tmt.go_type, '[]', '[]*')
+                           else
+                               '*' || tmt.go_type
+                           end
+                   else
+                       tmt.go_type
+                   end
            end as                    go_type
 from ti
          left join fk on fk.con_relpath = ti.relpath and fk.conkey_first = ti.attnum
