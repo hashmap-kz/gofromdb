@@ -97,17 +97,11 @@ func makeOneStruct(relPath string, cols []genpg.ColumnInfo) TableToStructInfo {
 
 	_, table := getSchemaTable(relPath)
 	for _, c := range cols {
-		var colType string
-		if c.AttNotNull {
-			colType = typmap.GetColType(c.AttType2)
-		} else {
-			colType = typmap.GetColTypeForNullable(c.AttType2)
-		}
 
 		fields = append(fields, TableToStructFieldInfo{
 			FieldComment: c.ColDesc,
 			FieldName:    makeName(c.AttName),
-			FieldType:    colType,
+			FieldType:    typmap.GetColType(c.AttType2, !c.AttNotNull),
 			DbFieldName:  c.AttName,
 			DbIsNotNull:  c.AttNotNull,
 			DbIsPk:       c.IsPK,
