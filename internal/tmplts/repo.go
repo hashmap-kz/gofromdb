@@ -10,15 +10,14 @@ RETURNING
 `
 
 var RepoSaveFuncTemplate = `
-func (r *clientRepository) Save(ctx context.Context, entity *model.Client) (*model.Client, error) {
-	query := ` + "`%s`" + `
+func (r *{{.StructName | ToCamel}}Repository) Save(ctx context.Context, entity *model.{{.StructName}}) (*model.{{.StructName}}, error) {
+	query := ` + "`{{.Query}}`" + `
 
-	var i model.Client
+	var i model.{{.StructName}}
 	if err := r.db.Pool.QueryRow(ctx, query,
-		entity.Email,
+{{.StructFieldsNoPKeys | AddPadding}}
 	).Scan(
-		&i.RecordID,
-		&i.Email,
+{{.StructFieldsWithPKeys | AddPadding}}
 	); err != nil {
 		return nil, err
 	}

@@ -3,12 +3,11 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"genpg-v5/internal/genpg"
 	"genpg-v5/internal/tmplts"
 	"log"
 	"strings"
 	"text/template"
-
-	"genpg-v5/internal/genpg"
 )
 
 func capitalizeFirstLetter(s string) string {
@@ -16,6 +15,13 @@ func capitalizeFirstLetter(s string) string {
 		return s
 	}
 	return strings.ToUpper(string(s[0])) + s[1:]
+}
+
+func lowerFirstLetter(s string) string {
+	if len(s) == 0 {
+		return s
+	}
+	return strings.ToLower(string(s[0])) + s[1:]
 }
 
 func makeName(from string) string {
@@ -148,6 +154,20 @@ func (s *TableToStructInfo) getDbFieldsAsString(withPkeys, skipIfHasDefault bool
 	return r
 }
 
+func (s *TableToStructInfo) getStructFieldsAsString(withPkeys, skipIfHasDefault bool, prefix string) []string {
+	r := []string{}
+	for _, f := range s.Fields {
+		if !withPkeys && f.DbIsPk {
+			continue
+		}
+		if skipIfHasDefault && f.DbHasDefault {
+			continue
+		}
+		r = append(r, prefix+f.FieldName)
+	}
+	return r
+}
+
 func makeOneStruct(relPath string, cols []genpg.ColumnInfo) TableToStructInfo {
 	fields := []TableToStructFieldInfo{}
 
@@ -171,13 +191,6 @@ func makeOneStruct(relPath string, cols []genpg.ColumnInfo) TableToStructInfo {
 	}
 }
 
-func replaceMaps(input string, params map[string]string) string {
-	for k := range params {
-		input = strings.ReplaceAll(input, "["+k+"]", params[k])
-	}
-	return input
-}
-
 func createPlaceholders(cnt int) []string {
 	pl := []string{}
 	for i := 0; i < cnt; i++ {
@@ -198,38 +211,64 @@ func addPadding(input string) string {
 func main() {
 	dbInfo := genpg.GetDBInfo()
 	structs := []TableToStructInfo{}
+
 	for t := range dbInfo {
 		columnInfos := dbInfo[t]
 		oneStruct := makeOneStruct(t, columnInfos)
 		structs = append(structs, oneStruct)
 	}
+
+	funcMap := template.FuncMap{
+		"AddPadding": addPadding,
+		"ToLower":    strings.ToLower,
+		"ToCamel":    lowerFirstLetter,
+	}
+
 	for _, s := range structs {
+
 		fieldsWithoutPkeysAndDefaults := s.getDbFieldsAsString(false, true)
 		fieldsWithPkeysAndDefaults := s.getDbFieldsAsString(true, false)
 		placeholders := createPlaceholders(len(fieldsWithoutPkeysAndDefaults))
 
-		// Register the custom function
-		funcMap := template.FuncMap{
-			"AddPadding": addPadding,
+		// Insert template
+
+		var insertResult bytes.Buffer
+		tmpl, err := template.New("query").Funcs(funcMap).Parse(tmplts.RepoSaveQueryTemplate)
+		if err != nil {
+			log.Fatal(err)
 		}
-		data := map[string]string{
+		err = tmpl.Execute(&insertResult, map[string]string{
 			"SchemaName":         "public",
 			"TableName":          s.DbTableName,
 			"FieldsNoPKeys":      strings.Join(fieldsWithoutPkeysAndDefaults, ",\n"),
 			"FieldsWithPKeys":    strings.Join(fieldsWithPkeysAndDefaults, ",\n"),
 			"ValuesPlaceholders": strings.Join(placeholders, ", "),
-		}
-		var result bytes.Buffer
-		tmpl, err := template.New("query").Funcs(funcMap).Parse(tmplts.RepoSaveQueryTemplate)
+		})
 		if err != nil {
-			panic(err)
-		}
-		err = tmpl.Execute(&result, data)
-		if err != nil {
-			panic(err)
+			log.Fatal(err)
 		}
 
-		fmt.Println(fmt.Sprintf(tmplts.RepoSaveFuncTemplate, result.String()))
+		// Function template
+
+		structFieldsWithoutPkeysAndDefaults := s.getStructFieldsAsString(false, true, "entity.")
+		structFieldsWithPkeysAndDefaults := s.getStructFieldsAsString(true, false, "&i.")
+
+		var result bytes.Buffer
+		funcTemplate, err := template.New("query").Funcs(funcMap).Parse(tmplts.RepoSaveFuncTemplate)
+		if err != nil {
+			log.Fatal(err)
+		}
+		err = funcTemplate.Execute(&result, map[string]string{
+			"Query":                 insertResult.String(),
+			"StructName":            s.StructName,
+			"StructFieldsNoPKeys":   strings.Join(structFieldsWithoutPkeysAndDefaults, ",\n") + ",",
+			"StructFieldsWithPKeys": strings.Join(structFieldsWithPkeysAndDefaults, ",\n") + ",",
+		})
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		fmt.Println(result.String())
 	}
 
 }
