@@ -218,7 +218,7 @@ func addPadding2(input string) string {
 	return strings.Join(lines, "\n")
 }
 
-func execTemplate(name, t string, data map[string]string, funcMap map[string]any) string {
+func execTemplate(name, t string, data map[string]any, funcMap map[string]any) string {
 	var result bytes.Buffer
 	tmpl, err := template.New(name).Funcs(funcMap).Parse(t)
 	if err != nil {
@@ -250,13 +250,21 @@ func main() {
 
 	for _, s := range structs {
 
+		// Entity template
+		entityTemplateResult := execTemplate("entity", tmplts.EntityTemplate,
+			map[string]any{
+				"StructName": s.StructName,
+				"Columns":    s.Fields,
+			}, funcMap)
+		fmt.Println(entityTemplateResult)
+
 		// Insert template
 
 		fieldsWithoutPkeysAndDefaults := s.getDbFieldsAsString(false, true)
 		fieldsWithPkeysAndDefaults := s.getDbFieldsAsString(true, false)
 
 		queryTemplateResult := execTemplate("query", tmplts.RepoSaveQueryTemplate,
-			map[string]string{
+			map[string]any{
 				"SchemaName":         "public",
 				"TableName":          s.DbTableName,
 				"FieldsNoPKeys":      strings.Join(fieldsWithoutPkeysAndDefaults, ",\n"),
@@ -270,7 +278,7 @@ func main() {
 		structFieldsWithPkeysAndDefaults := s.getStructFieldsAsString(true, false, "&i.")
 
 		result := execTemplate("funcs", tmplts.RepoSaveFuncTemplate,
-			map[string]string{
+			map[string]any{
 				"Query":                 queryTemplateResult,
 				"StructName":            s.StructName,
 				"StructFieldsNoPKeys":   strings.Join(structFieldsWithoutPkeysAndDefaults, ",\n") + ",",
