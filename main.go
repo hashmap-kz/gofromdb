@@ -208,6 +208,15 @@ func addPadding(input string) string {
 	return strings.Join(lines, "\n")
 }
 
+// Function to add padding (tabs) to each line
+func addPadding2(input string) string {
+	lines := strings.Split(input, "\n")
+	for i, line := range lines {
+		lines[i] = "\t\t" + line // Add a tab before each line
+	}
+	return strings.Join(lines, "\n")
+}
+
 func main() {
 	dbInfo := genpg.GetDBInfo()
 	structs := []TableToStructInfo{}
@@ -219,9 +228,10 @@ func main() {
 	}
 
 	funcMap := template.FuncMap{
-		"AddPadding": addPadding,
-		"ToLower":    strings.ToLower,
-		"ToCamel":    lowerFirstLetter,
+		"AddPadding":  addPadding,
+		"AddPadding2": addPadding2,
+		"ToLower":     strings.ToLower,
+		"ToCamel":     lowerFirstLetter,
 	}
 
 	for _, s := range structs {
