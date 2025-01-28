@@ -1,0 +1,65 @@
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+
+	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq" // Import the driver for PostgreSQL
+)
+
+// Example entity
+type Client struct {
+	RecordID   string `db:"record_id"`
+	Email      string `db:"email"`
+	Name       string `db:"name"`
+	CreatedAt  string `db:"created_at"`
+	UpdatedAt  string `db:"updated_at"`
+}
+
+func updateClient(ctx context.Context, db *sqlx.DB, entity *Client) (*Client, error) {
+	query := `
+		UPDATE public.client
+		SET email = :email
+		WHERE record_id = :record_id
+		RETURNING record_id, email, name, created_at, updated_at
+	`
+
+	// Named parameters as a map
+	params := map[string]interface{}{
+		"email":     entity.Email,
+		"record_id": entity.RecordID,
+	}
+
+	// Updated entity to scan into
+	updatedEntity := &Client{}
+	err := db.NamedQueryContext(ctx, query, params).StructScan(updatedEntity)
+	if err != nil {
+		return nil, err
+	}
+
+	return updatedEntity, nil
+}
+
+func main() {
+	// Example database connection
+	db, err := sqlx.Connect("postgres", "postgresql://user:password@localhost:5432/dbname?sslmode=disable")
+	if err != nil {
+		log.Fatalln("Failed to connect to the database:", err)
+	}
+	defer db.Close()
+
+	ctx := context.Background()
+	client := &Client{
+		RecordID: "123",
+		Email:    "newemail@example.com",
+	}
+
+	updatedClient, err := updateClient(ctx, db, client)
+	if err != nil {
+		log.Fatalln("Error updating client:", err)
+	}
+
+	fmt.Printf("Updated client: %+v\n", updatedClient)
+}
