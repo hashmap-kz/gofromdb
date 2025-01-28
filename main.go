@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"go/format"
 	"log"
 	"strings"
 	"text/template"
@@ -231,6 +232,28 @@ func execTemplate(name, t string, data map[string]any, funcMap map[string]any) s
 	return result.String()
 }
 
+func formatGoCode(input string) (string, error) {
+	// Convert the string to a []byte
+	source := []byte(input)
+
+	// Format the code using go/format
+	formattedSource, err := format.Source(source)
+	if err != nil {
+		return "", fmt.Errorf("failed to format code: %w", err)
+	}
+
+	// Convert the formatted code back to a string
+	return string(formattedSource), nil
+}
+
+func printFormatted(input string) string {
+	code, err := formatGoCode(input)
+	if err != nil {
+		return input
+	}
+	return code
+}
+
 func main() {
 	dbInfo := genpg.GetDBInfo()
 	structs := []TableToStructInfo{}
@@ -256,7 +279,7 @@ func main() {
 				"StructName": s.StructName,
 				"Columns":    s.Fields,
 			}, funcMap)
-		fmt.Println(entityTemplateResult)
+		fmt.Println(printFormatted(entityTemplateResult))
 
 		// Insert template
 
@@ -285,6 +308,6 @@ func main() {
 				"StructFieldsWithPKeys": strings.Join(structFieldsWithPkeysAndDefaults, ",\n") + ",",
 			}, funcMap)
 
-		fmt.Println(result)
+		fmt.Println(printFormatted(result))
 	}
 }
