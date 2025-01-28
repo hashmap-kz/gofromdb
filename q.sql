@@ -172,7 +172,17 @@ select ti.relpath,
        l.n_scal,
        def.def,
        ti.is_pk,
-       coalesce(tmt.go_type, '') as  go_type
+       case
+           when not ti.attnotnull then
+               case
+                   when coalesce(tmt.go_type, '') ilike '%[]%' then
+                       replace(coalesce(tmt.go_type, ''), '[]', '[]*')
+                   else
+                       '*' || coalesce(tmt.go_type, '')
+                   end
+           else
+               coalesce(tmt.go_type, '')
+           end as                    go_type
 from ti
          left join fk on fk.con_relpath = ti.relpath and fk.conkey_first = ti.attnum
          left join limits l on l.relpath = ti.relpath and l.attnum = ti.attnum
