@@ -12,6 +12,11 @@ const (
 	pkeyStructFieldName   = "RecordID"
 )
 
+// Paths example:
+// internal/api/client/entity/postgres/client_entity_pg.go
+// internal/api/client/repository/client_repository.go
+// internal/api/client/repository/impl/client_repository_pg.go
+
 type GenRepo struct {
 	RepoEntity    string
 	RepoInterface string
