@@ -1,8 +1,9 @@
 package v1
 
 import (
-	"go-project-template-v5/pkg/pageable"
 	"time"
+
+	"go-project-template-v5/pkg/pageable"
 )
 
 // clientCreateRequest stores client information, identified by a unique email.
@@ -41,7 +42,7 @@ type clientResponse struct {
 // clientResponseList response list
 type clientResponseList struct {
 	// Page information (if present)
-	Page pageable.Page `json:"page,omitempty"`
+	Page *pageable.Page `json:"page,omitempty"`
 
 	// Payload
 	Data []clientResponse `json:"data"`

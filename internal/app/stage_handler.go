@@ -1,6 +1,8 @@
 package app
 
 import (
+	"strings"
+
 	"genpg-v5/internal/tmplts"
 )
 
@@ -10,22 +12,33 @@ type GenHandl struct {
 }
 
 func GenHandler(s TableToStructInfo) GenHandl {
-	// Dto template
-
 	structFieldsWithoutPkeysAndDefaults := s.GetStructFields(false, true)
 	structFieldsWithPkeysAndWithoutDefaults := s.GetStructFields(true, true)
 
-	dtosResult := ExecTemplate("handler-dtos", tmplts.HandlerPayloadsTmpl,
-		map[string]any{
-			"StructNameLowerFirstLetter": s.StructNameLowerFirstLetter,
-			"StructComment":              s.StructComment,
-			"DtoFieldsFull":              s.Fields,
-			"DtoFieldsCreate":            structFieldsWithoutPkeysAndDefaults,
-			"DtoFieldsUpdate":            structFieldsWithPkeysAndWithoutDefaults,
-		}, FuncMap)
+	data := map[string]any{
+		"PackageName":                strings.ToLower(s.DbTableName),
+		"StructNameLowerFirstLetter": s.StructNameLowerFirstLetter,
+		"StructComment":              s.StructComment,
+		"ImplName":                   s.StructName + "HTTPHandler",
+		"ServiceVarName":             s.StructNameLowerFirstLetter + "Service",
+		"ServiceInterfaceName":       s.StructName + "Service",
+		"CreateRequestName":          s.StructNameLowerFirstLetter + "CreateRequest",
+		"UpdateRequestName":          s.StructNameLowerFirstLetter + "UpdateRequest",
+		"ResponseName":               s.StructNameLowerFirstLetter + "Response",
+		"ResponseListName":           s.StructNameLowerFirstLetter + "ResponseList",
+		"DtoName":                    s.StructName + "Dto",
+		"DtoUpdateName":              s.StructName + "UpdateDto",
+		"DtoCreateName":              s.StructName + "CreateDto",
+		"DtoFieldsFull":              s.Fields,
+		"DtoFieldsCreate":            structFieldsWithoutPkeysAndDefaults,
+		"DtoFieldsUpdate":            structFieldsWithPkeysAndWithoutDefaults,
+	}
+
+	dtosResult := ExecTemplate("handler-dtos", tmplts.HandlerPayloadsTmpl, data, FuncMap)
+	implResult := ExecTemplate("handler-impl", tmplts.HandlerImpl, data, FuncMap)
 
 	return GenHandl{
 		HandlerDtos: PrintFormatted(dtosResult),
-		HandlerImpl: "",
+		HandlerImpl: PrintFormatted(implResult),
 	}
 }

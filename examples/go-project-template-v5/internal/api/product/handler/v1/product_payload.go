@@ -1,8 +1,9 @@
 package v1
 
 import (
-	"go-project-template-v5/pkg/pageable"
 	"time"
+
+	"go-project-template-v5/pkg/pageable"
 )
 
 // productCreateRequest stores products with a reference to their category.
@@ -59,7 +60,7 @@ type productResponse struct {
 // productResponseList response list
 type productResponseList struct {
 	// Page information (if present)
-	Page pageable.Page `json:"page,omitempty"`
+	Page *pageable.Page `json:"page,omitempty"`
 
 	// Payload
 	Data []productResponse `json:"data"`

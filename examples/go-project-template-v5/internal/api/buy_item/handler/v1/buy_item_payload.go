@@ -1,8 +1,9 @@
 package v1
 
 import (
-	"go-project-template-v5/pkg/pageable"
 	"time"
+
+	"go-project-template-v5/pkg/pageable"
 )
 
 // buyItemCreateRequest represents items in a purchase, including quantity and price.
@@ -68,7 +69,7 @@ type buyItemResponse struct {
 // buyItemResponseList response list
 type buyItemResponseList struct {
 	// Page information (if present)
-	Page pageable.Page `json:"page,omitempty"`
+	Page *pageable.Page `json:"page,omitempty"`
 
 	// Payload
 	Data []buyItemResponse `json:"data"`

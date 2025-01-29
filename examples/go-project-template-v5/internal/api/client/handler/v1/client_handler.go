@@ -17,22 +17,12 @@ type ClientHTTPHandler struct {
 	clientService service.ClientService
 }
 
-func NewClientHTTPHandler(filesService service.ClientService) *ClientHTTPHandler {
+func NewClientHTTPHandler(clientService service.ClientService) *ClientHTTPHandler {
 	return &ClientHTTPHandler{
-		clientService: filesService,
+		clientService: clientService,
 	}
 }
 
-// Save Create godoc
-//
-// @Summary Create new client
-// @Description Create client handler
-// @Tags Clients
-// @Accept json
-// @Produce json
-// @Param request body clientCreateRequest true "ClientDto creation input params"
-// @Success 201 {object} shared.IdResponse
-// @Router /api/v1/clients [post]
 func (h *ClientHTTPHandler) Save(w http.ResponseWriter, r *http.Request) {
 	// read RequestBody
 	req := &clientCreateRequest{}
@@ -48,7 +38,9 @@ func (h *ClientHTTPHandler) Save(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// call service
-	resp, err := h.clientService.Save(r.Context(), &dto.ClientCreateInput{Email: req.Email})
+	resp, err := h.clientService.Save(r.Context(), &dto.ClientCreateDto{
+		Email: req.Email,
+	})
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
 		return
@@ -65,16 +57,6 @@ func (h *ClientHTTPHandler) Save(w http.ResponseWriter, r *http.Request) {
 	httputils.WriteJSON(w, http.StatusOK, dtoToPayload)
 }
 
-// GetAll retrieves full list of clients.
-//
-// @Summary Retrieve all clients
-// @Description Get a list of clients from the database.
-// @Tags Clients
-// @Accept json
-// @Produce json
-// @Success 200 {object} clientResponseList
-// @Failure 400 {object} httputils.ErrorResponse
-// @Router /api/v1/clients [get]
 func (h *ClientHTTPHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	// call service
 	resp, err := h.clientService.GetAll(r.Context())
@@ -91,21 +73,11 @@ func (h *ClientHTTPHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 200 OK
-	httputils.WriteJSON(w, http.StatusOK, dtosToPayloads)
+	httputils.WriteJSON(w, http.StatusOK, clientResponseList{
+		Data: dtosToPayloads,
+	})
 }
 
-// GetAllPaginated retrieves a paginated list of clients.
-//
-// @Summary Retrieve all clients
-// @Description Get a paginated list of clients from the database.
-// @Tags Clients
-// @Accept json
-// @Produce json
-// @Param page query int false "Page number"
-// @Param size query int false "Page size"
-// @Success 200 {object} clientResponseList
-// @Failure 400 {object} httputils.ErrorResponse
-// @Router /api/v1/clients [get]
 func (h *ClientHTTPHandler) GetAllPaginated(w http.ResponseWriter, r *http.Request) {
 	pq, err := pageable.GetPaginationFromCtx(r)
 	if err != nil {
@@ -130,7 +102,7 @@ func (h *ClientHTTPHandler) GetAllPaginated(w http.ResponseWriter, r *http.Reque
 	// 200 OK
 	httputils.WriteJSON(w, http.StatusOK, clientResponseList{
 		Data: dtosToPayloads,
-		Page: page,
+		Page: &page,
 	})
 }
 
@@ -147,8 +119,10 @@ func (h *ClientHTTPHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = h.clientService.Update(r.Context(), &dto.ClientUpdateInput{
-		RecordID: int(id),
+	// TODO: types
+	req.RecordID = int(id)
+	_, err = h.clientService.Update(r.Context(), &dto.ClientUpdateDto{
+		RecordID: req.RecordID,
 		Email:    req.Email,
 	})
 	if err != nil {
@@ -218,7 +192,10 @@ func mapDtoToPayload(inputDto *dto.ClientDto) (clientResponse, error) {
 		return clientResponse{}, fmt.Errorf("unexpected nil input for mapping between ClientDto->clientResponse")
 	}
 	return clientResponse{
-		ID:    inputDto.RecordID,
-		Email: inputDto.Email,
+		RecordID:  inputDto.RecordID,
+		Email:     inputDto.Email,
+		CreatedAt: inputDto.CreatedAt,
+		UpdatedAt: inputDto.UpdatedAt,
+		Guid:      inputDto.Guid,
 	}, nil
 }

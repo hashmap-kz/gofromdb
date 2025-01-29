@@ -1,69 +1,3 @@
-package tmplts
-
-var HandlerPayloadsTmpl = `
-package v1
-
-import (
-	"go-project-template-v5/pkg/pageable"
-	"time"
-)
-
-{{- if .StructComment}}
-// {{.CreateRequestName}} {{.StructComment | ToLower}}
-{{- end}}
-type {{.CreateRequestName}} struct {
-{{- range .DtoFieldsCreate}}
-	{{- if .FieldComment}}
-	// {{.FieldComment}}
-	{{- end}}
-	{{.FieldName}} {{.FieldType}} ` + "`json:\"{{.DbFieldName}}\"`" + `
-	{{- if .FieldComment}}
-		{{print "\n"}}
-	{{- end}}
-{{- end}}
-}
-
-{{- if .StructComment}}
-// {{.UpdateRequestName}} {{.StructComment | ToLower}}
-{{- end}}
-type {{.UpdateRequestName}} struct {
-{{- range .DtoFieldsUpdate}}
-	{{- if .FieldComment}}
-	// {{.FieldComment}}
-	{{- end}}
-	{{.FieldName}} {{.FieldType}} ` + "`json:\"{{.DbFieldName}}\"`" + `
-	{{- if .FieldComment}}
-		{{print "\n"}}
-	{{- end}}
-{{- end}}
-}
-
-{{- if .StructComment}}
-// {{.ResponseName}} {{.StructComment | ToLower}}
-{{- end}}
-type {{.ResponseName}} struct {
-{{- range .DtoFieldsFull}}
-	{{- if .FieldComment}}
-	// {{.FieldComment}}
-	{{- end}}
-	{{.FieldName}} {{.FieldType}} ` + "`json:\"{{.DbFieldName}}\"`" + `
-	{{- if .FieldComment}}
-		{{print "\n"}}
-	{{- end}}
-{{- end}}
-}
-
-// {{.ResponseListName}} response list
-type {{.ResponseListName}} struct {
-	// Page information (if present)
-	Page *pageable.Page ` + "`json:\"page,omitempty\"`" + `
-	
-	// Payload
-	Data []{{.ResponseName}} ` + "`json:\"data\"`" + `
-}
-`
-
-var HandlerImpl = `
 package v1
 
 import (
@@ -72,26 +6,26 @@ import (
 
 	"go-project-template-v5/pkg/pageable"
 
-	"go-project-template-v5/internal/api/{{.PackageName}}/dto"
-	"go-project-template-v5/internal/api/{{.PackageName}}/service"
+	"go-project-template-v5/internal/api/buy_item/dto"
+	"go-project-template-v5/internal/api/buy_item/service"
 
 	"go-project-template-v5/pkg/httputils"
 	"go-project-template-v5/pkg/validator"
 )
 
-type {{.ImplName}} struct {
-	{{.ServiceVarName}} service.{{.ServiceInterfaceName}}
+type BuyItemHTTPHandler struct {
+	buyItemService service.BuyItemService
 }
 
-func New{{.ImplName}}({{.ServiceVarName}} service.{{.ServiceInterfaceName}}) *{{.ImplName}} {
-	return &{{.ImplName}}{
-		{{.ServiceVarName}}: {{.ServiceVarName}},
+func NewBuyItemHTTPHandler(buyItemService service.BuyItemService) *BuyItemHTTPHandler {
+	return &BuyItemHTTPHandler{
+		buyItemService: buyItemService,
 	}
 }
 
-func (h *{{.ImplName}}) Save(w http.ResponseWriter, r *http.Request) {
+func (h *BuyItemHTTPHandler) Save(w http.ResponseWriter, r *http.Request) {
 	// read RequestBody
-	req := &{{.CreateRequestName}}{}
+	req := &buyItemCreateRequest{}
 	if err := httputils.ReadJSON(r, &req); err != nil {
 		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
 		return
@@ -104,10 +38,11 @@ func (h *{{.ImplName}}) Save(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// call service
-	resp, err := h.{{.ServiceVarName}}.Save(r.Context(), &dto.{{.DtoCreateName}}{
-{{- range .DtoFieldsCreate}}
-	{{.FieldName}}: req.{{.FieldName}},
-{{- end}}	
+	resp, err := h.buyItemService.Save(r.Context(), &dto.BuyItemCreateDto{
+		BuyID:     req.BuyID,
+		ProductID: req.ProductID,
+		Quantity:  req.Quantity,
+		Price:     req.Price,
 	})
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
@@ -125,9 +60,9 @@ func (h *{{.ImplName}}) Save(w http.ResponseWriter, r *http.Request) {
 	httputils.WriteJSON(w, http.StatusOK, dtoToPayload)
 }
 
-func (h *{{.ImplName}}) GetAll(w http.ResponseWriter, r *http.Request) {
+func (h *BuyItemHTTPHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	// call service
-	resp, err := h.{{.ServiceVarName}}.GetAll(r.Context())
+	resp, err := h.buyItemService.GetAll(r.Context())
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
 		return
@@ -141,12 +76,12 @@ func (h *{{.ImplName}}) GetAll(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 200 OK
-	httputils.WriteJSON(w, http.StatusOK, {{.ResponseName}}List{
+	httputils.WriteJSON(w, http.StatusOK, buyItemResponseList{
 		Data: dtosToPayloads,
 	})
 }
 
-func (h *{{.ImplName}}) GetAllPaginated(w http.ResponseWriter, r *http.Request) {
+func (h *BuyItemHTTPHandler) GetAllPaginated(w http.ResponseWriter, r *http.Request) {
 	pq, err := pageable.GetPaginationFromCtx(r)
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
@@ -154,7 +89,7 @@ func (h *{{.ImplName}}) GetAllPaginated(w http.ResponseWriter, r *http.Request) 
 	}
 
 	// call service
-	resp, page, err := h.{{.ServiceVarName}}.GetAllPaginated(r.Context(), pq)
+	resp, page, err := h.buyItemService.GetAllPaginated(r.Context(), pq)
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
 		return
@@ -168,20 +103,20 @@ func (h *{{.ImplName}}) GetAllPaginated(w http.ResponseWriter, r *http.Request) 
 	}
 
 	// 200 OK
-	httputils.WriteJSON(w, http.StatusOK, {{.ResponseName}}List{
+	httputils.WriteJSON(w, http.StatusOK, buyItemResponseList{
 		Data: dtosToPayloads,
 		Page: &page,
 	})
 }
 
-func (h *{{.ImplName}}) Update(w http.ResponseWriter, r *http.Request) {
+func (h *BuyItemHTTPHandler) Update(w http.ResponseWriter, r *http.Request) {
 	id, err := httputils.PathValueI64(r, "id")
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
 		return
 	}
 
-	req := &{{.UpdateRequestName}}{}
+	req := &buyItemUpdateRequest{}
 	if err := httputils.ReadJSON(r, &req); err != nil {
 		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
 		return
@@ -189,10 +124,12 @@ func (h *{{.ImplName}}) Update(w http.ResponseWriter, r *http.Request) {
 
 	// TODO: types
 	req.RecordID = int(id)
-	_, err = h.{{.ServiceVarName}}.Update(r.Context(), &dto.{{.DtoUpdateName}}{
-{{- range .DtoFieldsUpdate}}
-	{{.FieldName}}: req.{{.FieldName}},
-{{- end}}
+	_, err = h.buyItemService.Update(r.Context(), &dto.BuyItemUpdateDto{
+		RecordID:  req.RecordID,
+		BuyID:     req.BuyID,
+		ProductID: req.ProductID,
+		Quantity:  req.Quantity,
+		Price:     req.Price,
 	})
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
@@ -203,14 +140,14 @@ func (h *{{.ImplName}}) Update(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 }
 
-func (h *{{.ImplName}}) Delete(w http.ResponseWriter, r *http.Request) {
+func (h *BuyItemHTTPHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	id, err := httputils.PathValueI64(r, "id")
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
 		return
 	}
 
-	err = h.{{.ServiceVarName}}.Delete(r.Context(), int(id))
+	err = h.buyItemService.Delete(r.Context(), int(id))
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
 		return
@@ -220,14 +157,14 @@ func (h *{{.ImplName}}) Delete(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func (h *{{.ImplName}}) GetByID(w http.ResponseWriter, r *http.Request) {
+func (h *BuyItemHTTPHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	id, err := httputils.PathValueI64(r, "id")
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
 		return
 	}
 
-	resp, err := h.{{.ServiceVarName}}.GetByID(r.Context(), int(id))
+	resp, err := h.buyItemService.GetByID(r.Context(), int(id))
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
 		return
@@ -244,8 +181,8 @@ func (h *{{.ImplName}}) GetByID(w http.ResponseWriter, r *http.Request) {
 
 // mappers
 
-func mapDtosToPayloads(inputDtos []dto.{{.DtoName}}) ([]{{.ResponseName}}, error) {
-	var outputResponses []{{.ResponseName}}
+func mapDtosToPayloads(inputDtos []dto.BuyItemDto) ([]buyItemResponse, error) {
+	var outputResponses []buyItemResponse
 	for _, inputDto := range inputDtos {
 		toPayload, err := mapDtoToPayload(&inputDto)
 		if err != nil {
@@ -256,14 +193,18 @@ func mapDtosToPayloads(inputDtos []dto.{{.DtoName}}) ([]{{.ResponseName}}, error
 	return outputResponses, nil
 }
 
-func mapDtoToPayload(inputDto *dto.{{.DtoName}}) ({{.ResponseName}}, error) {
+func mapDtoToPayload(inputDto *dto.BuyItemDto) (buyItemResponse, error) {
 	if inputDto == nil {
-		return {{.ResponseName}}{}, fmt.Errorf("unexpected nil input for mapping between {{.DtoName}}->{{.ResponseName}}")
+		return buyItemResponse{}, fmt.Errorf("unexpected nil input for mapping between BuyItemDto->buyItemResponse")
 	}
-	return {{.ResponseName}}{
-{{- range .DtoFieldsFull}}
-		{{.FieldName}}: inputDto.{{.FieldName}},
-{{- end }}
+	return buyItemResponse{
+		RecordID:  inputDto.RecordID,
+		BuyID:     inputDto.BuyID,
+		ProductID: inputDto.ProductID,
+		Quantity:  inputDto.Quantity,
+		Price:     inputDto.Price,
+		CreatedAt: inputDto.CreatedAt,
+		UpdatedAt: inputDto.UpdatedAt,
+		Guid:      inputDto.Guid,
 	}, nil
 }
-`

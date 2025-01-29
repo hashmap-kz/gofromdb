@@ -49,6 +49,13 @@ func writeHandlerFiles(s app.TableToStructInfo, outputPath string) {
 		s.DbTableName),
 	)
 	writeFile(modelsPath, layer.HandlerDtos)
+
+	// impl
+	implPath := path.Join(outputPath, fmt.Sprintf("internal/api/%s/handler/v1/%s_handler.go",
+		s.DbTableName,
+		s.DbTableName),
+	)
+	writeFile(implPath, layer.HandlerImpl)
 }
 
 func writeServiceFiles(s app.TableToStructInfo, outputPath string) {
