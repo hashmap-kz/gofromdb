@@ -14,7 +14,7 @@ import (
 	"go-project-template-v5/pkg/storage/postgres"
 )
 
-// Init
+// Init all repos
 
 type Repositories struct {
 {{- range .Structs}}
@@ -36,16 +36,18 @@ package api
 
 import (
 	"context"
-
-	clientServiceInterface "go-project-template-v5/internal/api/{{.DbTableName}}/service"
-	clientServiceImpl "go-project-template-v5/internal/api/{{.DbTableName}}/service/impl"
+{{- range .Structs}}
+	{{.StructName | ToLower}}Serv "go-project-template-v5/internal/api/{{.DbTableName}}/service"
+	{{.StructName | ToLower}}Impl "go-project-template-v5/internal/api/{{.DbTableName}}/service/impl"
+{{- end }}
 )
 
-// Init
+// Init all services
 
 type Services struct {
-	// TODO: other service interfaces here
-	ClientService clientServiceInterface.ClientService
+{{- range .Structs}}
+	{{.StructName}}Service {{.StructName | ToLower}}Serv.{{.StructName}}Service
+{{- end }}
 }
 
 type Deps struct {
@@ -55,8 +57,9 @@ type Deps struct {
 
 func NewServices(ctx context.Context, deps Deps) *Services {
 	return &Services{
-		// TODO: other service impls here
-		ClientService: clientServiceImpl.NewClientService(ctx, deps.Repos.ClientRepository),
+{{- range .Structs}}
+		{{.StructName}}Service: {{.StructName | ToLower}}Impl.New{{.StructName}}Service(ctx, deps.Repos.{{.StructName}}Repository),
+{{- end }}
 	}
 }
 `

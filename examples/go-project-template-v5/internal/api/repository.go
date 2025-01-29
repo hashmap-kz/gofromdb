@@ -17,22 +17,22 @@ import (
 	"go-project-template-v5/pkg/storage/postgres"
 )
 
-// Init
+// Init all repos
 
 type Repositories struct {
+	BuyRepository      buyRepo.BuyRepository
 	BuyItemRepository  buyitemRepo.BuyItemRepository
 	CategoryRepository categoryRepo.CategoryRepository
 	ClientRepository   clientRepo.ClientRepository
 	ProductRepository  productRepo.ProductRepository
-	BuyRepository      buyRepo.BuyRepository
 }
 
 func NewRepositories(ctx context.Context, db *postgres.Postgres) *Repositories {
 	return &Repositories{
+		BuyRepository:      buyImpl.NewBuyRepository(ctx, db),
 		BuyItemRepository:  buyitemImpl.NewBuyItemRepository(ctx, db),
 		CategoryRepository: categoryImpl.NewCategoryRepository(ctx, db),
 		ClientRepository:   clientImpl.NewClientRepository(ctx, db),
 		ProductRepository:  productImpl.NewProductRepository(ctx, db),
-		BuyRepository:      buyImpl.NewBuyRepository(ctx, db),
 	}
 }

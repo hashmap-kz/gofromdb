@@ -3,15 +3,26 @@ package api
 import (
 	"context"
 
-	clientServiceInterface "go-project-template-v5/internal/api/<no value>/service"
-	clientServiceImpl "go-project-template-v5/internal/api/<no value>/service/impl"
+	buyServ "go-project-template-v5/internal/api/buy/service"
+	buyImpl "go-project-template-v5/internal/api/buy/service/impl"
+	buyitemServ "go-project-template-v5/internal/api/buy_item/service"
+	buyitemImpl "go-project-template-v5/internal/api/buy_item/service/impl"
+	categoryServ "go-project-template-v5/internal/api/category/service"
+	categoryImpl "go-project-template-v5/internal/api/category/service/impl"
+	clientServ "go-project-template-v5/internal/api/client/service"
+	clientImpl "go-project-template-v5/internal/api/client/service/impl"
+	productServ "go-project-template-v5/internal/api/product/service"
+	productImpl "go-project-template-v5/internal/api/product/service/impl"
 )
 
-// Init
+// Init all services
 
 type Services struct {
-	// TODO: other service interfaces here
-	ClientService clientServiceInterface.ClientService
+	BuyService      buyServ.BuyService
+	BuyItemService  buyitemServ.BuyItemService
+	CategoryService categoryServ.CategoryService
+	ClientService   clientServ.ClientService
+	ProductService  productServ.ProductService
 }
 
 type Deps struct {
@@ -21,7 +32,10 @@ type Deps struct {
 
 func NewServices(ctx context.Context, deps Deps) *Services {
 	return &Services{
-		// TODO: other service impls here
-		ClientService: clientServiceImpl.NewClientService(ctx, deps.Repos.ClientRepository),
+		BuyService:      buyImpl.NewBuyService(ctx, deps.Repos.BuyRepository),
+		BuyItemService:  buyitemImpl.NewBuyItemService(ctx, deps.Repos.BuyItemRepository),
+		CategoryService: categoryImpl.NewCategoryService(ctx, deps.Repos.CategoryRepository),
+		ClientService:   clientImpl.NewClientService(ctx, deps.Repos.ClientRepository),
+		ProductService:  productImpl.NewProductService(ctx, deps.Repos.ProductRepository),
 	}
 }
