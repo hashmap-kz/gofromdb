@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"genpg-v5/internal/typmap"
 	"go/format"
 	"log"
 	"strings"
@@ -97,11 +96,17 @@ func makeOneStruct(relPath string, cols []genpg.ColumnInfo) TableToStructInfo {
 
 	_, table := getSchemaTable(relPath)
 	for _, c := range cols {
+		if c.GoType == "" {
+			log.Fatalf("cannot find type mapping for pg-type: `%s`, column: `%s`",
+				c.AttType,
+				fmt.Sprintf("%s.%s", c.RelPath, c.AttName),
+			)
+		}
 
 		fields = append(fields, TableToStructFieldInfo{
 			FieldComment: c.ColDesc,
 			FieldName:    makeName(c.AttName),
-			FieldType:    typmap.GetColType(c.AttType2, !c.AttNotNull),
+			FieldType:    c.GoType,
 			DbFieldName:  c.AttName,
 			DbIsNotNull:  c.AttNotNull,
 			DbIsPk:       c.IsPK,

@@ -83,7 +83,6 @@ with ti as (select (select cls.relnamespace::regnamespace::text || '.' || cls.re
                        colinfo.numeric_precision                         as n_prec,
                        colinfo.numeric_scale                             as n_scal
                 from information_schema.columns colinfo
-                where colinfo.table_schema = 'public'
                 order by relpath, ordinal_position),
 
      def as (select (select c.relnamespace::regnamespace::text || '.' || c.relname
@@ -105,7 +104,61 @@ with ti as (select (select cls.relnamespace::regnamespace::text || '.' || cls.re
              where d.adrelid = pa.attrelid
                and d.adnum = pa.attnum
                and pa.atthasdef
-             order by relpath, pa.attnum)
+             order by relpath, pa.attnum),
+
+     type_map AS (SELECT '{
+       "_bool": "[]bool",
+       "_date": "[]time.Time",
+       "_float4": "[]float32",
+       "_float8": "[]float64",
+       "_int2": "[]int16",
+       "_int4": "[]int",
+       "_int8": "[]int64",
+       "_numeric": "[]string",
+       "_text": "[]string",
+       "_uuid": "[]string",
+       "_varchar": "[]string",
+       "bytea": "[]byte",
+       "bigserial": "int64",
+       "bool": "bool",
+       "bpchar": "string",
+       "char": "string",
+       "cid": "uint32",
+       "date": "time.Time",
+       "decimal": "string",
+       "float4": "float32",
+       "float8": "float64",
+       "int2": "int16",
+       "int4": "int",
+       "int8": "int64",
+       "interval": "string",
+       "json": "string",
+       "jsonb": "string",
+       "name": "string",
+       "numeric": "string",
+       "oid": "uint32",
+       "pg_lsn": "string",
+       "regclass": "string",
+       "regproc": "string",
+       "regtype": "string",
+       "serial": "int",
+       "smallserial": "int16",
+       "text": "string",
+       "time": "time.Time",
+       "timestamp": "time.Time",
+       "timestamptz": "time.Time",
+       "timetz": "time.Time",
+       "tsquery": "string",
+       "tsvector": "string",
+       "uuid": "string",
+       "varchar": "string",
+       "xid": "uint32",
+       "xml": "string"
+     }'::jsonb AS mapping),
+
+     typemap_tab as (SELECT key   AS pg_type,
+                            value AS go_type
+                     FROM jsonb_each_text((SELECT mapping FROM type_map)))
 
 select ti.relpath,
        ti.attname,
@@ -120,12 +173,30 @@ select ti.relpath,
        l.n_prec,
        l.n_scal,
        def.def,
-       ti.is_pk
+       ti.is_pk,
+       case
+           when coalesce(tmt.go_type, '') = ''
+               then ''
+           else
+               case
+                   when not ti.attnotnull then
+                       case
+                           when tmt.go_type ilike '%[]%' then
+                               replace(tmt.go_type, '[]', '[]*')
+                           else
+                               '*' || tmt.go_type
+                           end
+                   else
+                       tmt.go_type
+                   end
+           end as                    go_type
 from ti
          left join fk on fk.con_relpath = ti.relpath and fk.conkey_first = ti.attnum
          left join limits l on l.relpath = ti.relpath and l.attnum = ti.attnum
          left join def on def.relpath = ti.relpath and def.attnum = ti.attnum
+         left join typemap_tab tmt on tmt.pg_type = ti.atttype2
 where ti.relpath ~* 'public'
   and ti.relpath !~* 'migrate_'
 order by ti.relpath, ti.attnum
+;
 `
