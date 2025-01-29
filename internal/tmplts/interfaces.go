@@ -88,12 +88,12 @@ func (h *Handler) Init(router *http.ServeMux) {
 {{- range .Structs}}
 	// {{.StructName}} routing
 	{{.StructNameLowerFirstLetter}}Handler := {{.StructName | ToLower}}v1.New{{.StructName}}HTTPHandler(h.Services.{{.StructName}}Service)
-	router.HandleFunc("POST /api/v1/{{.DbTableName}}"			, {{.StructNameLowerFirstLetter}}Handler.Save)
-	router.HandleFunc("GET /api/v1/{{.DbTableName}}"			, {{.StructNameLowerFirstLetter}}Handler.GetAll)
-	router.HandleFunc("GET /api/v1/{{.DbTableName}}/pageable"	, {{.StructNameLowerFirstLetter}}Handler.GetAllPaginated)
-	router.HandleFunc("GET /api/v1/{{.DbTableName}}/{id}"		, {{.StructNameLowerFirstLetter}}Handler.GetByID)
-	router.HandleFunc("PUT /api/v1/{{.DbTableName}}/{id}"		, {{.StructNameLowerFirstLetter}}Handler.Update)
-	router.HandleFunc("DELETE /api/v1/{{.DbTableName}}/{id}"	, {{.StructNameLowerFirstLetter}}Handler.Delete)
+	router.HandleFunc("POST /api/v1/{{.StructNamePluralRequestPath}}"			, {{.StructNameLowerFirstLetter}}Handler.Save)
+	router.HandleFunc("GET /api/v1/{{.StructNamePluralRequestPath}}"			, {{.StructNameLowerFirstLetter}}Handler.GetAll)
+	router.HandleFunc("GET /api/v1/{{.StructNamePluralRequestPath}}/pageable"	, {{.StructNameLowerFirstLetter}}Handler.GetAllPaginated)
+	router.HandleFunc("GET /api/v1/{{.StructNamePluralRequestPath}}/{id}"		, {{.StructNameLowerFirstLetter}}Handler.GetByID)
+	router.HandleFunc("PUT /api/v1/{{.StructNamePluralRequestPath}}/{id}"		, {{.StructNameLowerFirstLetter}}Handler.Update)
+	router.HandleFunc("DELETE /api/v1/{{.StructNamePluralRequestPath}}/{id}"	, {{.StructNameLowerFirstLetter}}Handler.Delete)
 {{print "\n"}}
 {{- end }}
 }

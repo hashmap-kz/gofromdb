@@ -18,11 +18,12 @@ type TableToStructFieldInfo struct {
 }
 
 type TableToStructInfo struct {
-	StructName                 string
-	StructNameLowerFirstLetter string
-	StructComment              string
-	DbTableName                string
-	Fields                     []TableToStructFieldInfo
+	StructName                  string
+	StructNameLowerFirstLetter  string
+	StructNamePluralRequestPath string
+	StructComment               string
+	DbTableName                 string
+	Fields                      []TableToStructFieldInfo
 }
 
 func GenStructs() []TableToStructInfo {
@@ -111,10 +112,11 @@ func makeOneStruct(relPath string, cols []genpg.ColumnInfo) TableToStructInfo {
 	structName := makeName(table)
 
 	return TableToStructInfo{
-		StructName:                 structName,
-		StructNameLowerFirstLetter: LowerFirstLetter(structName),
-		StructComment:              structComment,
-		DbTableName:                table,
-		Fields:                     fields,
+		StructName:                  structName,
+		StructNameLowerFirstLetter:  LowerFirstLetter(structName),
+		StructNamePluralRequestPath: makeDnsPathPluralFromDbTable(table),
+		StructComment:               structComment,
+		DbTableName:                 table,
+		Fields:                      fields,
 	}
 }

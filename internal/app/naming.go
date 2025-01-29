@@ -60,3 +60,16 @@ func addPadding2(input string) string {
 	}
 	return strings.Join(lines, "\n")
 }
+
+// TODO: use proper libs :)
+func makeDnsPathPluralFromDbTable(input string) string {
+	split := strings.Split(input, "_")
+	if len(split) == 1 {
+		return Pluralize(split[0])
+	}
+	last := Pluralize(split[len(split)-1])
+	tail := split[0 : len(split)-1]
+	tail = append(tail, last)
+	result := strings.Join(tail, "-")
+	return result
+}
