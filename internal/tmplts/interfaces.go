@@ -86,7 +86,7 @@ func NewHandler(services *Services) *Handler {
 
 func (h *Handler) Init(router *http.ServeMux) {
 {{- range .Structs}}
-	// {{.StructName}} routing
+	// {{.StructName}} routes
 	{{.StructNameLowerFirstLetter}}Handler := {{.StructName | ToLower}}v1.New{{.StructName}}HTTPHandler(h.Services.{{.StructName}}Service)
 	router.HandleFunc("POST /api/v1/{{.StructNamePluralRequestPath}}"			, {{.StructNameLowerFirstLetter}}Handler.Save)
 	router.HandleFunc("GET /api/v1/{{.StructNamePluralRequestPath}}"			, {{.StructNameLowerFirstLetter}}Handler.GetAll)

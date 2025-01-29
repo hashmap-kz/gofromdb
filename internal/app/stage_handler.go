@@ -18,6 +18,7 @@ func GenHandler(s TableToStructInfo) GenHandl {
 	dtosResult := ExecTemplate("handler-dtos", tmplts.HandlerPayloadsTmpl,
 		map[string]any{
 			"StructNameLowerFirstLetter": s.StructNameLowerFirstLetter,
+			"StructComment":              s.StructComment,
 			"DtoFieldsFull":              s.Fields,
 			"DtoFieldsCreate":            structFieldsWithoutPkeysAndDefaults,
 			"DtoFieldsUpdate":            structFieldsWithPkeysAndWithoutDefaults,

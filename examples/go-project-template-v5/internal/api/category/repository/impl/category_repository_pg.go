@@ -55,6 +55,7 @@ func (r *categoryRepository) Save(ctx context.Context, inputEntity *dbModel.Cate
 		&scannedEntity.UpdatedAt,
 		&scannedEntity.Guid,
 	)
+
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", tag, err)
 	}
@@ -92,6 +93,7 @@ func (r *categoryRepository) Update(ctx context.Context, inputEntity *dbModel.Ca
 		&scannedEntity.UpdatedAt,
 		&scannedEntity.Guid,
 	)
+
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", tag, err)
 	}
@@ -138,6 +140,7 @@ func (r *categoryRepository) GetByID(ctx context.Context, id int) (*dbModel.Cate
 		&scannedEntity.UpdatedAt,
 		&scannedEntity.Guid,
 	)
+
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", tag, err)
 	}
