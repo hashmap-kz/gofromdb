@@ -1,7 +1,7 @@
 package tmplts
 
 var ServiceDtosTemplate = `
-package postgres
+package dto
 import "time"
 
 type {{.DtoName}} struct {
