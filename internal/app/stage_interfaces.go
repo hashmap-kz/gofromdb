@@ -7,6 +7,7 @@ import (
 type GenInterf struct {
 	ServiceInterface string
 	RepoInterface    string
+	HandlerInterface string
 }
 
 func GenInterfaces(structs []TableToStructInfo) GenInterf {
@@ -20,8 +21,14 @@ func GenInterfaces(structs []TableToStructInfo) GenInterf {
 			"Structs": structs,
 		}, FuncMap)
 
+	handlerInterfaceResult := ExecTemplate("habdler-interface-general", tmplts.HandlerInterfaceGeneral,
+		map[string]any{
+			"Structs": structs,
+		}, FuncMap)
+
 	return GenInterf{
 		ServiceInterface: PrintFormatted(serviceInterfaceResult),
 		RepoInterface:    PrintFormatted(repoInterfaceResult),
+		HandlerInterface: PrintFormatted(handlerInterfaceResult),
 	}
 }

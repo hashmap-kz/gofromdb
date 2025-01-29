@@ -34,6 +34,7 @@ func writeInterfaces(s []app.TableToStructInfo, outputPath string) {
 	layer := app.GenInterfaces(s)
 	writeFile(path.Join(outputPath, "internal/api/repository.go"), layer.RepoInterface)
 	writeFile(path.Join(outputPath, "internal/api/service.go"), layer.ServiceInterface)
+	writeFile(path.Join(outputPath, "internal/api/handler.go"), layer.HandlerInterface)
 }
 
 func writeServiceFiles(s app.TableToStructInfo, outputPath string) {

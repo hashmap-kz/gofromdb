@@ -18,10 +18,11 @@ type TableToStructFieldInfo struct {
 }
 
 type TableToStructInfo struct {
-	StructName    string
-	StructComment string
-	DbTableName   string
-	Fields        []TableToStructFieldInfo
+	StructName                 string
+	StructNameLowerFirstLetter string
+	StructComment              string
+	DbTableName                string
+	Fields                     []TableToStructFieldInfo
 }
 
 func GenStructs() []TableToStructInfo {
@@ -107,10 +108,13 @@ func makeOneStruct(relPath string, cols []genpg.ColumnInfo) TableToStructInfo {
 		structComment = cols[0].TabDesc
 	}
 
+	structName := makeName(table)
+
 	return TableToStructInfo{
-		StructName:    makeName(table),
-		StructComment: structComment,
-		DbTableName:   table,
-		Fields:        fields,
+		StructName:                 structName,
+		StructNameLowerFirstLetter: LowerFirstLetter(structName),
+		StructComment:              structComment,
+		DbTableName:                table,
+		Fields:                     fields,
 	}
 }
