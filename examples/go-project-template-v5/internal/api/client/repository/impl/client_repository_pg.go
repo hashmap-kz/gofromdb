@@ -51,7 +51,6 @@ func (r *clientRepository) Save(ctx context.Context, inputEntity *dbModel.Client
 		&scannedEntity.UpdatedAt,
 		&scannedEntity.Guid,
 	)
-
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", tag, err)
 	}
@@ -85,7 +84,6 @@ func (r *clientRepository) Update(ctx context.Context, inputEntity *dbModel.Clie
 		&scannedEntity.UpdatedAt,
 		&scannedEntity.Guid,
 	)
-
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", tag, err)
 	}
@@ -130,7 +128,6 @@ func (r *clientRepository) GetByID(ctx context.Context, id int) (*dbModel.Client
 		&scannedEntity.UpdatedAt,
 		&scannedEntity.Guid,
 	)
-
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", tag, err)
 	}

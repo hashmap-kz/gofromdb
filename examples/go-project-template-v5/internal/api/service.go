@@ -3,8 +3,8 @@ package api
 import (
 	"context"
 
-	clientServiceInterface "go-project-template-v5/internal/api/client/service"
-	clientServiceImpl "go-project-template-v5/internal/api/client/service/impl"
+	clientServiceInterface "go-project-template-v5/internal/api/<no value>/service"
+	clientServiceImpl "go-project-template-v5/internal/api/<no value>/service/impl"
 )
 
 // Init

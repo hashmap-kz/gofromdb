@@ -23,10 +23,17 @@ func main() {
 	// internal/api/client/service/client_service.go
 	// internal/api/client/service/impl/client_service_impl.go
 
+	writeInterfaces(structs, outputPath)
 	for _, s := range structs {
 		writeRepoFiles(s, outputPath)
 		writeServiceFiles(s, outputPath)
 	}
+}
+
+func writeInterfaces(s []app.TableToStructInfo, outputPath string) {
+	layer := app.GenInterfaces(s)
+	writeFile(path.Join(outputPath, "internal/api/repository.go"), layer.RepoInterface)
+	writeFile(path.Join(outputPath, "internal/api/service.go"), layer.ServiceInterface)
 }
 
 func writeServiceFiles(s app.TableToStructInfo, outputPath string) {

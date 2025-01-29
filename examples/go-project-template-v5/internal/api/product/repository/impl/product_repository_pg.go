@@ -59,7 +59,6 @@ func (r *productRepository) Save(ctx context.Context, inputEntity *dbModel.Produ
 		&scannedEntity.UpdatedAt,
 		&scannedEntity.Guid,
 	)
-
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", tag, err)
 	}
@@ -101,7 +100,6 @@ func (r *productRepository) Update(ctx context.Context, inputEntity *dbModel.Pro
 		&scannedEntity.UpdatedAt,
 		&scannedEntity.Guid,
 	)
-
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", tag, err)
 	}
@@ -150,7 +148,6 @@ func (r *productRepository) GetByID(ctx context.Context, id int) (*dbModel.Produ
 		&scannedEntity.UpdatedAt,
 		&scannedEntity.Guid,
 	)
-
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", tag, err)
 	}
