@@ -1,6 +1,9 @@
 package tmplts
 
 var EntityTemplate = `
+package postgres
+import "time"
+
 {{- if .StructComment}}
 // {{.StructName}} {{.StructComment | ToLower}}
 {{- end}}
