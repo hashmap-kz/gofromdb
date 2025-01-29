@@ -2,7 +2,7 @@ package tmplts
 
 var EntityTemplate = `
 {{- if .StructComment}}
-// {{.StructName}}. {{.StructComment}}
+// {{.StructName}} {{.StructComment | ToLower}}
 {{- end}}
 type {{.StructName}} struct {
 {{- range .Columns}}
