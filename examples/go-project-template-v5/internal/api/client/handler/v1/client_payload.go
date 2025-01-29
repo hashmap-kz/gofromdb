@@ -1,32 +1,29 @@
 package v1
 
-import "go-project-template-v5/pkg/pageable"
+import (
+	"time"
 
-// clientCreateRequest - handler layer
+	"go-project-template-v5/pkg/pageable"
+)
+
 type clientCreateRequest struct {
-	Email string `json:"email" validate:"required"`
-}
-
-// clientResponse - single client payload
-type clientResponse struct {
-	// Identifier
-	ID int `json:"id"`
-
-	// Client email
 	Email string `json:"email"`
 }
 
-// clientResponseList - paginated response
-type clientResponseList struct {
-	// Pagination
-	Page pageable.Page `json:"page"`
-
-	// Files list
-	Data []clientResponse `json:"data,omitempty"`
+type clientResponse struct {
+	RecordID  int       `json:"record_id"`
+	Email     string    `json:"email"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+	Guid      string    `json:"guid"`
 }
 
-// clientUpdateRequest - request for update available client fields
+type clientResponseList struct {
+	Page pageable.Page
+	Data []clientResponse `json:"data"`
+}
+
 type clientUpdateRequest struct {
-	// Client email
-	Email string
+	RecordID int    `json:"record_id"`
+	Email    string `json:"email"`
 }

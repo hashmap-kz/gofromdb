@@ -63,7 +63,6 @@ func (r *buyItemRepository) Save(ctx context.Context, inputEntity *dbModel.BuyIt
 		&scannedEntity.UpdatedAt,
 		&scannedEntity.Guid,
 	)
-
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", tag, err)
 	}
@@ -109,7 +108,6 @@ func (r *buyItemRepository) Update(ctx context.Context, inputEntity *dbModel.Buy
 		&scannedEntity.UpdatedAt,
 		&scannedEntity.Guid,
 	)
-
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", tag, err)
 	}
@@ -160,7 +158,6 @@ func (r *buyItemRepository) GetByID(ctx context.Context, id int) (*dbModel.BuyIt
 		&scannedEntity.UpdatedAt,
 		&scannedEntity.Guid,
 	)
-
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", tag, err)
 	}

@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+
 	buyServ "go-project-template-v5/internal/api/buy/service"
 	buyImpl "go-project-template-v5/internal/api/buy/service/impl"
 	buyitemServ "go-project-template-v5/internal/api/buy_item/service"
@@ -17,11 +18,11 @@ import (
 // Init all services
 
 type Services struct {
+	ProductService  productServ.ProductService
 	BuyService      buyServ.BuyService
 	BuyItemService  buyitemServ.BuyItemService
 	CategoryService categoryServ.CategoryService
 	ClientService   clientServ.ClientService
-	ProductService  productServ.ProductService
 }
 
 type Deps struct {
@@ -31,10 +32,10 @@ type Deps struct {
 
 func NewServices(ctx context.Context, deps Deps) *Services {
 	return &Services{
+		ProductService:  productImpl.NewProductService(ctx, deps.Repos.ProductRepository),
 		BuyService:      buyImpl.NewBuyService(ctx, deps.Repos.BuyRepository),
 		BuyItemService:  buyitemImpl.NewBuyItemService(ctx, deps.Repos.BuyItemRepository),
 		CategoryService: categoryImpl.NewCategoryService(ctx, deps.Repos.CategoryRepository),
 		ClientService:   clientImpl.NewClientService(ctx, deps.Repos.ClientRepository),
-		ProductService:  productImpl.NewProductService(ctx, deps.Repos.ProductRepository),
 	}
 }

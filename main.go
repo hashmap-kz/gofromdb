@@ -22,11 +22,14 @@ func main() {
 	// internal/api/client/dto/client_dto.go
 	// internal/api/client/service/client_service.go
 	// internal/api/client/service/impl/client_service_impl.go
+	//
+	// internal/api/client/handler/v1/client_payload.go
 
 	writeInterfaces(structs, outputPath)
 	for _, s := range structs {
 		writeRepoFiles(s, outputPath)
 		writeServiceFiles(s, outputPath)
+		writeHandlerFiles(s, outputPath)
 	}
 }
 
@@ -35,6 +38,17 @@ func writeInterfaces(s []app.TableToStructInfo, outputPath string) {
 	writeFile(path.Join(outputPath, "internal/api/repository.go"), layer.RepoInterface)
 	writeFile(path.Join(outputPath, "internal/api/service.go"), layer.ServiceInterface)
 	writeFile(path.Join(outputPath, "internal/api/handler.go"), layer.HandlerInterface)
+}
+
+func writeHandlerFiles(s app.TableToStructInfo, outputPath string) {
+	layer := app.GenHandler(s)
+
+	// models
+	modelsPath := path.Join(outputPath, fmt.Sprintf("internal/api/%s/handler/v1/%s_payload.go",
+		s.DbTableName,
+		s.DbTableName),
+	)
+	writeFile(modelsPath, layer.HandlerDtos)
 }
 
 func writeServiceFiles(s app.TableToStructInfo, outputPath string) {
