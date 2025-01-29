@@ -55,6 +55,7 @@ func (r *buyRepository) Save(ctx context.Context, inputEntity *dbModel.Buy) (*db
 		&scannedEntity.UpdatedAt,
 		&scannedEntity.Guid,
 	)
+
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", tag, err)
 	}
@@ -92,6 +93,7 @@ func (r *buyRepository) Update(ctx context.Context, inputEntity *dbModel.Buy) (*
 		&scannedEntity.UpdatedAt,
 		&scannedEntity.Guid,
 	)
+
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", tag, err)
 	}
@@ -138,6 +140,7 @@ func (r *buyRepository) GetByID(ctx context.Context, id int) (*dbModel.Buy, erro
 		&scannedEntity.UpdatedAt,
 		&scannedEntity.Guid,
 	)
+
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", tag, err)
 	}
@@ -192,7 +195,7 @@ func (r *buyRepository) GetAllPaginated(ctx context.Context, pq *pageable.Pagina
 	tag := "buyRepository.GetAllPaginated"
 
 	// retrieve total count
-	queryCnt := `		select count(record_id) from public.buy`
+	queryCnt := `select count(record_id) from public.buy`
 	var totalCount int
 	if err := r.db.Pool.QueryRow(ctx, queryCnt).Scan(&totalCount); err != nil {
 		return nil, pageable.Page{}, err

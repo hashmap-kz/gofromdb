@@ -1,13 +1,12 @@
 package api
 
 import (
-	"net/http"
-
 	buyv1 "go-project-template-v5/internal/api/buy/handler/v1"
 	buyitemv1 "go-project-template-v5/internal/api/buy_item/handler/v1"
 	categoryv1 "go-project-template-v5/internal/api/category/handler/v1"
 	clientv1 "go-project-template-v5/internal/api/client/handler/v1"
 	productv1 "go-project-template-v5/internal/api/product/handler/v1"
+	"net/http"
 )
 
 type Handler struct {
@@ -65,4 +64,5 @@ func (h *Handler) Init(router *http.ServeMux) {
 	router.HandleFunc("GET /api/v1/products/{id}", productHandler.GetByID)
 	router.HandleFunc("PUT /api/v1/products/{id}", productHandler.Update)
 	router.HandleFunc("DELETE /api/v1/products/{id}", productHandler.Delete)
+
 }

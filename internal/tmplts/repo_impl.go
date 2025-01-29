@@ -226,7 +226,7 @@ func (r *{{.ImplName}}) GetAllPaginated(ctx context.Context, pq *pageable.Pagina
 	tag := "{{.ImplName}}.GetAllPaginated"
 
 	// retrieve total count
-	queryCnt := ` + "`{{.RepoCountQuery | AddPadding2}}`" + `
+	queryCnt := ` + "`{{.RepoCountQuery}}`" + `
 	var totalCount int
 	if err := r.db.Pool.QueryRow(ctx, queryCnt).Scan(&totalCount); err != nil {
 		return nil, pageable.Page{}, err
