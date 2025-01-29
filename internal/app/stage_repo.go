@@ -73,6 +73,22 @@ func GenRepository(s TableToStructInfo) GenRepo {
 			"PkeyFieldName":   pkeyDatabaseFieldName,
 		}, FuncMap)
 
+	repoCountQueryResult := ExecTemplate("query-count", tmplts.RepoCountQueryTemplate,
+		map[string]any{
+			"SchemaName":      "public",
+			"TableName":       s.DbTableName,
+			"FieldsWithPKeys": strings.Join(fieldsWithPkeysAndDefaults, ",\n"),
+			"PkeyFieldName":   pkeyDatabaseFieldName,
+		}, FuncMap)
+
+	repoGetAllPaginatedQueryResult := ExecTemplate("query-get-all-paginated", tmplts.RepoGetAllPaginatedQueryTemplate,
+		map[string]any{
+			"SchemaName":      "public",
+			"TableName":       s.DbTableName,
+			"FieldsWithPKeys": strings.Join(fieldsWithPkeysAndDefaults, ",\n"),
+			"PkeyFieldName":   pkeyDatabaseFieldName,
+		}, FuncMap)
+
 	// Function template
 
 	structFieldsWithoutPkeysAndDefaults := s.GetStructFieldsAsString(false, true)
@@ -83,18 +99,20 @@ func GenRepository(s TableToStructInfo) GenRepo {
 
 	repoImplTemplateResult := ExecTemplate("funcs", tmplts.RepoImplTemplate,
 		map[string]any{
-			"RepoSaveQuery":         repoSaveQueryResult,
-			"RepoUpdateQuery":       repoUpdateQueryResult,
-			"RepoDeleteQuery":       repoDeleteQueryResult,
-			"RepoGetByIdQuery":      repoGetByIdQueryResult,
-			"RepoGetAllQuery":       repoGetAllQueryResult,
-			"StructName":            s.StructName,
-			"PackageName":           strings.ToLower(s.DbTableName),
-			"InterfaceName":         s.StructName + "Repository",
-			"ImplName":              LowerFirstLetter(s.StructName) + "Repository",
-			"StructFieldsUpdate":    structFieldsUpdate,
-			"StructFieldsNoPKeys":   structFieldsWithoutPkeysAndDefaults,
-			"StructFieldsWithPKeys": structFieldsWithPkeysAndDefaults,
+			"RepoSaveQuery":            repoSaveQueryResult,
+			"RepoUpdateQuery":          repoUpdateQueryResult,
+			"RepoDeleteQuery":          repoDeleteQueryResult,
+			"RepoGetByIdQuery":         repoGetByIdQueryResult,
+			"RepoGetAllQuery":          repoGetAllQueryResult,
+			"RepoCountQuery":           repoCountQueryResult,
+			"RepoGetAllPaginatedQuery": repoGetAllPaginatedQueryResult,
+			"StructName":               s.StructName,
+			"PackageName":              strings.ToLower(s.DbTableName),
+			"InterfaceName":            s.StructName + "Repository",
+			"ImplName":                 LowerFirstLetter(s.StructName) + "Repository",
+			"StructFieldsUpdate":       structFieldsUpdate,
+			"StructFieldsNoPKeys":      structFieldsWithoutPkeysAndDefaults,
+			"StructFieldsWithPKeys":    structFieldsWithPkeysAndDefaults,
 		}, FuncMap)
 
 	return GenRepo{

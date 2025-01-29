@@ -38,6 +38,16 @@ from {{.SchemaName}}.{{.TableName}}
 order by {{.PkeyFieldName}}
 `
 
+var RepoCountQueryTemplate = `select count({{.PkeyFieldName}}) from {{.SchemaName}}.{{.TableName}}`
+
+var RepoGetAllPaginatedQueryTemplate = `
+select
+{{.FieldsWithPKeys | AddPadding}}
+from {{.SchemaName}}.{{.TableName}}
+order by {{.PkeyFieldName}}
+offset $1 limit $2
+`
+
 var RepoImplTemplate = `
 package impl
 
@@ -169,5 +179,52 @@ func (r *{{.ImplName}}) GetAll(ctx context.Context) ([]dbModel.{{.StructName}}, 
 		return nil, rows.Err()
 	}
 	return scannedEntities, nil
+}
+
+func (r *{{.ImplName}}) GetAllPaginated(ctx context.Context, pq *pageable.PaginationQuery) ([]dbModel.{{.StructName}}, pageable.Page, error) {
+	tag := "{{.ImplName}}.GetAllPaginated"
+
+	// retrieve total count
+	queryCnt := ` + "`{{.RepoCountQuery | AddPadding2}}`" + `
+	var totalCount int
+	if err := r.db.Pool.QueryRow(ctx, queryCnt).Scan(&totalCount); err != nil {
+		return nil, pageable.Page{}, err
+	}
+
+	// init page
+	page := pageable.CreatePage(pq, totalCount)
+
+	// handle empty result
+	if totalCount == 0 {
+		return nil, page, nil
+	}
+
+	// select entities
+	query := ` + "`{{.RepoGetAllPaginatedQuery | AddPadding2}}`" + `
+
+	rows, err := r.db.Pool.Query(ctx, query, pq.GetOffset(), pq.GetLimit())
+	if err != nil {
+		return nil, pageable.Page{}, fmt.Errorf("%s: %w", tag, err)
+	}
+	defer rows.Close()
+
+	var scannedEntities []dbModel.{{.StructName}}
+	for rows.Next() {
+		var scannedEntity dbModel.{{.StructName}}
+		err = rows.Scan(
+{{- range .StructFieldsWithPKeys}}
+			&scannedEntity.{{.}},
+{{- end }}
+		)
+		if err != nil {
+			return nil, pageable.Page{}, fmt.Errorf("%s: %w", tag, err)
+		}
+		scannedEntities = append(scannedEntities, scannedEntity)
+	}
+
+	if rows.Err() != nil {
+		return nil, page, rows.Err()
+	}
+	return scannedEntities, page, nil
 }
 `
