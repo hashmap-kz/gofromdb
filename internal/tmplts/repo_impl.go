@@ -46,14 +46,14 @@ func NewClientRepository(_ context.Context, db *postgres.Postgres) repository.{{
 	}
 }
 
-func (r *{{.ImplName}}) Save(ctx context.Context, inputEntity *model.{{.StructName}}) (*model.{{.StructName}}, error) {
+func (r *{{.ImplName}}) Save(ctx context.Context, inputEntity *dbModel.{{.StructName}}) (*dbModel.{{.StructName}}, error) {
 	tag := "{{.ImplName}}.Save"
 
 	query := ` + "`{{.RepoSaveQuery | AddPadding2}}`" + `
 
 	var scannedEntity model.{{.StructName}}
 	err := r.db.Pool.QueryRow(ctx, query,
-{{- range .StructFieldsNoPkeys}}
+{{- range .StructFieldsNoPKeys}}
 		inputEntity.{{.}},
 {{- end }}
 	).Scan(
@@ -68,8 +68,8 @@ func (r *{{.ImplName}}) Save(ctx context.Context, inputEntity *model.{{.StructNa
 	return &scannedEntity, nil
 }
 
-func (r *clientRepository) Update(ctx context.Context, inputEntity *dbModel.Client) (*dbModel.Client, error) {
-	tag := "clientRepository.Update"
+func (r *{{.ImplName}}) Update(ctx context.Context, inputEntity *dbModel.{{.StructName}}) (*dbModel.{{.StructName}}, error) {
+	tag := "{{.ImplName}}.Update"
 
 	query := ` + "`{{.RepoUpdateQuery | AddPadding2}}`" + `
 
