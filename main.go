@@ -78,7 +78,7 @@ func (s *TableToStructInfo) getDbFieldsAsString(withPkeys, skipIfHasDefault bool
 	return r
 }
 
-func (s *TableToStructInfo) getStructFieldsAsString(withPkeys, skipIfHasDefault bool, prefix string) []string {
+func (s *TableToStructInfo) getStructFieldsAsString(withPkeys, skipIfHasDefault bool) []string {
 	r := []string{}
 	for _, f := range s.Fields {
 		if !withPkeys && f.DbIsPk {
@@ -87,7 +87,7 @@ func (s *TableToStructInfo) getStructFieldsAsString(withPkeys, skipIfHasDefault 
 		if skipIfHasDefault && f.DbHasDefault {
 			continue
 		}
-		r = append(r, prefix+f.FieldName)
+		r = append(r, f.FieldName)
 	}
 	return r
 }
@@ -189,6 +189,15 @@ func printFormatted(input string) string {
 	return code
 }
 
+func genUpdateSets(from []string) []string {
+	result := []string{}
+	for i := 0; i < len(from); i++ {
+		indexOf := i + 2 // because $1 is a first parameter (starts with 1, not 0), and also $1 is reserved for ID
+		result = append(result, from[i]+" = $"+fmt.Sprintf("%d", indexOf))
+	}
+	return result
+}
+
 func main() {
 	dbInfo := genpg.GetDBInfo()
 	structs := []TableToStructInfo{}
@@ -221,8 +230,9 @@ func main() {
 
 		fieldsWithoutPkeysAndDefaults := s.getDbFieldsAsString(false, true)
 		fieldsWithPkeysAndDefaults := s.getDbFieldsAsString(true, false)
+		updateSets := genUpdateSets(fieldsWithoutPkeysAndDefaults)
 
-		queryTemplateResult := execTemplate("query", tmplts.RepoSaveQueryTemplate,
+		repoSaveQueryResult := execTemplate("query-save", tmplts.RepoSaveQueryTemplate,
 			map[string]any{
 				"SchemaName":         "public",
 				"TableName":          s.DbTableName,
@@ -231,17 +241,35 @@ func main() {
 				"ValuesPlaceholders": strings.Join(createPlaceholders(len(fieldsWithoutPkeysAndDefaults)), ", "),
 			}, funcMap)
 
+		repoUpdateQueryResult := execTemplate("query-update", tmplts.RepoUpdateQueryTemplate,
+			map[string]any{
+				"SchemaName":                    "public",
+				"TableName":                     s.DbTableName,
+				"FieldsNoPKeysWithPlaceholders": strings.Join(updateSets, ",\n"),
+				"FieldsWithPKeys":               strings.Join(fieldsWithPkeysAndDefaults, ",\n"),
+				"PkeyFieldName":                 "record_id",
+			}, funcMap)
+
 		// Function template
 
-		structFieldsWithoutPkeysAndDefaults := s.getStructFieldsAsString(false, true, "entity.")
-		structFieldsWithPkeysAndDefaults := s.getStructFieldsAsString(true, false, "&i.")
+		structFieldsWithoutPkeysAndDefaults := s.getStructFieldsAsString(false, true)
+		structFieldsWithPkeysAndDefaults := s.getStructFieldsAsString(true, false)
 
-		result := execTemplate("funcs", tmplts.RepoSaveFuncTemplate,
+		structFieldsUpdate := []string{}
+		structFieldsUpdate = append(structFieldsUpdate, "RecordID")
+		structFieldsUpdate = append(structFieldsUpdate, structFieldsWithoutPkeysAndDefaults...)
+
+		result := execTemplate("funcs", tmplts.RepoImplTemplate,
 			map[string]any{
-				"Query":                 queryTemplateResult,
+				"RepoSaveQuery":         repoSaveQueryResult,
+				"RepoUpdateQuery":       repoUpdateQueryResult,
 				"StructName":            s.StructName,
-				"StructFieldsNoPKeys":   strings.Join(structFieldsWithoutPkeysAndDefaults, ",\n") + ",",
-				"StructFieldsWithPKeys": strings.Join(structFieldsWithPkeysAndDefaults, ",\n") + ",",
+				"PackageName":           strings.ToLower(s.DbTableName),
+				"InterfaceName":         s.StructName + "Repository",
+				"ImplName":              lowerFirstLetter(s.StructName) + "Repository",
+				"StructFieldsUpdate":    structFieldsUpdate,
+				"StructFieldsNoPKeys":   structFieldsWithoutPkeysAndDefaults,
+				"StructFieldsWithPKeys": structFieldsWithPkeysAndDefaults,
 			}, funcMap)
 
 		fmt.Println(printFormatted(result))
