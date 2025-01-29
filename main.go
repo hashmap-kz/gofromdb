@@ -271,7 +271,7 @@ func main() {
 				"PkeyFieldName":   pkeyDatabaseFieldName,
 			}, funcMap)
 
-		repoGetAllQueryResult := execTemplate("query-get-by-id", tmplts.RepoGetAllQueryTemplate,
+		repoGetAllQueryResult := execTemplate("query-get-all", tmplts.RepoGetAllQueryTemplate,
 			map[string]any{
 				"SchemaName":      "public",
 				"TableName":       s.DbTableName,
