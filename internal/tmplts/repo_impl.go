@@ -1,26 +1,26 @@
 package tmplts
 
 var RepoSaveQueryTemplate = `
-INSERT INTO {{.SchemaName}}.{{.TableName}} (
+insert into {{.SchemaName}}.{{.TableName}} (
 {{.FieldsNoPKeys | AddPadding}}
 )
-VALUES ({{.ValuesPlaceholders}})
-RETURNING
+values ({{.ValuesPlaceholders}})
+returning
 {{.FieldsWithPKeys | AddPadding}}
 `
 
 var RepoUpdateQueryTemplate = `
-UPDATE {{.SchemaName}}.{{.TableName}}
-SET 
+update {{.SchemaName}}.{{.TableName}}
+set 
 {{.FieldsNoPKeysWithPlaceholders | AddPadding}}
-WHERE {{.PkeyFieldName}} = $1
-RETURNING 
+where {{.PkeyFieldName}} = $1
+returning 
 {{.FieldsWithPKeys | AddPadding}}
 `
 
 var RepoDeleteQueryTemplate = `
-DELETE FROM ONLY {{.SchemaName}}.{{.TableName}}
-WHERE {{.PkeyFieldName}} = $1
+delete from only {{.SchemaName}}.{{.TableName}}
+where {{.PkeyFieldName}} = $1
 `
 
 var RepoGetByIdQueryTemplate = `
@@ -28,6 +28,13 @@ select
 {{.FieldsWithPKeys | AddPadding}}
 from {{.SchemaName}}.{{.TableName}}
 where {{.PkeyFieldName}} = $1
+order by {{.PkeyFieldName}}
+`
+
+var RepoGetAllQueryTemplate = `
+select
+{{.FieldsWithPKeys | AddPadding}}
+from {{.SchemaName}}.{{.TableName}}
 order by {{.PkeyFieldName}}
 `
 
@@ -131,5 +138,36 @@ func (r *{{.ImplName}}) GetByID(ctx context.Context, id int) (*dbModel.{{.Struct
 		return nil, fmt.Errorf("%s: %w", tag, err)
 	}
 	return &scannedEntity, nil
+}
+
+func (r *{{.ImplName}}) GetAll(ctx context.Context) ([]dbModel.{{.StructName}}, error) {
+	tag := "{{.ImplName}}.GetAll"
+
+	query := ` + "`{{.RepoGetAllQuery | AddPadding2}}`" + `
+
+	rows, err := r.db.Pool.Query(ctx, query)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", tag, err)
+	}
+	defer rows.Close()
+
+	var scannedEntities []dbModel.{{.StructName}}
+	for rows.Next() {
+		var scannedEntity dbModel.{{.StructName}}
+		err = rows.Scan(
+{{- range .StructFieldsWithPKeys}}
+			&scannedEntity.{{.}},
+{{- end }}
+		)
+		if err != nil {
+			return nil, fmt.Errorf("%s: %w", tag, err)
+		}
+		scannedEntities = append(scannedEntities, scannedEntity)
+	}
+	
+	if rows.Err() != nil {
+		return nil, rows.Err()
+	}
+	return scannedEntities, nil
 }
 `
