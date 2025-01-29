@@ -58,9 +58,10 @@ type TableToStructFieldInfo struct {
 }
 
 type TableToStructInfo struct {
-	StructName  string
-	DbTableName string
-	Fields      []TableToStructFieldInfo
+	StructName    string
+	StructComment string
+	DbTableName   string
+	Fields        []TableToStructFieldInfo
 }
 
 func (s *TableToStructInfo) getDbFieldsAsString(withPkeys, skipIfHasDefault bool) []string {
@@ -114,10 +115,16 @@ func makeOneStruct(relPath string, cols []genpg.ColumnInfo) TableToStructInfo {
 		})
 	}
 
+	structComment := ""
+	if len(cols) > 0 {
+		structComment = cols[0].TabDesc
+	}
+
 	return TableToStructInfo{
-		StructName:  makeName(table),
-		DbTableName: table,
-		Fields:      fields,
+		StructName:    makeName(table),
+		StructComment: structComment,
+		DbTableName:   table,
+		Fields:        fields,
 	}
 }
 
@@ -204,8 +211,9 @@ func main() {
 		// Entity template
 		entityTemplateResult := execTemplate("entity", tmplts.EntityTemplate,
 			map[string]any{
-				"StructName": s.StructName,
-				"Columns":    s.Fields,
+				"StructName":    s.StructName,
+				"StructComment": s.StructComment,
+				"Columns":       s.Fields,
 			}, funcMap)
 		fmt.Println(printFormatted(entityTemplateResult))
 
