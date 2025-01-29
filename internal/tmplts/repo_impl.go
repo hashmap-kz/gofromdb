@@ -48,6 +48,27 @@ order by {{.PkeyFieldName}}
 offset $1 limit $2
 `
 
+var RepoInterfaceTemplate = `
+package repository
+
+import (
+	"context"
+
+	"go-project-template-v5/pkg/pageable"
+
+	dbModel "go-project-template-v5/internal/api/{{.PackageName}}/entity/postgres"
+)
+
+type {{.InterfaceName}} interface {
+	Save(ctx context.Context, input *dbModel.{{.StructName}}) (*dbModel.{{.StructName}}, error)
+	GetAll(ctx context.Context) ([]dbModel.{{.StructName}}, error)
+	GetAllPaginated(ctx context.Context, pq *pageable.PaginationQuery) ([]dbModel.{{.StructName}}, pageable.Page, error)
+	Update(ctx context.Context, input *dbModel.{{.StructName}}) (*dbModel.{{.StructName}}, error)
+	Delete(ctx context.Context, id int) error
+	GetByID(ctx context.Context, id int) (*dbModel.{{.StructName}}, error)
+}
+`
+
 var RepoImplTemplate = `
 package impl
 

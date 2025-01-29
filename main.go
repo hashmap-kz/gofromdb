@@ -13,6 +13,7 @@ func main() {
 		repository := app.GenRepository(s)
 		fmt.Printf("// @@@@@ REPO: %s\n", s.StructName)
 		fmt.Println(repository.RepoEntity)
+		fmt.Println(repository.RepoInterface)
 		fmt.Println(repository.RepoImpl)
 	}
 }

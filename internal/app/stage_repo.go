@@ -13,8 +13,9 @@ const (
 )
 
 type GenRepo struct {
-	RepoEntity string
-	RepoImpl   string
+	RepoEntity    string
+	RepoInterface string
+	RepoImpl      string
 }
 
 func GenRepository(s TableToStructInfo) GenRepo {
@@ -26,7 +27,15 @@ func GenRepository(s TableToStructInfo) GenRepo {
 			"Columns":       s.Fields,
 		}, FuncMap)
 
-	// Insert template
+	// Interface template
+	interfaceTemplateResult := ExecTemplate("entity-interface", tmplts.RepoInterfaceTemplate,
+		map[string]any{
+			"StructName":    s.StructName,
+			"PackageName":   strings.ToLower(s.DbTableName),
+			"InterfaceName": s.StructName + "Repository",
+		}, FuncMap)
+
+	// Impl
 
 	fieldsWithoutPkeysAndDefaults := s.GetDbFieldsAsString(false, true)
 	fieldsWithPkeysAndDefaults := s.GetDbFieldsAsString(true, false)
@@ -116,7 +125,8 @@ func GenRepository(s TableToStructInfo) GenRepo {
 		}, FuncMap)
 
 	return GenRepo{
-		RepoEntity: PrintFormatted(entityTemplateResult),
-		RepoImpl:   PrintFormatted(repoImplTemplateResult),
+		RepoEntity:    PrintFormatted(entityTemplateResult),
+		RepoInterface: PrintFormatted(interfaceTemplateResult),
+		RepoImpl:      PrintFormatted(repoImplTemplateResult),
 	}
 }
