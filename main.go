@@ -14,34 +14,69 @@ func main() {
 	outputPath := "tmpgen"
 
 	// Paths example:
+	//
 	// internal/api/client/entity/postgres/client_entity_pg.go
 	// internal/api/client/repository/client_repository.go
 	// internal/api/client/repository/impl/client_repository_pg.go
+	//
+	// internal/api/client/dto/client_dto.go
+	// internal/api/client/service/client_service.go
+	// internal/api/client/service/impl/client_service_impl.go
 
 	for _, s := range structs {
-		repository := app.GenRepository(s)
-
-		// entity
-		entityPath := path.Join(outputPath, fmt.Sprintf("internal/api/%s/entity/postgres/%s_entity_pg.go",
-			s.DbTableName,
-			s.DbTableName),
-		)
-		writeFile(entityPath, repository.RepoEntity)
-
-		// interface
-		interfacePath := path.Join(outputPath, fmt.Sprintf("internal/api/%s/repository/%s_repository.go",
-			s.DbTableName,
-			s.DbTableName),
-		)
-		writeFile(interfacePath, repository.RepoInterface)
-
-		// interface impl
-		interfaceImplPath := path.Join(outputPath, fmt.Sprintf("internal/api/%s/repository/impl/%s_repository_pg.go",
-			s.DbTableName,
-			s.DbTableName),
-		)
-		writeFile(interfaceImplPath, repository.RepoImpl)
+		writeRepoFiles(s, outputPath)
+		writeServiceFiles(s, outputPath)
 	}
+}
+
+func writeServiceFiles(s app.TableToStructInfo, outputPath string) {
+	layer := app.GenService(s)
+
+	// models
+	modelsPath := path.Join(outputPath, fmt.Sprintf("internal/api/%s/dto/%s_dto.go",
+		s.DbTableName,
+		s.DbTableName),
+	)
+	writeFile(modelsPath, layer.ServiceDtos)
+
+	// interface
+	interfacePath := path.Join(outputPath, fmt.Sprintf("internal/api/%s/service/%s_service.go",
+		s.DbTableName,
+		s.DbTableName),
+	)
+	writeFile(interfacePath, layer.ServiceInterface)
+
+	// interface impl
+	implPath := path.Join(outputPath, fmt.Sprintf("internal/api/%s/service/impl/%s_service_impl.go",
+		s.DbTableName,
+		s.DbTableName),
+	)
+	writeFile(implPath, layer.ServiceImpl)
+}
+
+func writeRepoFiles(s app.TableToStructInfo, outputPath string) {
+	layer := app.GenRepository(s)
+
+	// models
+	modelsPath := path.Join(outputPath, fmt.Sprintf("internal/api/%s/entity/postgres/%s_entity_pg.go",
+		s.DbTableName,
+		s.DbTableName),
+	)
+	writeFile(modelsPath, layer.RepoEntity)
+
+	// interface
+	interfacePath := path.Join(outputPath, fmt.Sprintf("internal/api/%s/repository/%s_repository.go",
+		s.DbTableName,
+		s.DbTableName),
+	)
+	writeFile(interfacePath, layer.RepoInterface)
+
+	// interface impl
+	implPath := path.Join(outputPath, fmt.Sprintf("internal/api/%s/repository/impl/%s_repository_pg.go",
+		s.DbTableName,
+		s.DbTableName),
+	)
+	writeFile(implPath, layer.RepoImpl)
 }
 
 func writeFile(entityPath, content string) {

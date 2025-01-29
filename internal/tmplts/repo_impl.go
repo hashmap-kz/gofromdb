@@ -1,5 +1,25 @@
 package tmplts
 
+var EntityTemplate = `
+package postgres
+import "time"
+
+{{- if .StructComment}}
+// {{.StructName}} {{.StructComment | ToLower}}
+{{- end}}
+type {{.StructName}} struct {
+{{- range .Columns}}
+	{{- if .FieldComment}}
+	// {{.FieldComment}}
+	{{- end}}
+	{{.FieldName}} {{.FieldType}} ` + "`json:\"{{.DbFieldName}}\" db:\"{{.DbFieldName}}\"`" + `
+	{{- if .FieldComment}}
+		{{print "\n"}}
+	{{- end}}
+{{- end}}
+}
+`
+
 var RepoSaveQueryTemplate = `
 insert into {{.SchemaName}}.{{.TableName}} (
 {{.FieldsNoPKeys | AddPadding}}
@@ -91,7 +111,7 @@ type {{.ImplName}} struct {
 
 var _ repository.{{.InterfaceName}} = &{{.ImplName}}{}
 
-func NewClientRepository(_ context.Context, db *postgres.Postgres) repository.{{.InterfaceName}} {
+func New{{.InterfaceName}}(_ context.Context, db *postgres.Postgres) repository.{{.InterfaceName}} {
 	return &{{.ImplName}}{
 		db: db,
 	}

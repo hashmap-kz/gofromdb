@@ -57,10 +57,24 @@ func (s *TableToStructInfo) GetStructFieldsAsString(withPkeys, skipIfHasDefault 
 		if !withPkeys && f.DbIsPk {
 			continue
 		}
-		if skipIfHasDefault && f.DbHasDefault {
+		if skipIfHasDefault && f.DbHasDefault && !f.DbIsPk {
 			continue
 		}
 		r = append(r, f.FieldName)
+	}
+	return r
+}
+
+func (s *TableToStructInfo) GetStructFields(withPkeys, skipIfHasDefault bool) []TableToStructFieldInfo {
+	r := []TableToStructFieldInfo{}
+	for _, f := range s.Fields {
+		if !withPkeys && f.DbIsPk {
+			continue
+		}
+		if skipIfHasDefault && f.DbHasDefault && !f.DbIsPk {
+			continue
+		}
+		r = append(r, f)
 	}
 	return r
 }
