@@ -18,6 +18,11 @@ RETURNING
 {{.FieldsWithPKeys | AddPadding}}
 `
 
+var RepoDeleteQueryTemplate = `
+DELETE FROM ONLY {{.SchemaName}}.{{.TableName}}
+WHERE {{.PkeyFieldName}} = $1
+`
+
 var RepoImplTemplate = `
 package impl
 
@@ -88,5 +93,17 @@ func (r *{{.ImplName}}) Update(ctx context.Context, inputEntity *dbModel.{{.Stru
 		return nil, fmt.Errorf("%s: %w", tag, err)
 	}
 	return &scannedEntity, nil
+}
+
+func (r *{{.ImplName}}) Delete(ctx context.Context, id int) error {
+	tag := "{{.ImplName}}.Delete"
+
+	query := ` + "`{{.RepoDeleteQuery | AddPadding2}}`" + `
+
+	cmdTag, err := r.db.Pool.Exec(ctx, query, id)
+	if err != nil || cmdTag.RowsAffected() == 0 {
+		return fmt.Errorf("%s. no rows deleted for id: %v, %w", tag, id, err)
+	}
+	return nil
 }
 `

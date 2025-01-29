@@ -12,6 +12,12 @@ import (
 	"genpg-v5/internal/tmplts"
 )
 
+const (
+	// used for update/delete handling
+	pkeyDatabaseFieldName = "record_id"
+	pkeyStructFieldName   = "RecordID"
+)
+
 func capitalizeFirstLetter(s string) string {
 	if len(s) == 0 {
 		return s
@@ -247,7 +253,14 @@ func main() {
 				"TableName":                     s.DbTableName,
 				"FieldsNoPKeysWithPlaceholders": strings.Join(updateSets, ",\n"),
 				"FieldsWithPKeys":               strings.Join(fieldsWithPkeysAndDefaults, ",\n"),
-				"PkeyFieldName":                 "record_id",
+				"PkeyFieldName":                 pkeyDatabaseFieldName,
+			}, funcMap)
+
+		repoDeleteQueryResult := execTemplate("query-delete", tmplts.RepoDeleteQueryTemplate,
+			map[string]any{
+				"SchemaName":    "public",
+				"TableName":     s.DbTableName,
+				"PkeyFieldName": pkeyDatabaseFieldName,
 			}, funcMap)
 
 		// Function template
@@ -255,14 +268,14 @@ func main() {
 		structFieldsWithoutPkeysAndDefaults := s.getStructFieldsAsString(false, true)
 		structFieldsWithPkeysAndDefaults := s.getStructFieldsAsString(true, false)
 
-		structFieldsUpdate := []string{}
-		structFieldsUpdate = append(structFieldsUpdate, "RecordID")
+		structFieldsUpdate := []string{pkeyStructFieldName}
 		structFieldsUpdate = append(structFieldsUpdate, structFieldsWithoutPkeysAndDefaults...)
 
 		result := execTemplate("funcs", tmplts.RepoImplTemplate,
 			map[string]any{
 				"RepoSaveQuery":         repoSaveQueryResult,
 				"RepoUpdateQuery":       repoUpdateQueryResult,
+				"RepoDeleteQuery":       repoDeleteQueryResult,
 				"StructName":            s.StructName,
 				"PackageName":           strings.ToLower(s.DbTableName),
 				"InterfaceName":         s.StructName + "Repository",
