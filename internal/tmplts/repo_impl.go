@@ -23,6 +23,14 @@ DELETE FROM ONLY {{.SchemaName}}.{{.TableName}}
 WHERE {{.PkeyFieldName}} = $1
 `
 
+var RepoGetByIdQueryTemplate = `
+select
+{{.FieldsWithPKeys | AddPadding}}
+from {{.SchemaName}}.{{.TableName}}
+where {{.PkeyFieldName}} = $1
+order by {{.PkeyFieldName}}
+`
+
 var RepoImplTemplate = `
 package impl
 
@@ -56,7 +64,7 @@ func (r *{{.ImplName}}) Save(ctx context.Context, inputEntity *dbModel.{{.Struct
 
 	query := ` + "`{{.RepoSaveQuery | AddPadding2}}`" + `
 
-	var scannedEntity model.{{.StructName}}
+	var scannedEntity dbModel.{{.StructName}}
 	err := r.db.Pool.QueryRow(ctx, query,
 {{- range .StructFieldsNoPKeys}}
 		inputEntity.{{.}},
@@ -78,7 +86,7 @@ func (r *{{.ImplName}}) Update(ctx context.Context, inputEntity *dbModel.{{.Stru
 
 	query := ` + "`{{.RepoUpdateQuery | AddPadding2}}`" + `
 
-	var scannedEntity model.{{.StructName}}
+	var scannedEntity dbModel.{{.StructName}}
 	err := r.db.Pool.QueryRow(ctx, query,
 {{- range .StructFieldsUpdate}}
 		inputEntity.{{.}},
@@ -105,5 +113,23 @@ func (r *{{.ImplName}}) Delete(ctx context.Context, id int) error {
 		return fmt.Errorf("%s. no rows deleted for id: %v, %w", tag, id, err)
 	}
 	return nil
+}
+
+func (r *{{.ImplName}}) GetByID(ctx context.Context, id int) (*dbModel.{{.StructName}}, error) {
+	tag := "{{.ImplName}}.GetByID"
+
+	query := ` + "`{{.RepoGetByIdQuery | AddPadding2}}`" + `
+
+	var scannedEntity dbModel.{{.StructName}}
+	err := r.db.Pool.QueryRow(ctx, query, id).Scan(
+{{- range .StructFieldsWithPKeys}}
+		&scannedEntity.{{.}},
+{{- end }}
+	)
+
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", tag, err)
+	}
+	return &scannedEntity, nil
 }
 `

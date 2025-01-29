@@ -263,6 +263,14 @@ func main() {
 				"PkeyFieldName": pkeyDatabaseFieldName,
 			}, funcMap)
 
+		repoGetByIdQueryResult := execTemplate("query-get-by-id", tmplts.RepoGetByIdQueryTemplate,
+			map[string]any{
+				"SchemaName":      "public",
+				"TableName":       s.DbTableName,
+				"FieldsWithPKeys": strings.Join(fieldsWithPkeysAndDefaults, ",\n"),
+				"PkeyFieldName":   pkeyDatabaseFieldName,
+			}, funcMap)
+
 		// Function template
 
 		structFieldsWithoutPkeysAndDefaults := s.getStructFieldsAsString(false, true)
@@ -276,6 +284,7 @@ func main() {
 				"RepoSaveQuery":         repoSaveQueryResult,
 				"RepoUpdateQuery":       repoUpdateQueryResult,
 				"RepoDeleteQuery":       repoDeleteQueryResult,
+				"RepoGetByIdQuery":      repoGetByIdQueryResult,
 				"StructName":            s.StructName,
 				"PackageName":           strings.ToLower(s.DbTableName),
 				"InterfaceName":         s.StructName + "Repository",
