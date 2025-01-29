@@ -1,0 +1,20 @@
+server:
+  Port: 5000
+  ReadTimeout: 10s
+  WriteTimeout: 10s
+
+logger:
+  # console/json
+  Encoding: console
+  # debug info warn error
+  Level: debug
+
+postgres:
+  URL: "postgresql://postgres:postgres@localhost:5432/bookstore?sslmode=disable"
+  PoolMax: 10
+
+auth:
+  url: "${AUTH_KEYCLOAK_URL}"
+  realm: "${AUTH_KEYCLOAK_REALM}"
+  clientId: "${AUTH_KEYCLOAK_CLIENT_ID}"
+  clientSecret: "${AUTH_KEYCLOAK_CLIENT_SECRET}"

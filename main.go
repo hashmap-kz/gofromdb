@@ -11,7 +11,7 @@ import (
 
 func main() {
 	structs := app.GenStructs()
-	outputPath := "tmpgen"
+	outputPath := path.Join("examples", "go-project-template-v5")
 
 	// Paths example:
 	//
