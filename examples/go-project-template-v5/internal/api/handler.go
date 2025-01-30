@@ -21,15 +21,6 @@ func NewHandler(services *Services) *Handler {
 }
 
 func (h *Handler) Init(router *http.ServeMux) {
-	// Product routes
-	productHandler := productv1.NewProductHTTPHandler(h.Services.ProductService)
-	router.HandleFunc("POST /api/v1/products", productHandler.Save)
-	router.HandleFunc("GET /api/v1/products", productHandler.GetAll)
-	router.HandleFunc("GET /api/v1/products/pageable", productHandler.GetAllPaginated)
-	router.HandleFunc("GET /api/v1/products/{id}", productHandler.GetByID)
-	router.HandleFunc("PUT /api/v1/products/{id}", productHandler.Update)
-	router.HandleFunc("DELETE /api/v1/products/{id}", productHandler.Delete)
-
 	// Buy routes
 	buyHandler := buyv1.NewBuyHTTPHandler(h.Services.BuyService)
 	router.HandleFunc("POST /api/v1/buys", buyHandler.Save)
@@ -65,4 +56,13 @@ func (h *Handler) Init(router *http.ServeMux) {
 	router.HandleFunc("GET /api/v1/clients/{id}", clientHandler.GetByID)
 	router.HandleFunc("PUT /api/v1/clients/{id}", clientHandler.Update)
 	router.HandleFunc("DELETE /api/v1/clients/{id}", clientHandler.Delete)
+
+	// Product routes
+	productHandler := productv1.NewProductHTTPHandler(h.Services.ProductService)
+	router.HandleFunc("POST /api/v1/products", productHandler.Save)
+	router.HandleFunc("GET /api/v1/products", productHandler.GetAll)
+	router.HandleFunc("GET /api/v1/products/pageable", productHandler.GetAllPaginated)
+	router.HandleFunc("GET /api/v1/products/{id}", productHandler.GetByID)
+	router.HandleFunc("PUT /api/v1/products/{id}", productHandler.Update)
+	router.HandleFunc("DELETE /api/v1/products/{id}", productHandler.Delete)
 }

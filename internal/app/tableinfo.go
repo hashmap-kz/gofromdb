@@ -3,6 +3,7 @@ package app
 import (
 	"fmt"
 	"log"
+	"sort"
 
 	"genpg-v5/internal/genpg"
 )
@@ -35,6 +36,10 @@ func GenStructs() []TableToStructInfo {
 		oneStruct := makeOneStruct(t, columnInfos)
 		structs = append(structs, oneStruct)
 	}
+
+	sort.Slice(structs, func(i, j int) bool {
+		return structs[i].StructName < structs[j].StructName
+	})
 
 	return structs
 }
