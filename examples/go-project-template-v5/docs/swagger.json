@@ -3,5 +3,637 @@
     "info": {
         "contact": {}
     },
-    "paths": {}
+    "paths": {
+        "/api/v1/buy-items": {
+            "put": {
+                "description": "Update BuyItem handler",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "BuyItem"
+                ],
+                "summary": "Update existing BuyItem",
+                "parameters": [
+                    {
+                        "description": "Update input",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/v1.buyItemUpdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/v1.buyItemResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create BuyItem handler",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "BuyItem"
+                ],
+                "summary": "Create new BuyItem",
+                "parameters": [
+                    {
+                        "description": "Create input",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/v1.buyItemCreateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/v1.buyItemResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/buys": {
+            "put": {
+                "description": "Update Buy handler",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Buy"
+                ],
+                "summary": "Update existing Buy",
+                "parameters": [
+                    {
+                        "description": "Update input",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/v1.buyUpdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/v1.buyResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create Buy handler",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Buy"
+                ],
+                "summary": "Create new Buy",
+                "parameters": [
+                    {
+                        "description": "Create input",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/v1.buyCreateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/v1.buyResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/categories": {
+            "put": {
+                "description": "Update Category handler",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Category"
+                ],
+                "summary": "Update existing Category",
+                "parameters": [
+                    {
+                        "description": "Update input",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/v1.categoryUpdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/v1.categoryResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create Category handler",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Category"
+                ],
+                "summary": "Create new Category",
+                "parameters": [
+                    {
+                        "description": "Create input",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/v1.categoryCreateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/v1.categoryResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/clients": {
+            "put": {
+                "description": "Update Client handler",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Client"
+                ],
+                "summary": "Update existing Client",
+                "parameters": [
+                    {
+                        "description": "Update input",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/v1.clientUpdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/v1.clientResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create Client handler",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Client"
+                ],
+                "summary": "Create new Client",
+                "parameters": [
+                    {
+                        "description": "Create input",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/v1.clientCreateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/v1.clientResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/products": {
+            "put": {
+                "description": "Update Product handler",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Update existing Product",
+                "parameters": [
+                    {
+                        "description": "Update input",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/v1.productUpdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/v1.productResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create Product handler",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Create new Product",
+                "parameters": [
+                    {
+                        "description": "Create input",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/v1.productCreateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/v1.productResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "v1.buyCreateRequest": {
+            "type": "object",
+            "properties": {
+                "client_id": {
+                    "description": "Foreign key referencing the client who made the purchase.",
+                    "type": "integer"
+                },
+                "description": {
+                    "description": "Optional description or additional details of the purchase.",
+                    "type": "string"
+                }
+            }
+        },
+        "v1.buyItemCreateRequest": {
+            "type": "object",
+            "properties": {
+                "buy_id": {
+                    "description": "Foreign key referencing the associated purchase.",
+                    "type": "integer"
+                },
+                "price": {
+                    "description": "Price per unit of the product at the time of purchase.",
+                    "type": "string"
+                },
+                "product_id": {
+                    "description": "Foreign key referencing the purchased product.",
+                    "type": "integer"
+                },
+                "quantity": {
+                    "description": "Number of units of the product in the purchase.",
+                    "type": "integer"
+                }
+            }
+        },
+        "v1.buyItemResponse": {
+            "type": "object",
+            "properties": {
+                "buy_id": {
+                    "description": "Foreign key referencing the associated purchase.",
+                    "type": "integer"
+                },
+                "created_at": {
+                    "description": "Internal field, creation TS",
+                    "type": "string"
+                },
+                "guid": {
+                    "description": "Internal field, UUID of the row",
+                    "type": "string"
+                },
+                "price": {
+                    "description": "Price per unit of the product at the time of purchase.",
+                    "type": "string"
+                },
+                "product_id": {
+                    "description": "Foreign key referencing the purchased product.",
+                    "type": "integer"
+                },
+                "quantity": {
+                    "description": "Number of units of the product in the purchase.",
+                    "type": "integer"
+                },
+                "record_id": {
+                    "description": "Primary key for the buy_item table.",
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "description": "Internal field, last updated TS",
+                    "type": "string"
+                }
+            }
+        },
+        "v1.buyItemUpdateRequest": {
+            "type": "object",
+            "properties": {
+                "buy_id": {
+                    "description": "Foreign key referencing the associated purchase.",
+                    "type": "integer"
+                },
+                "price": {
+                    "description": "Price per unit of the product at the time of purchase.",
+                    "type": "string"
+                },
+                "product_id": {
+                    "description": "Foreign key referencing the purchased product.",
+                    "type": "integer"
+                },
+                "quantity": {
+                    "description": "Number of units of the product in the purchase.",
+                    "type": "integer"
+                }
+            }
+        },
+        "v1.buyResponse": {
+            "type": "object",
+            "properties": {
+                "client_id": {
+                    "description": "Foreign key referencing the client who made the purchase.",
+                    "type": "integer"
+                },
+                "created_at": {
+                    "description": "Internal field, creation TS",
+                    "type": "string"
+                },
+                "description": {
+                    "description": "Optional description or additional details of the purchase.",
+                    "type": "string"
+                },
+                "guid": {
+                    "description": "Internal field, UUID of the row",
+                    "type": "string"
+                },
+                "record_id": {
+                    "description": "Primary key for the buy table.",
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "description": "Internal field, last updated TS",
+                    "type": "string"
+                }
+            }
+        },
+        "v1.buyUpdateRequest": {
+            "type": "object",
+            "properties": {
+                "client_id": {
+                    "description": "Foreign key referencing the client who made the purchase.",
+                    "type": "integer"
+                },
+                "description": {
+                    "description": "Optional description or additional details of the purchase.",
+                    "type": "string"
+                }
+            }
+        },
+        "v1.categoryCreateRequest": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "description": "Name of the category.",
+                    "type": "string"
+                },
+                "parent_id": {
+                    "description": "Reference to the parent category. NULL if it is a root category.",
+                    "type": "integer"
+                }
+            }
+        },
+        "v1.categoryResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "description": "Internal field, creation TS",
+                    "type": "string"
+                },
+                "guid": {
+                    "description": "Internal field, UUID of the row",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Name of the category.",
+                    "type": "string"
+                },
+                "parent_id": {
+                    "description": "Reference to the parent category. NULL if it is a root category.",
+                    "type": "integer"
+                },
+                "record_id": {
+                    "description": "Primary key for the category table.",
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "description": "Internal field, last updated TS",
+                    "type": "string"
+                }
+            }
+        },
+        "v1.categoryUpdateRequest": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "description": "Name of the category.",
+                    "type": "string"
+                },
+                "parent_id": {
+                    "description": "Reference to the parent category. NULL if it is a root category.",
+                    "type": "integer"
+                }
+            }
+        },
+        "v1.clientCreateRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "description": "Unique email address of the client.",
+                    "type": "string"
+                }
+            }
+        },
+        "v1.clientResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "description": "Internal field, creation TS",
+                    "type": "string"
+                },
+                "email": {
+                    "description": "Unique email address of the client.",
+                    "type": "string"
+                },
+                "guid": {
+                    "description": "Internal field, UUID of the row",
+                    "type": "string"
+                },
+                "record_id": {
+                    "description": "Primary key for the client table.",
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "description": "Internal field, last updated TS",
+                    "type": "string"
+                }
+            }
+        },
+        "v1.clientUpdateRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "description": "Unique email address of the client.",
+                    "type": "string"
+                }
+            }
+        },
+        "v1.productCreateRequest": {
+            "type": "object",
+            "properties": {
+                "category_id": {
+                    "description": "Foreign key referencing the category to which the product belongs.",
+                    "type": "integer"
+                },
+                "description": {
+                    "description": "Detailed description of the product.",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Name of the product.",
+                    "type": "string"
+                }
+            }
+        },
+        "v1.productResponse": {
+            "type": "object",
+            "properties": {
+                "category_id": {
+                    "description": "Foreign key referencing the category to which the product belongs.",
+                    "type": "integer"
+                },
+                "created_at": {
+                    "description": "Internal field, creation TS",
+                    "type": "string"
+                },
+                "description": {
+                    "description": "Detailed description of the product.",
+                    "type": "string"
+                },
+                "guid": {
+                    "description": "Internal field, UUID of the row",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Name of the product.",
+                    "type": "string"
+                },
+                "record_id": {
+                    "description": "Primary key for the product table.",
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "description": "Internal field, last updated TS",
+                    "type": "string"
+                }
+            }
+        },
+        "v1.productUpdateRequest": {
+            "type": "object",
+            "properties": {
+                "category_id": {
+                    "description": "Foreign key referencing the category to which the product belongs.",
+                    "type": "integer"
+                },
+                "description": {
+                    "description": "Detailed description of the product.",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Name of the product.",
+                    "type": "string"
+                }
+            }
+        }
+    }
 }

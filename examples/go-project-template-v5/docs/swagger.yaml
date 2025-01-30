@@ -1,4 +1,433 @@
+definitions:
+  v1.buyCreateRequest:
+    properties:
+      client_id:
+        description: Foreign key referencing the client who made the purchase.
+        type: integer
+      description:
+        description: Optional description or additional details of the purchase.
+        type: string
+    type: object
+  v1.buyItemCreateRequest:
+    properties:
+      buy_id:
+        description: Foreign key referencing the associated purchase.
+        type: integer
+      price:
+        description: Price per unit of the product at the time of purchase.
+        type: string
+      product_id:
+        description: Foreign key referencing the purchased product.
+        type: integer
+      quantity:
+        description: Number of units of the product in the purchase.
+        type: integer
+    type: object
+  v1.buyItemResponse:
+    properties:
+      buy_id:
+        description: Foreign key referencing the associated purchase.
+        type: integer
+      created_at:
+        description: Internal field, creation TS
+        type: string
+      guid:
+        description: Internal field, UUID of the row
+        type: string
+      price:
+        description: Price per unit of the product at the time of purchase.
+        type: string
+      product_id:
+        description: Foreign key referencing the purchased product.
+        type: integer
+      quantity:
+        description: Number of units of the product in the purchase.
+        type: integer
+      record_id:
+        description: Primary key for the buy_item table.
+        type: integer
+      updated_at:
+        description: Internal field, last updated TS
+        type: string
+    type: object
+  v1.buyItemUpdateRequest:
+    properties:
+      buy_id:
+        description: Foreign key referencing the associated purchase.
+        type: integer
+      price:
+        description: Price per unit of the product at the time of purchase.
+        type: string
+      product_id:
+        description: Foreign key referencing the purchased product.
+        type: integer
+      quantity:
+        description: Number of units of the product in the purchase.
+        type: integer
+    type: object
+  v1.buyResponse:
+    properties:
+      client_id:
+        description: Foreign key referencing the client who made the purchase.
+        type: integer
+      created_at:
+        description: Internal field, creation TS
+        type: string
+      description:
+        description: Optional description or additional details of the purchase.
+        type: string
+      guid:
+        description: Internal field, UUID of the row
+        type: string
+      record_id:
+        description: Primary key for the buy table.
+        type: integer
+      updated_at:
+        description: Internal field, last updated TS
+        type: string
+    type: object
+  v1.buyUpdateRequest:
+    properties:
+      client_id:
+        description: Foreign key referencing the client who made the purchase.
+        type: integer
+      description:
+        description: Optional description or additional details of the purchase.
+        type: string
+    type: object
+  v1.categoryCreateRequest:
+    properties:
+      name:
+        description: Name of the category.
+        type: string
+      parent_id:
+        description: Reference to the parent category. NULL if it is a root category.
+        type: integer
+    type: object
+  v1.categoryResponse:
+    properties:
+      created_at:
+        description: Internal field, creation TS
+        type: string
+      guid:
+        description: Internal field, UUID of the row
+        type: string
+      name:
+        description: Name of the category.
+        type: string
+      parent_id:
+        description: Reference to the parent category. NULL if it is a root category.
+        type: integer
+      record_id:
+        description: Primary key for the category table.
+        type: integer
+      updated_at:
+        description: Internal field, last updated TS
+        type: string
+    type: object
+  v1.categoryUpdateRequest:
+    properties:
+      name:
+        description: Name of the category.
+        type: string
+      parent_id:
+        description: Reference to the parent category. NULL if it is a root category.
+        type: integer
+    type: object
+  v1.clientCreateRequest:
+    properties:
+      email:
+        description: Unique email address of the client.
+        type: string
+    type: object
+  v1.clientResponse:
+    properties:
+      created_at:
+        description: Internal field, creation TS
+        type: string
+      email:
+        description: Unique email address of the client.
+        type: string
+      guid:
+        description: Internal field, UUID of the row
+        type: string
+      record_id:
+        description: Primary key for the client table.
+        type: integer
+      updated_at:
+        description: Internal field, last updated TS
+        type: string
+    type: object
+  v1.clientUpdateRequest:
+    properties:
+      email:
+        description: Unique email address of the client.
+        type: string
+    type: object
+  v1.productCreateRequest:
+    properties:
+      category_id:
+        description: Foreign key referencing the category to which the product belongs.
+        type: integer
+      description:
+        description: Detailed description of the product.
+        type: string
+      name:
+        description: Name of the product.
+        type: string
+    type: object
+  v1.productResponse:
+    properties:
+      category_id:
+        description: Foreign key referencing the category to which the product belongs.
+        type: integer
+      created_at:
+        description: Internal field, creation TS
+        type: string
+      description:
+        description: Detailed description of the product.
+        type: string
+      guid:
+        description: Internal field, UUID of the row
+        type: string
+      name:
+        description: Name of the product.
+        type: string
+      record_id:
+        description: Primary key for the product table.
+        type: integer
+      updated_at:
+        description: Internal field, last updated TS
+        type: string
+    type: object
+  v1.productUpdateRequest:
+    properties:
+      category_id:
+        description: Foreign key referencing the category to which the product belongs.
+        type: integer
+      description:
+        description: Detailed description of the product.
+        type: string
+      name:
+        description: Name of the product.
+        type: string
+    type: object
 info:
   contact: {}
-paths: {}
+paths:
+  /api/v1/buy-items:
+    post:
+      consumes:
+      - application/json
+      description: Create BuyItem handler
+      parameters:
+      - description: Create input
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/v1.buyItemCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/v1.buyItemResponse'
+      summary: Create new BuyItem
+      tags:
+      - BuyItem
+    put:
+      consumes:
+      - application/json
+      description: Update BuyItem handler
+      parameters:
+      - description: Update input
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/v1.buyItemUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/v1.buyItemResponse'
+      summary: Update existing BuyItem
+      tags:
+      - BuyItem
+  /api/v1/buys:
+    post:
+      consumes:
+      - application/json
+      description: Create Buy handler
+      parameters:
+      - description: Create input
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/v1.buyCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/v1.buyResponse'
+      summary: Create new Buy
+      tags:
+      - Buy
+    put:
+      consumes:
+      - application/json
+      description: Update Buy handler
+      parameters:
+      - description: Update input
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/v1.buyUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/v1.buyResponse'
+      summary: Update existing Buy
+      tags:
+      - Buy
+  /api/v1/categories:
+    post:
+      consumes:
+      - application/json
+      description: Create Category handler
+      parameters:
+      - description: Create input
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/v1.categoryCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/v1.categoryResponse'
+      summary: Create new Category
+      tags:
+      - Category
+    put:
+      consumes:
+      - application/json
+      description: Update Category handler
+      parameters:
+      - description: Update input
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/v1.categoryUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/v1.categoryResponse'
+      summary: Update existing Category
+      tags:
+      - Category
+  /api/v1/clients:
+    post:
+      consumes:
+      - application/json
+      description: Create Client handler
+      parameters:
+      - description: Create input
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/v1.clientCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/v1.clientResponse'
+      summary: Create new Client
+      tags:
+      - Client
+    put:
+      consumes:
+      - application/json
+      description: Update Client handler
+      parameters:
+      - description: Update input
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/v1.clientUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/v1.clientResponse'
+      summary: Update existing Client
+      tags:
+      - Client
+  /api/v1/products:
+    post:
+      consumes:
+      - application/json
+      description: Create Product handler
+      parameters:
+      - description: Create input
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/v1.productCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/v1.productResponse'
+      summary: Create new Product
+      tags:
+      - Product
+    put:
+      consumes:
+      - application/json
+      description: Update Product handler
+      parameters:
+      - description: Update input
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/v1.productUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/v1.productResponse'
+      summary: Update existing Product
+      tags:
+      - Product
 swagger: "2.0"
