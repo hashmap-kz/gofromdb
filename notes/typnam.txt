@@ -45,6 +45,32 @@ BEGIN
 END; $$ LANGUAGE plpgsql;
 
 
+SELECT '[1,10]'::int4range; -- Includes 1 to 10
+SELECT '(1,10)'::int4range; -- Excludes 1 and 10 (1 < x < 10)
+SELECT '[1,)'::int4range;   -- Includes 1, but open-ended (1 to ∞)
+SELECT 'empty'::int4range;  -- Represents an empty range
+
+SELECT '[1.5, 3.5]'::numrange; -- Includes 1.5 to 3.5
+SELECT '(0.99, 3.99)'::numrange; -- Exclusive 0.99 and 3.99
+SELECT '[0.5,)'::numrange; -- Open-ended range (0.5 to ∞)
+SELECT 'empty'::numrange;  -- Empty numeric range
+
+SELECT '[2024-01-01, 2024-12-31]'::daterange; -- Includes full year
+SELECT '(2024-01-01, 2024-12-31)'::daterange; -- Excludes Jan 1 and Dec 31
+SELECT '[2024-06-01,)'::daterange; -- Open-ended date range (from June 1 onward)
+SELECT 'empty'::daterange;  -- Empty date range
+
+SELECT '[2024-01-01 10:00, 2024-01-01 12:00]'::tsrange; -- Includes both times
+SELECT '(2024-01-01 10:00, 2024-01-01 12:00)'::tsrange; -- Excludes 10:00 and 12:00
+SELECT '[2024-01-01 09:00,)'::tsrange; -- Open-ended from 9 AM
+SELECT 'empty'::tsrange;  -- Empty timestamp range
+
+SELECT '[2024-01-01 10:00+00, 2024-01-01 12:00+00]'::tstzrange; -- UTC timezone
+SELECT '[2024-01-01 10:00+02, 2024-01-01 12:00+02]'::tstzrange; -- CET timezone
+SELECT '[2024-06-01 09:00,)'::tstzrange; -- Open-ended timestamp
+SELECT 'empty'::tstzrange;  -- Empty timestamp range
+
+
 with type_map as (values
                       -- numeric types
                       ('_bool', '[]bool', '{}'),
