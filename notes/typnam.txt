@@ -70,10 +70,16 @@ SELECT '[2024-01-01 10:00+02, 2024-01-01 12:00+02]'::tstzrange; -- CET timezone
 SELECT '[2024-06-01 09:00,)'::tstzrange; -- Open-ended timestamp
 SELECT 'empty'::tstzrange;  -- Empty timestamp range
 
+
+
+
 -- https://postgrespro.ru/docs/postgresql/17/datatype?lang=en
-with zeroes as (select
-                    $T$''$T$ as str,
-                    $T$''::bytea$T$ as byt),
+with zeroes as (select $T$''$T$                    as str,
+                       $T$''::bytea$T$             as byt,
+                       $T$'0'::numeric$T$          as num,
+                       $T$'{}'::json$T$            as jsn,
+                       $T$'{}'::jsonb$T$           as jsb,
+                       $T$'0001-01-01 00:00:00'$T$ as t),
      type_map as
          (values
               -- Arrays
@@ -102,17 +108,17 @@ with zeroes as (select
               ('int4', 'int', '0'),
               ('int8', 'int64', '0'),
               -- Arbitrary Precision Numbers
-              ('decimal', 'string', (select str from zeroes)),
-              ('numeric', 'string', (select str from zeroes)),
+              ('decimal', 'string', (select num from zeroes)),
+              ('numeric', 'string', (select num from zeroes)),
               -- Floating-Point Types
               ('float4', 'float32', '0'),
               ('float8', 'float64', '0'),
               -- Date/Time Types
-              ('date', 'time.Time', '0001-01-01 00:00:00'),
-              ('time', 'time.Time', '0001-01-01 00:00:00'),
-              ('timetz', 'time.Time', '0001-01-01 00:00:00'),
-              ('timestamp', 'time.Time', '0001-01-01 00:00:00'),
-              ('timestamptz', 'time.Time', '0001-01-01 00:00:00'),
+              ('date', 'time.Time', (select t from zeroes) || '::date'),
+              ('time', 'time.Time', (select t from zeroes) || '::time'),
+              ('timetz', 'time.Time', (select t from zeroes) || '::timetz'),
+              ('timestamp', 'time.Time', (select t from zeroes) || '::timestamp'),
+              ('timestamptz', 'time.Time', (select t from zeroes) || '::timestamptz'),
               ('interval', 'string', $T$'0'::interval$T$),
               -- Character Types
               ('bpchar', 'string', (select str from zeroes)),
@@ -122,8 +128,8 @@ with zeroes as (select
               -- Boolean
               ('bool', 'bool', 'false'),
               -- ETC
-              ('json', 'string', (select str from zeroes)),
-              ('jsonb', 'string', (select str from zeroes)),
+              ('json', 'string', (select jsn from zeroes)),
+              ('jsonb', 'string', (select jsb from zeroes)),
               ('name', 'string', (select str from zeroes)),
               ('cid', 'uint32', '0'),
               ('oid', 'uint32', '0'),
@@ -140,3 +146,7 @@ select tm.column1 as pgtyp,
        tm.column2 as gotyp,
        tm.column3 as defvl
 from type_map tm;
+
+
+
+
