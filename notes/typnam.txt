@@ -70,56 +70,72 @@ SELECT '[2024-01-01 10:00+02, 2024-01-01 12:00+02]'::tstzrange; -- CET timezone
 SELECT '[2024-06-01 09:00,)'::tstzrange; -- Open-ended timestamp
 SELECT 'empty'::tstzrange;  -- Empty timestamp range
 
-
-with type_map as (values
-                      -- numeric types
-                      ('_bool', '[]bool', '{}'),
-                      ('_date', '[]time.Time', '{}'),
-                      ('_float4', '[]float32', '{}'),
-                      ('_float8', '[]float64', '{}'),
-                      ('_int2', '[]int16', '{}'),
-                      ('_int4', '[]int', '{}'),
-                      ('_int8', '[]int64', '{}'),
-                      ('_numeric', '[]string', '{}'),
-                      ('_text', '[]string', '{}'),
-                      ('_uuid', '[]string', '{}'),
-                      ('_varchar', '[]string', '{}'),
-                      ('bigserial', 'int64', '0'),
-                      ('bool', 'bool', 'false'),
-                      ('bpchar', 'string', ''),
-                      ('bytea', '[]byte', '{}'),
-                      ('char', 'string', ''),
-                      ('cid', 'uint32', '0'),
-                      ('date', 'time.Time', '0001-01-01 00:00:00'),
-                      ('decimal', 'string', ''),
-                      ('float4', 'float32', '0'),
-                      ('float8', 'float64', '0'),
-                      ('int2', 'int16', '0'),
-                      ('int4', 'int', '0'),
-                      ('int8', 'int64', '0'),
-                      ('interval', 'string', ''),
-                      ('json', 'string', ''),
-                      ('jsonb', 'string', ''),
-                      ('name', 'string', ''),
-                      ('numeric', 'string', ''),
-                      ('oid', 'uint32', '0'),
-                      ('pg_lsn', 'string', ''),
-                      ('regclass', 'string', ''),
-                      ('regproc', 'string', ''),
-                      ('regtype', 'string', ''),
-                      ('serial', 'int', '0'),
-                      ('smallserial', 'int16', '0'),
-                      ('text', 'string', ''),
-                      ('time', 'time.Time', '0001-01-01 00:00:00'),
-                      ('timestamp', 'time.Time', '0001-01-01 00:00:00'),
-                      ('timestamptz', 'time.Time', '0001-01-01 00:00:00'),
-                      ('timetz', 'time.Time', '0001-01-01 00:00:00'),
-                      ('tsquery', 'string', ''),
-                      ('tsvector', 'string', ''),
-                      ('uuid', 'string', ''),
-                      ('varchar', 'string', ''),
-                      ('xid', 'uint32', '0'),
-                      ('xml', 'string', ''))
+-- https://postgrespro.ru/docs/postgresql/17/datatype?lang=en
+with zeroes as (select
+                    $T$''$T$ as str,
+                    $T$''::bytea$T$ as byt),
+     type_map as
+         (values
+              -- Arrays
+              ('_bool', '[]bool', $T$'{}'::bool[]$T$),
+              ('_date', '[]time.Time', '{}'),
+              ('_float4', '[]float32', '{}'),
+              ('_float8', '[]float64', '{}'),
+              ('_int2', '[]int16', '{}'),
+              ('_int4', '[]int', '{}'),
+              ('_int8', '[]int64', '{}'),
+              ('_numeric', '[]string', '{}'),
+              ('_text', '[]string', '{}'),
+              ('_uuid', '[]string', '{}'),
+              ('_varchar', '[]string', '{}'),
+              -- Bytea
+              ('bytea', '[]byte', (select byt from zeroes)),
+              -- Integer Types
+              ('int2', 'int16', '0'),
+              ('int4', 'int', '0'),
+              ('int8', 'int64', '0'),
+              -- Serial Types
+              ('smallserial', 'int16', '0'),
+              ('serial', 'int', '0'),
+              ('bigserial', 'int64', '0'),
+              ('int2', 'int16', '0'),
+              ('int4', 'int', '0'),
+              ('int8', 'int64', '0'),
+              -- Arbitrary Precision Numbers
+              ('decimal', 'string', (select str from zeroes)),
+              ('numeric', 'string', (select str from zeroes)),
+              -- Floating-Point Types
+              ('float4', 'float32', '0'),
+              ('float8', 'float64', '0'),
+              -- Date/Time Types
+              ('date', 'time.Time', '0001-01-01 00:00:00'),
+              ('time', 'time.Time', '0001-01-01 00:00:00'),
+              ('timetz', 'time.Time', '0001-01-01 00:00:00'),
+              ('timestamp', 'time.Time', '0001-01-01 00:00:00'),
+              ('timestamptz', 'time.Time', '0001-01-01 00:00:00'),
+              ('interval', 'string', $T$'0'::interval$T$),
+              -- Character Types
+              ('bpchar', 'string', (select str from zeroes)),
+              ('char', 'string', (select str from zeroes)),
+              ('text', 'string', (select str from zeroes)),
+              ('varchar', 'string', (select str from zeroes)),
+              -- Boolean
+              ('bool', 'bool', 'false'),
+              -- ETC
+              ('json', 'string', (select str from zeroes)),
+              ('jsonb', 'string', (select str from zeroes)),
+              ('name', 'string', (select str from zeroes)),
+              ('cid', 'uint32', '0'),
+              ('oid', 'uint32', '0'),
+              ('xid', 'uint32', '0'),
+              ('pg_lsn', 'string', (select str from zeroes)),
+              ('regclass', 'string', (select str from zeroes)),
+              ('regproc', 'string', (select str from zeroes)),
+              ('regtype', 'string', (select str from zeroes)),
+              ('tsquery', 'string', (select str from zeroes)),
+              ('tsvector', 'string', (select str from zeroes)),
+              ('uuid', 'string', (select str from zeroes)),
+              ('xml', 'string', (select str from zeroes)))
 select tm.column1 as pgtyp,
        tm.column2 as gotyp,
        tm.column3 as defvl
