@@ -19,7 +19,6 @@ type ProductCreateDto struct {
 }
 
 type ProductUpdateDto struct {
-	RecordID    int
 	CategoryID  int
 	Name        string
 	Description *string

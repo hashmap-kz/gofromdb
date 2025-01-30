@@ -23,9 +23,6 @@ type buyItemCreateRequest struct {
 
 // buyItemUpdateRequest represents items in a purchase, including quantity and price.
 type buyItemUpdateRequest struct {
-	// Primary key for the buy_item table.
-	RecordID int `json:"record_id"`
-
 	// Foreign key referencing the associated purchase.
 	BuyID int `json:"buy_id"`
 

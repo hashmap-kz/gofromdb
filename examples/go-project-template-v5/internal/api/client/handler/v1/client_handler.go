@@ -119,11 +119,9 @@ func (h *ClientHTTPHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO: types
-	req.RecordID = int(id)
-	_, err = h.clientService.Update(r.Context(), &dto.ClientUpdateDto{
-		RecordID: req.RecordID,
-		Email:    req.Email,
+	// TODO: types - int(id)
+	_, err = h.clientService.Update(r.Context(), int(id), &dto.ClientUpdateDto{
+		Email: req.Email,
 	})
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})

@@ -12,7 +12,7 @@ import (
 // {{.CreateRequestName}} {{.StructComment | ToLower}}
 {{- end}}
 type {{.CreateRequestName}} struct {
-{{- range .DtoFieldsCreate}}
+{{- range .DtoFieldsNoPkeysNoDefaults}}
 	{{- if .FieldComment}}
 	// {{.FieldComment}}
 	{{- end}}
@@ -27,7 +27,7 @@ type {{.CreateRequestName}} struct {
 // {{.UpdateRequestName}} {{.StructComment | ToLower}}
 {{- end}}
 type {{.UpdateRequestName}} struct {
-{{- range .DtoFieldsUpdate}}
+{{- range .DtoFieldsNoPkeysNoDefaults}}
 	{{- if .FieldComment}}
 	// {{.FieldComment}}
 	{{- end}}
@@ -105,7 +105,7 @@ func (h *{{.ImplName}}) Save(w http.ResponseWriter, r *http.Request) {
 
 	// call service
 	resp, err := h.{{.ServiceVarName}}.Save(r.Context(), &dto.{{.DtoCreateName}}{
-{{- range .DtoFieldsCreate}}
+{{- range .DtoFieldsNoPkeysNoDefaults}}
 	{{.FieldName}}: req.{{.FieldName}},
 {{- end}}	
 	})
@@ -187,10 +187,9 @@ func (h *{{.ImplName}}) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO: types
-	req.RecordID = int(id)
-	_, err = h.{{.ServiceVarName}}.Update(r.Context(), &dto.{{.DtoUpdateName}}{
-{{- range .DtoFieldsUpdate}}
+	// TODO: types - int(id)
+	_, err = h.{{.ServiceVarName}}.Update(r.Context(), int(id), &dto.{{.DtoUpdateName}}{
+{{- range .DtoFieldsNoPkeysNoDefaults}}
 	{{.FieldName}}: req.{{.FieldName}},
 {{- end}}
 	})

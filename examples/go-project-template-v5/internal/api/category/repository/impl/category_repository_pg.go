@@ -61,7 +61,7 @@ func (r *categoryRepository) Save(ctx context.Context, inputEntity *dbModel.Cate
 	return &scannedEntity, nil
 }
 
-func (r *categoryRepository) Update(ctx context.Context, inputEntity *dbModel.Category) (*dbModel.Category, error) {
+func (r *categoryRepository) Update(ctx context.Context, entityId int, inputEntity *dbModel.Category) (*dbModel.Category, error) {
 	tag := "categoryRepository.Update"
 
 	query := `		
@@ -81,7 +81,7 @@ func (r *categoryRepository) Update(ctx context.Context, inputEntity *dbModel.Ca
 
 	var scannedEntity dbModel.Category
 	err := r.db.Pool.QueryRow(ctx, query,
-		inputEntity.RecordID,
+		entityId,
 		inputEntity.Name,
 		inputEntity.ParentID,
 	).Scan(
@@ -98,7 +98,7 @@ func (r *categoryRepository) Update(ctx context.Context, inputEntity *dbModel.Ca
 	return &scannedEntity, nil
 }
 
-func (r *categoryRepository) Delete(ctx context.Context, id int) error {
+func (r *categoryRepository) Delete(ctx context.Context, entityId int) error {
 	tag := "categoryRepository.Delete"
 
 	query := `		
@@ -106,14 +106,14 @@ func (r *categoryRepository) Delete(ctx context.Context, id int) error {
 		where record_id = $1
 		`
 
-	cmdTag, err := r.db.Pool.Exec(ctx, query, id)
+	cmdTag, err := r.db.Pool.Exec(ctx, query, entityId)
 	if err != nil || cmdTag.RowsAffected() == 0 {
-		return fmt.Errorf("%s. no rows deleted for id: %v, %w", tag, id, err)
+		return fmt.Errorf("%s. no rows deleted for id: %v, %w", tag, entityId, err)
 	}
 	return nil
 }
 
-func (r *categoryRepository) GetByID(ctx context.Context, id int) (*dbModel.Category, error) {
+func (r *categoryRepository) GetByID(ctx context.Context, entityId int) (*dbModel.Category, error) {
 	tag := "categoryRepository.GetByID"
 
 	query := `		
@@ -130,7 +130,7 @@ func (r *categoryRepository) GetByID(ctx context.Context, id int) (*dbModel.Cate
 		`
 
 	var scannedEntity dbModel.Category
-	err := r.db.Pool.QueryRow(ctx, query, id).Scan(
+	err := r.db.Pool.QueryRow(ctx, query, entityId).Scan(
 		&scannedEntity.RecordID,
 		&scannedEntity.Name,
 		&scannedEntity.ParentID,

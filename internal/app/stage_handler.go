@@ -13,7 +13,6 @@ type GenHandl struct {
 
 func GenHandler(s TableToStructInfo) GenHandl {
 	structFieldsWithoutPkeysAndDefaults := s.GetStructFields(false, true)
-	structFieldsWithPkeysAndWithoutDefaults := s.GetStructFields(true, true)
 
 	data := map[string]any{
 		"PackageName":                strings.ToLower(s.DbTableName),
@@ -30,8 +29,7 @@ func GenHandler(s TableToStructInfo) GenHandl {
 		"DtoUpdateName":              s.StructName + "UpdateDto",
 		"DtoCreateName":              s.StructName + "CreateDto",
 		"DtoFieldsFull":              s.Fields,
-		"DtoFieldsCreate":            structFieldsWithoutPkeysAndDefaults,
-		"DtoFieldsUpdate":            structFieldsWithPkeysAndWithoutDefaults,
+		"DtoFieldsNoPkeysNoDefaults": structFieldsWithoutPkeysAndDefaults,
 	}
 
 	dtosResult := ExecTemplate("handler-dtos", tmplts.HandlerPayloadsTmpl, data, FuncMap)

@@ -17,9 +17,6 @@ type buyCreateRequest struct {
 
 // buyUpdateRequest represents purchases made by clients.
 type buyUpdateRequest struct {
-	// Primary key for the buy table.
-	RecordID int `json:"record_id"`
-
 	// Foreign key referencing the client who made the purchase.
 	ClientID int `json:"client_id"`
 

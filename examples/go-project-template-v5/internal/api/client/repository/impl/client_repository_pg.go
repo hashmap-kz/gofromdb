@@ -57,7 +57,7 @@ func (r *clientRepository) Save(ctx context.Context, inputEntity *dbModel.Client
 	return &scannedEntity, nil
 }
 
-func (r *clientRepository) Update(ctx context.Context, inputEntity *dbModel.Client) (*dbModel.Client, error) {
+func (r *clientRepository) Update(ctx context.Context, entityId int, inputEntity *dbModel.Client) (*dbModel.Client, error) {
 	tag := "clientRepository.Update"
 
 	query := `		
@@ -75,7 +75,7 @@ func (r *clientRepository) Update(ctx context.Context, inputEntity *dbModel.Clie
 
 	var scannedEntity dbModel.Client
 	err := r.db.Pool.QueryRow(ctx, query,
-		inputEntity.RecordID,
+		entityId,
 		inputEntity.Email,
 	).Scan(
 		&scannedEntity.RecordID,
@@ -90,7 +90,7 @@ func (r *clientRepository) Update(ctx context.Context, inputEntity *dbModel.Clie
 	return &scannedEntity, nil
 }
 
-func (r *clientRepository) Delete(ctx context.Context, id int) error {
+func (r *clientRepository) Delete(ctx context.Context, entityId int) error {
 	tag := "clientRepository.Delete"
 
 	query := `		
@@ -98,14 +98,14 @@ func (r *clientRepository) Delete(ctx context.Context, id int) error {
 		where record_id = $1
 		`
 
-	cmdTag, err := r.db.Pool.Exec(ctx, query, id)
+	cmdTag, err := r.db.Pool.Exec(ctx, query, entityId)
 	if err != nil || cmdTag.RowsAffected() == 0 {
-		return fmt.Errorf("%s. no rows deleted for id: %v, %w", tag, id, err)
+		return fmt.Errorf("%s. no rows deleted for id: %v, %w", tag, entityId, err)
 	}
 	return nil
 }
 
-func (r *clientRepository) GetByID(ctx context.Context, id int) (*dbModel.Client, error) {
+func (r *clientRepository) GetByID(ctx context.Context, entityId int) (*dbModel.Client, error) {
 	tag := "clientRepository.GetByID"
 
 	query := `		
@@ -121,7 +121,7 @@ func (r *clientRepository) GetByID(ctx context.Context, id int) (*dbModel.Client
 		`
 
 	var scannedEntity dbModel.Client
-	err := r.db.Pool.QueryRow(ctx, query, id).Scan(
+	err := r.db.Pool.QueryRow(ctx, query, entityId).Scan(
 		&scannedEntity.RecordID,
 		&scannedEntity.Email,
 		&scannedEntity.CreatedAt,

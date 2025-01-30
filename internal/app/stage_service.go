@@ -29,29 +29,24 @@ func GenService(s TableToStructInfo) GenSvc {
 	// Dto template
 
 	structFieldsWithoutPkeysAndDefaults := s.GetStructFields(false, true)
-	structFieldsWithPkeysAndWithoutDefaults := s.GetStructFields(true, true)
 
 	dtosResult := ExecTemplate("service-dtos", tmplts.ServiceDtosTemplate,
 		map[string]any{
-			"StructName":      s.StructName,
-			"PackageName":     strings.ToLower(s.DbTableName),
-			"InterfaceName":   s.StructName + "Service",
-			"ImplName":        LowerFirstLetter(s.StructName) + "Service",
-			"DtoName":         s.StructName + "Dto",
-			"DtoUpdateName":   s.StructName + "UpdateDto",
-			"DtoCreateName":   s.StructName + "CreateDto",
-			"DtoFieldsFull":   s.Fields,
-			"DtoFieldsCreate": structFieldsWithoutPkeysAndDefaults,
-			"DtoFieldsUpdate": structFieldsWithPkeysAndWithoutDefaults,
+			"StructName":                 s.StructName,
+			"PackageName":                strings.ToLower(s.DbTableName),
+			"InterfaceName":              s.StructName + "Service",
+			"ImplName":                   LowerFirstLetter(s.StructName) + "Service",
+			"DtoName":                    s.StructName + "Dto",
+			"DtoUpdateName":              s.StructName + "UpdateDto",
+			"DtoCreateName":              s.StructName + "CreateDto",
+			"DtoFieldsFull":              s.Fields,
+			"DtoFieldsNoPkeysNoDefaults": structFieldsWithoutPkeysAndDefaults,
 		}, FuncMap)
 
 	// Functions template
 
 	structFieldsWithoutPkeysAndDefaultsStr := s.GetStructFieldsAsString(false, true)
 	structFieldsWithPkeysAndDefaultsStr := s.GetStructFieldsAsString(true, false)
-
-	structFieldsUpdate := []string{pkeyStructFieldName}
-	structFieldsUpdate = append(structFieldsUpdate, structFieldsWithoutPkeysAndDefaultsStr...)
 
 	implResult := ExecTemplate("service-impl", tmplts.ServiceImplTemplate,
 		map[string]any{
@@ -63,7 +58,6 @@ func GenService(s TableToStructInfo) GenSvc {
 			"DtoName":               s.StructName + "Dto",
 			"DtoUpdateName":         s.StructName + "UpdateDto",
 			"DtoCreateName":         s.StructName + "CreateDto",
-			"StructFieldsUpdate":    structFieldsUpdate,
 			"StructFieldsNoPKeys":   structFieldsWithoutPkeysAndDefaultsStr,
 			"StructFieldsWithPKeys": structFieldsWithPkeysAndDefaultsStr,
 		}, FuncMap)

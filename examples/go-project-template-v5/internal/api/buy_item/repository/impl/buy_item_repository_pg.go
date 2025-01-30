@@ -69,7 +69,7 @@ func (r *buyItemRepository) Save(ctx context.Context, inputEntity *dbModel.BuyIt
 	return &scannedEntity, nil
 }
 
-func (r *buyItemRepository) Update(ctx context.Context, inputEntity *dbModel.BuyItem) (*dbModel.BuyItem, error) {
+func (r *buyItemRepository) Update(ctx context.Context, entityId int, inputEntity *dbModel.BuyItem) (*dbModel.BuyItem, error) {
 	tag := "buyItemRepository.Update"
 
 	query := `		
@@ -93,7 +93,7 @@ func (r *buyItemRepository) Update(ctx context.Context, inputEntity *dbModel.Buy
 
 	var scannedEntity dbModel.BuyItem
 	err := r.db.Pool.QueryRow(ctx, query,
-		inputEntity.RecordID,
+		entityId,
 		inputEntity.BuyID,
 		inputEntity.ProductID,
 		inputEntity.Quantity,
@@ -114,7 +114,7 @@ func (r *buyItemRepository) Update(ctx context.Context, inputEntity *dbModel.Buy
 	return &scannedEntity, nil
 }
 
-func (r *buyItemRepository) Delete(ctx context.Context, id int) error {
+func (r *buyItemRepository) Delete(ctx context.Context, entityId int) error {
 	tag := "buyItemRepository.Delete"
 
 	query := `		
@@ -122,14 +122,14 @@ func (r *buyItemRepository) Delete(ctx context.Context, id int) error {
 		where record_id = $1
 		`
 
-	cmdTag, err := r.db.Pool.Exec(ctx, query, id)
+	cmdTag, err := r.db.Pool.Exec(ctx, query, entityId)
 	if err != nil || cmdTag.RowsAffected() == 0 {
-		return fmt.Errorf("%s. no rows deleted for id: %v, %w", tag, id, err)
+		return fmt.Errorf("%s. no rows deleted for id: %v, %w", tag, entityId, err)
 	}
 	return nil
 }
 
-func (r *buyItemRepository) GetByID(ctx context.Context, id int) (*dbModel.BuyItem, error) {
+func (r *buyItemRepository) GetByID(ctx context.Context, entityId int) (*dbModel.BuyItem, error) {
 	tag := "buyItemRepository.GetByID"
 
 	query := `		
@@ -148,7 +148,7 @@ func (r *buyItemRepository) GetByID(ctx context.Context, id int) (*dbModel.BuyIt
 		`
 
 	var scannedEntity dbModel.BuyItem
-	err := r.db.Pool.QueryRow(ctx, query, id).Scan(
+	err := r.db.Pool.QueryRow(ctx, query, entityId).Scan(
 		&scannedEntity.RecordID,
 		&scannedEntity.BuyID,
 		&scannedEntity.ProductID,

@@ -17,7 +17,6 @@ type CategoryCreateDto struct {
 }
 
 type CategoryUpdateDto struct {
-	RecordID int
 	Name     string
 	ParentID *int
 }

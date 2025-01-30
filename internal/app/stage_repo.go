@@ -55,9 +55,6 @@ func GenRepository(s TableToStructInfo) GenRepo {
 	structFieldsWithoutPkeysAndDefaults := s.GetStructFieldsAsString(false, true)
 	structFieldsWithPkeysAndDefaults := s.GetStructFieldsAsString(true, false)
 
-	structFieldsUpdate := []string{pkeyStructFieldName}
-	structFieldsUpdate = append(structFieldsUpdate, structFieldsWithoutPkeysAndDefaults...)
-
 	queries := genQueries(s)
 
 	repoImplTemplateResult := ExecTemplate("funcs", tmplts.RepoImplTemplate,
@@ -73,7 +70,6 @@ func GenRepository(s TableToStructInfo) GenRepo {
 			"PackageName":              strings.ToLower(s.DbTableName),
 			"InterfaceName":            s.StructName + "Repository",
 			"ImplName":                 LowerFirstLetter(s.StructName) + "Repository",
-			"StructFieldsUpdate":       structFieldsUpdate,
 			"StructFieldsNoPKeys":      structFieldsWithoutPkeysAndDefaults,
 			"StructFieldsWithPKeys":    structFieldsWithPkeysAndDefaults,
 		}, FuncMap)

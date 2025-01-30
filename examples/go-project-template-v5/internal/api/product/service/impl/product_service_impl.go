@@ -63,10 +63,9 @@ func (s *productService) GetAllPaginated(ctx context.Context, pq *pageable.Pagin
 	return toDtos, page, nil
 }
 
-func (s *productService) Update(ctx context.Context, input *dto.ProductUpdateDto) (*dto.ProductDto, error) {
+func (s *productService) Update(ctx context.Context, entityId int, input *dto.ProductUpdateDto) (*dto.ProductDto, error) {
 	// update dbModel
-	updatedResult, err := s.repo.Update(ctx, &dbModel.Product{
-		RecordID:    input.RecordID,
+	updatedResult, err := s.repo.Update(ctx, entityId, &dbModel.Product{
 		CategoryID:  input.CategoryID,
 		Name:        input.Name,
 		Description: input.Description,

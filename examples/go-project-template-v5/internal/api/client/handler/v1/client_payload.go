@@ -14,9 +14,6 @@ type clientCreateRequest struct {
 
 // clientUpdateRequest stores client information, identified by a unique email.
 type clientUpdateRequest struct {
-	// Primary key for the client table.
-	RecordID int `json:"record_id"`
-
 	// Unique email address of the client.
 	Email string `json:"email"`
 }

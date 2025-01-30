@@ -61,7 +61,7 @@ func (r *buyRepository) Save(ctx context.Context, inputEntity *dbModel.Buy) (*db
 	return &scannedEntity, nil
 }
 
-func (r *buyRepository) Update(ctx context.Context, inputEntity *dbModel.Buy) (*dbModel.Buy, error) {
+func (r *buyRepository) Update(ctx context.Context, entityId int, inputEntity *dbModel.Buy) (*dbModel.Buy, error) {
 	tag := "buyRepository.Update"
 
 	query := `		
@@ -81,7 +81,7 @@ func (r *buyRepository) Update(ctx context.Context, inputEntity *dbModel.Buy) (*
 
 	var scannedEntity dbModel.Buy
 	err := r.db.Pool.QueryRow(ctx, query,
-		inputEntity.RecordID,
+		entityId,
 		inputEntity.ClientID,
 		inputEntity.Description,
 	).Scan(
@@ -98,7 +98,7 @@ func (r *buyRepository) Update(ctx context.Context, inputEntity *dbModel.Buy) (*
 	return &scannedEntity, nil
 }
 
-func (r *buyRepository) Delete(ctx context.Context, id int) error {
+func (r *buyRepository) Delete(ctx context.Context, entityId int) error {
 	tag := "buyRepository.Delete"
 
 	query := `		
@@ -106,14 +106,14 @@ func (r *buyRepository) Delete(ctx context.Context, id int) error {
 		where record_id = $1
 		`
 
-	cmdTag, err := r.db.Pool.Exec(ctx, query, id)
+	cmdTag, err := r.db.Pool.Exec(ctx, query, entityId)
 	if err != nil || cmdTag.RowsAffected() == 0 {
-		return fmt.Errorf("%s. no rows deleted for id: %v, %w", tag, id, err)
+		return fmt.Errorf("%s. no rows deleted for id: %v, %w", tag, entityId, err)
 	}
 	return nil
 }
 
-func (r *buyRepository) GetByID(ctx context.Context, id int) (*dbModel.Buy, error) {
+func (r *buyRepository) GetByID(ctx context.Context, entityId int) (*dbModel.Buy, error) {
 	tag := "buyRepository.GetByID"
 
 	query := `		
@@ -130,7 +130,7 @@ func (r *buyRepository) GetByID(ctx context.Context, id int) (*dbModel.Buy, erro
 		`
 
 	var scannedEntity dbModel.Buy
-	err := r.db.Pool.QueryRow(ctx, query, id).Scan(
+	err := r.db.Pool.QueryRow(ctx, query, entityId).Scan(
 		&scannedEntity.RecordID,
 		&scannedEntity.ClientID,
 		&scannedEntity.Description,

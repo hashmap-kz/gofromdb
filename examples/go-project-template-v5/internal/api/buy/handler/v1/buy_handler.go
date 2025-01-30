@@ -120,10 +120,8 @@ func (h *BuyHTTPHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO: types
-	req.RecordID = int(id)
-	_, err = h.buyService.Update(r.Context(), &dto.BuyUpdateDto{
-		RecordID:    req.RecordID,
+	// TODO: types - int(id)
+	_, err = h.buyService.Update(r.Context(), int(id), &dto.BuyUpdateDto{
 		ClientID:    req.ClientID,
 		Description: req.Description,
 	})

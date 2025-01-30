@@ -17,9 +17,6 @@ type categoryCreateRequest struct {
 
 // categoryUpdateRequest represents product categories, supporting hierarchical relationships.
 type categoryUpdateRequest struct {
-	// Primary key for the category table.
-	RecordID int `json:"record_id"`
-
 	// Name of the category.
 	Name string `json:"name"`
 

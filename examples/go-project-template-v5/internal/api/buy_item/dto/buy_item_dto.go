@@ -21,7 +21,6 @@ type BuyItemCreateDto struct {
 }
 
 type BuyItemUpdateDto struct {
-	RecordID  int
 	BuyID     int
 	ProductID int
 	Quantity  int

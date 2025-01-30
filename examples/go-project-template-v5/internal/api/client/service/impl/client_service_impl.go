@@ -61,11 +61,10 @@ func (s *clientService) GetAllPaginated(ctx context.Context, pq *pageable.Pagina
 	return toDtos, page, nil
 }
 
-func (s *clientService) Update(ctx context.Context, input *dto.ClientUpdateDto) (*dto.ClientDto, error) {
+func (s *clientService) Update(ctx context.Context, entityId int, input *dto.ClientUpdateDto) (*dto.ClientDto, error) {
 	// update dbModel
-	updatedResult, err := s.repo.Update(ctx, &dbModel.Client{
-		RecordID: input.RecordID,
-		Email:    input.Email,
+	updatedResult, err := s.repo.Update(ctx, entityId, &dbModel.Client{
+		Email: input.Email,
 	})
 	if err != nil {
 		return nil, err

@@ -121,10 +121,8 @@ func (h *ProductHTTPHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO: types
-	req.RecordID = int(id)
-	_, err = h.productService.Update(r.Context(), &dto.ProductUpdateDto{
-		RecordID:    req.RecordID,
+	// TODO: types - int(id)
+	_, err = h.productService.Update(r.Context(), int(id), &dto.ProductUpdateDto{
 		CategoryID:  req.CategoryID,
 		Name:        req.Name,
 		Description: req.Description,

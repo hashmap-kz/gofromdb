@@ -9,10 +9,10 @@ import (
 )
 
 type BuyRepository interface {
-	Save(ctx context.Context, input *dbModel.Buy) (*dbModel.Buy, error)
+	Save(ctx context.Context, inputEntity *dbModel.Buy) (*dbModel.Buy, error)
 	GetAll(ctx context.Context) ([]dbModel.Buy, error)
 	GetAllPaginated(ctx context.Context, pq *pageable.PaginationQuery) ([]dbModel.Buy, pageable.Page, error)
-	Update(ctx context.Context, input *dbModel.Buy) (*dbModel.Buy, error)
-	Delete(ctx context.Context, id int) error
-	GetByID(ctx context.Context, id int) (*dbModel.Buy, error)
+	Update(ctx context.Context, entityId int, inputEntity *dbModel.Buy) (*dbModel.Buy, error)
+	Delete(ctx context.Context, entityId int) error
+	GetByID(ctx context.Context, entityId int) (*dbModel.Buy, error)
 }

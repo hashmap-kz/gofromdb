@@ -20,9 +20,6 @@ type productCreateRequest struct {
 
 // productUpdateRequest stores products with a reference to their category.
 type productUpdateRequest struct {
-	// Primary key for the product table.
-	RecordID int `json:"record_id"`
-
 	// Foreign key referencing the category to which the product belongs.
 	CategoryID int `json:"category_id"`
 

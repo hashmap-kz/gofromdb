@@ -62,10 +62,9 @@ func (s *buyService) GetAllPaginated(ctx context.Context, pq *pageable.Paginatio
 	return toDtos, page, nil
 }
 
-func (s *buyService) Update(ctx context.Context, input *dto.BuyUpdateDto) (*dto.BuyDto, error) {
+func (s *buyService) Update(ctx context.Context, entityId int, input *dto.BuyUpdateDto) (*dto.BuyDto, error) {
 	// update dbModel
-	updatedResult, err := s.repo.Update(ctx, &dbModel.Buy{
-		RecordID:    input.RecordID,
+	updatedResult, err := s.repo.Update(ctx, entityId, &dbModel.Buy{
 		ClientID:    input.ClientID,
 		Description: input.Description,
 	})

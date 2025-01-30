@@ -120,10 +120,8 @@ func (h *CategoryHTTPHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO: types
-	req.RecordID = int(id)
-	_, err = h.categoryService.Update(r.Context(), &dto.CategoryUpdateDto{
-		RecordID: req.RecordID,
+	// TODO: types - int(id)
+	_, err = h.categoryService.Update(r.Context(), int(id), &dto.CategoryUpdateDto{
 		Name:     req.Name,
 		ParentID: req.ParentID,
 	})

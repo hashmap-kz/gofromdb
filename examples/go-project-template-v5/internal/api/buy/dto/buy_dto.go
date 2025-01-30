@@ -17,7 +17,6 @@ type BuyCreateDto struct {
 }
 
 type BuyUpdateDto struct {
-	RecordID    int
 	ClientID    int
 	Description *string
 }

@@ -11,13 +11,13 @@ type {{.DtoName}} struct {
 }
 
 type {{.DtoCreateName}} struct {
-{{- range .DtoFieldsCreate}}
+{{- range .DtoFieldsNoPkeysNoDefaults}}
 	{{.FieldName}} {{.FieldType}}
 {{- end}}
 }
 
 type {{.DtoUpdateName}} struct {
-{{- range .DtoFieldsUpdate}}
+{{- range .DtoFieldsNoPkeysNoDefaults}}
 	{{.FieldName}} {{.FieldType}}
 {{- end}}
 }
@@ -38,7 +38,7 @@ type {{.InterfaceName}} interface {
 	Save(ctx context.Context, input *dto.{{.DtoCreateName}}) (*dto.{{.DtoName}}, error)
 	GetAll(ctx context.Context) ([]dto.{{.DtoName}}, error)
 	GetAllPaginated(ctx context.Context, pq *pageable.PaginationQuery) ([]dto.{{.DtoName}}, pageable.Page, error)
-	Update(ctx context.Context, input *dto.{{.DtoUpdateName}}) (*dto.{{.DtoName}}, error)
+	Update(ctx context.Context, entityId int, input *dto.{{.DtoUpdateName}}) (*dto.{{.DtoName}}, error)
 	Delete(ctx context.Context, id int) error
 	GetByID(ctx context.Context, id int) (*dto.{{.DtoName}}, error)
 }
@@ -110,10 +110,10 @@ func (s *{{.ImplName}}) GetAllPaginated(ctx context.Context, pq *pageable.Pagina
 	return toDtos, page, nil
 }
 
-func (s *{{.ImplName}}) Update(ctx context.Context, input *dto.{{.DtoUpdateName}}) (*dto.{{.DtoName}}, error) {
+func (s *{{.ImplName}}) Update(ctx context.Context, entityId int, input *dto.{{.DtoUpdateName}}) (*dto.{{.DtoName}}, error) {
 	// update dbModel
-	updatedResult, err := s.repo.Update(ctx, &dbModel.{{.StructName}}{
-{{- range .StructFieldsUpdate}}
+	updatedResult, err := s.repo.Update(ctx, entityId, &dbModel.{{.StructName}}{
+{{- range .StructFieldsNoPKeys}}
 		{{.}}: input.{{.}},
 {{- end }}
 	})

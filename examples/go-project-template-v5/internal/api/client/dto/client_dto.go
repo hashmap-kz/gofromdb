@@ -15,6 +15,5 @@ type ClientCreateDto struct {
 }
 
 type ClientUpdateDto struct {
-	RecordID int
-	Email    string
+	Email string
 }
