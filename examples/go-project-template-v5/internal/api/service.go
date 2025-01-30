@@ -18,11 +18,11 @@ import (
 // Init all services
 
 type Services struct {
+	BuyService      buyServ.BuyService
 	BuyItemService  buyitemServ.BuyItemService
 	CategoryService categoryServ.CategoryService
 	ClientService   clientServ.ClientService
 	ProductService  productServ.ProductService
-	BuyService      buyServ.BuyService
 }
 
 type Deps struct {
@@ -32,10 +32,10 @@ type Deps struct {
 
 func NewServices(ctx context.Context, deps Deps) *Services {
 	return &Services{
+		BuyService:      buyImpl.NewBuyService(ctx, deps.Repos.BuyRepository),
 		BuyItemService:  buyitemImpl.NewBuyItemService(ctx, deps.Repos.BuyItemRepository),
 		CategoryService: categoryImpl.NewCategoryService(ctx, deps.Repos.CategoryRepository),
 		ClientService:   clientImpl.NewClientService(ctx, deps.Repos.ClientRepository),
 		ProductService:  productImpl.NewProductService(ctx, deps.Repos.ProductRepository),
-		BuyService:      buyImpl.NewBuyService(ctx, deps.Repos.BuyRepository),
 	}
 }

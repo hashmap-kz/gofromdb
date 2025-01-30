@@ -46,62 +46,23 @@ func GenRepository(s TableToStructInfo) GenRepo {
 	fieldsWithPkeysAndDefaults := s.GetDbFieldsAsString(true, false)
 	updateSets := GenUpdateSets(fieldsWithoutPkeysAndDefaults)
 
-	repoSaveQueryResult := ExecTemplate("query-save", tmplts.RepoSaveQueryTemplate,
-		map[string]any{
-			"SchemaName":         "public",
-			"TableName":          s.DbTableName,
-			"FieldsNoPKeys":      strings.Join(fieldsWithoutPkeysAndDefaults, ",\n"),
-			"FieldsWithPKeys":    strings.Join(fieldsWithPkeysAndDefaults, ",\n"),
-			"ValuesPlaceholders": strings.Join(CreatePlaceholders(len(fieldsWithoutPkeysAndDefaults)), ", "),
-		}, FuncMap)
+	queryTemplatesData := map[string]any{
+		"SchemaName":                    "public",
+		"TableName":                     s.DbTableName,
+		"FieldsNoPKeys":                 strings.Join(fieldsWithoutPkeysAndDefaults, ",\n"),
+		"FieldsWithPKeys":               strings.Join(fieldsWithPkeysAndDefaults, ",\n"),
+		"PkeyFieldName":                 pkeyDatabaseFieldName,
+		"ValuesPlaceholders":            strings.Join(CreatePlaceholders(len(fieldsWithoutPkeysAndDefaults)), ", "),
+		"FieldsNoPKeysWithPlaceholders": strings.Join(updateSets, ",\n"),
+	}
 
-	repoUpdateQueryResult := ExecTemplate("query-update", tmplts.RepoUpdateQueryTemplate,
-		map[string]any{
-			"SchemaName":                    "public",
-			"TableName":                     s.DbTableName,
-			"FieldsNoPKeysWithPlaceholders": strings.Join(updateSets, ",\n"),
-			"FieldsWithPKeys":               strings.Join(fieldsWithPkeysAndDefaults, ",\n"),
-			"PkeyFieldName":                 pkeyDatabaseFieldName,
-		}, FuncMap)
-
-	repoDeleteQueryResult := ExecTemplate("query-delete", tmplts.RepoDeleteQueryTemplate,
-		map[string]any{
-			"SchemaName":    "public",
-			"TableName":     s.DbTableName,
-			"PkeyFieldName": pkeyDatabaseFieldName,
-		}, FuncMap)
-
-	repoGetByIdQueryResult := ExecTemplate("query-get-by-id", tmplts.RepoGetByIdQueryTemplate,
-		map[string]any{
-			"SchemaName":      "public",
-			"TableName":       s.DbTableName,
-			"FieldsWithPKeys": strings.Join(fieldsWithPkeysAndDefaults, ",\n"),
-			"PkeyFieldName":   pkeyDatabaseFieldName,
-		}, FuncMap)
-
-	repoGetAllQueryResult := ExecTemplate("query-get-all", tmplts.RepoGetAllQueryTemplate,
-		map[string]any{
-			"SchemaName":      "public",
-			"TableName":       s.DbTableName,
-			"FieldsWithPKeys": strings.Join(fieldsWithPkeysAndDefaults, ",\n"),
-			"PkeyFieldName":   pkeyDatabaseFieldName,
-		}, FuncMap)
-
-	repoCountQueryResult := ExecTemplate("query-count", tmplts.RepoCountQueryTemplate,
-		map[string]any{
-			"SchemaName":      "public",
-			"TableName":       s.DbTableName,
-			"FieldsWithPKeys": strings.Join(fieldsWithPkeysAndDefaults, ",\n"),
-			"PkeyFieldName":   pkeyDatabaseFieldName,
-		}, FuncMap)
-
-	repoGetAllPaginatedQueryResult := ExecTemplate("query-get-all-paginated", tmplts.RepoGetAllPaginatedQueryTemplate,
-		map[string]any{
-			"SchemaName":      "public",
-			"TableName":       s.DbTableName,
-			"FieldsWithPKeys": strings.Join(fieldsWithPkeysAndDefaults, ",\n"),
-			"PkeyFieldName":   pkeyDatabaseFieldName,
-		}, FuncMap)
+	repoSaveQueryResult := ExecTemplate("query-save", tmplts.RepoSaveQueryTemplate, queryTemplatesData, FuncMap)
+	repoUpdateQueryResult := ExecTemplate("query-update", tmplts.RepoUpdateQueryTemplate, queryTemplatesData, FuncMap)
+	repoDeleteQueryResult := ExecTemplate("query-delete", tmplts.RepoDeleteQueryTemplate, queryTemplatesData, FuncMap)
+	repoGetByIdQueryResult := ExecTemplate("query-get-by-id", tmplts.RepoGetByIdQueryTemplate, queryTemplatesData, FuncMap)
+	repoGetAllQueryResult := ExecTemplate("query-get-all", tmplts.RepoGetAllQueryTemplate, queryTemplatesData, FuncMap)
+	repoCountQueryResult := ExecTemplate("query-count", tmplts.RepoCountQueryTemplate, queryTemplatesData, FuncMap)
+	repoGetAllPaginatedQueryResult := ExecTemplate("query-get-all-paginated", tmplts.RepoGetAllPaginatedQueryTemplate, queryTemplatesData, FuncMap)
 
 	// Function template
 
