@@ -161,6 +161,18 @@ func (h *BuyHTTPHandler) Update(w http.ResponseWriter, r *http.Request) {
 	httputils.WriteJSON(w, http.StatusCreated, dtoToPayload)
 }
 
+// Delete handles the deletion of a Buy.
+//
+// @Summary Delete a Buy
+// @Description Deletes a Buy by its ID
+// @Tags Buy
+// @Accept json
+// @Produce json
+// @Param id path int true "Buy ID"
+// @Success 204 "No Content (Successfully deleted)"
+// @Failure 400 {object} httputils.ErrorResponse "Bad Request (Invalid ID format)"
+// @Failure 500 {object} httputils.ErrorResponse "Internal Server Error (Deletion failed)"
+// @Router /api/v1/buys [delete]
 func (h *BuyHTTPHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	id, err := httputils.PathValueI64(r, "id")
 	if err != nil {

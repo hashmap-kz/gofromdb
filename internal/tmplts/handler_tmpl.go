@@ -98,6 +98,8 @@ func New{{.ImplName}}({{.ServiceVarName}} service.{{.ServiceInterfaceName}}) *{{
 // @Produce json
 // @Param request body {{.CreateRequestName}} true "Create input"
 // @Success 201 {object} {{.ResponseName}}
+// @Failure 400 {object} httputils.ErrorResponse "Bad Request"
+// @Failure 500 {object} httputils.ErrorResponse "Internal Server Error"
 // @Router /api/v1/{{.StructNamePluralRequestPath}} [post]
 func (h *{{.ImplName}}) Save(w http.ResponseWriter, r *http.Request) {
 	// read RequestBody
@@ -193,6 +195,8 @@ func (h *{{.ImplName}}) GetAllPaginated(w http.ResponseWriter, r *http.Request) 
 // @Produce json
 // @Param request body {{.UpdateRequestName}} true "Update input"
 // @Success 201 {object} {{.ResponseName}}
+// @Failure 400 {object} httputils.ErrorResponse "Bad Request"
+// @Failure 500 {object} httputils.ErrorResponse "Internal Server Error"
 // @Router /api/v1/{{.StructNamePluralRequestPath}} [put]
 func (h *{{.ImplName}}) Update(w http.ResponseWriter, r *http.Request) {
 	id, err := httputils.PathValueI64(r, "id")
@@ -229,6 +233,18 @@ func (h *{{.ImplName}}) Update(w http.ResponseWriter, r *http.Request) {
 	httputils.WriteJSON(w, http.StatusCreated, dtoToPayload)
 }
 
+// Delete handles the deletion of a {{.StructName}}.
+//
+// @Summary Delete a {{.StructName}}
+// @Description Deletes a {{.StructName}} by its ID
+// @Tags {{.StructName}}
+// @Accept json
+// @Produce json
+// @Param id path int true "{{.StructName}} ID"
+// @Success 204 "No Content (Successfully deleted)"
+// @Failure 400 {object} httputils.ErrorResponse "Bad Request (Invalid ID format)"
+// @Failure 500 {object} httputils.ErrorResponse "Internal Server Error (Deletion failed)"
+// @Router /api/v1/{{.StructNamePluralRequestPath}} [delete]
 func (h *{{.ImplName}}) Delete(w http.ResponseWriter, r *http.Request) {
 	id, err := httputils.PathValueI64(r, "id")
 	if err != nil {

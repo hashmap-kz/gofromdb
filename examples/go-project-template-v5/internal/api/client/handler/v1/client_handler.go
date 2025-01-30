@@ -159,6 +159,18 @@ func (h *ClientHTTPHandler) Update(w http.ResponseWriter, r *http.Request) {
 	httputils.WriteJSON(w, http.StatusCreated, dtoToPayload)
 }
 
+// Delete handles the deletion of a Client.
+//
+// @Summary Delete a Client
+// @Description Deletes a Client by its ID
+// @Tags Client
+// @Accept json
+// @Produce json
+// @Param id path int true "Client ID"
+// @Success 204 "No Content (Successfully deleted)"
+// @Failure 400 {object} httputils.ErrorResponse "Bad Request (Invalid ID format)"
+// @Failure 500 {object} httputils.ErrorResponse "Internal Server Error (Deletion failed)"
+// @Router /api/v1/clients [delete]
 func (h *ClientHTTPHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	id, err := httputils.PathValueI64(r, "id")
 	if err != nil {

@@ -163,6 +163,18 @@ func (h *ProductHTTPHandler) Update(w http.ResponseWriter, r *http.Request) {
 	httputils.WriteJSON(w, http.StatusCreated, dtoToPayload)
 }
 
+// Delete handles the deletion of a Product.
+//
+// @Summary Delete a Product
+// @Description Deletes a Product by its ID
+// @Tags Product
+// @Accept json
+// @Produce json
+// @Param id path int true "Product ID"
+// @Success 204 "No Content (Successfully deleted)"
+// @Failure 400 {object} httputils.ErrorResponse "Bad Request (Invalid ID format)"
+// @Failure 500 {object} httputils.ErrorResponse "Internal Server Error (Deletion failed)"
+// @Router /api/v1/products [delete]
 func (h *ProductHTTPHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	id, err := httputils.PathValueI64(r, "id")
 	if err != nil {
