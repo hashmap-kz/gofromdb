@@ -91,14 +91,14 @@ func New{{.ImplName}}({{.ServiceVarName}} service.{{.ServiceInterfaceName}}) *{{
 
 // Save
 //
-// @Summary Create new {{.StructName}}
-// @Description Create {{.StructName}} handler
-// @Tags {{.StructName}}
+// @Summary Create new item
+// @Description Create new item handler
+// @Tags {{.StructNamePluralRequestPath}}
 // @Accept json
 // @Produce json
 // @Param request body {{.CreateRequestName}} true "Create input"
 // @Success 201 {object} {{.ResponseName}}
-// @Failure 400 {object} httputils.ErrorResponse "Bad Request"
+// @Failure 400 {object} httputils.ErrorResponse "Bad Request (Invalid request payload)"
 // @Failure 500 {object} httputils.ErrorResponse "Internal Server Error"
 // @Router /api/v1/{{.StructNamePluralRequestPath}} [post]
 func (h *{{.ImplName}}) Save(w http.ResponseWriter, r *http.Request) {
@@ -137,14 +137,14 @@ func (h *{{.ImplName}}) Save(w http.ResponseWriter, r *http.Request) {
 	httputils.WriteJSON(w, http.StatusOK, dtoToPayload)
 }
 
-// GetAll retrieves all {{.StructName}}.
+// GetAll
 //
-// @Summary Get all {{.StructName}}
-// @Description Retrieves a list of all {{.StructName}} without pagination.
-// @Tags {{.StructName}}
+// @Summary Get all
+// @Description Retrieves a list without pagination.
+// @Tags {{.StructNamePluralRequestPath}}
 // @Accept json
 // @Produce  json
-// @Success 200 {object} {{.ResponseName}}List "List of all BuyItems"
+// @Success 200 {object} {{.ResponseListName}} "List of all BuyItems"
 // @Failure 400 {object} httputils.ErrorResponse "Bad Request (Service failure)"
 // @Failure 500 {object} httputils.ErrorResponse "Internal Server Error (Data processing failure)"
 // @Router /api/v1/{{.StructNamePluralRequestPath}} [get]
@@ -164,22 +164,22 @@ func (h *{{.ImplName}}) GetAll(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 200 OK
-	httputils.WriteJSON(w, http.StatusOK, {{.ResponseName}}List{
+	httputils.WriteJSON(w, http.StatusOK, {{.ResponseListName}}{
 		Data: dtosToPayloads,
 	})
 }
 
-// GetAllPaginated retrieves a paginated list of {{.StructName}}.
+// GetAllPaginated
 //
-// @Summary Get paginated list of {{.StructName}}
-// @Description Retrieves a paginated list of {{.StructName}} with pagination parameters.
-// @Tags {{.StructName}}
+// @Summary Get paginated list
+// @Description Retrieves a paginated list using pagination parameters.
+// @Tags {{.StructNamePluralRequestPath}}
 // @Accept json
 // @Produce json
 // @Param page query int false "Page number (default: 1)"
 // @Param size query int false "Number of items per page (default: 10)"
 // @Param sort query string false "Sort order, e.g., 'name,asc'"
-// @Success 200 {object} {{.ResponseName}}List "Paginated list of {{.StructName}}"
+// @Success 200 {object} {{.ResponseListName}} "Paginated list of {{.StructName}}"
 // @Failure 400 {object} httputils.ErrorResponse "Bad Request (Invalid pagination parameters or service failure)"
 // @Failure 500 {object} httputils.ErrorResponse "Internal Server Error (Data processing failure)"
 // @Router /api/v1/{{.StructNamePluralRequestPath}}/pageable [get]
@@ -205,7 +205,7 @@ func (h *{{.ImplName}}) GetAllPaginated(w http.ResponseWriter, r *http.Request) 
 	}
 
 	// 200 OK
-	httputils.WriteJSON(w, http.StatusOK, {{.ResponseName}}List{
+	httputils.WriteJSON(w, http.StatusOK, {{.ResponseListName}}{
 		Data: dtosToPayloads,
 		Page: &page,
 	})
@@ -213,9 +213,9 @@ func (h *{{.ImplName}}) GetAllPaginated(w http.ResponseWriter, r *http.Request) 
 
 // Update
 //
-// @Summary Update existing {{.StructName}}
-// @Description Update {{.StructName}} handler
-// @Tags {{.StructName}}
+// @Summary Update existing item
+// @Description Updates an item by its ID
+// @Tags {{.StructNamePluralRequestPath}}
 // @Accept json
 // @Produce json
 // @Param request body {{.UpdateRequestName}} true "Update input"
@@ -258,11 +258,11 @@ func (h *{{.ImplName}}) Update(w http.ResponseWriter, r *http.Request) {
 	httputils.WriteJSON(w, http.StatusCreated, dtoToPayload)
 }
 
-// Delete handles the deletion of a {{.StructName}}.
+// Delete
 //
-// @Summary Delete a {{.StructName}}
-// @Description Deletes a {{.StructName}} by its ID
-// @Tags {{.StructName}}
+// @Summary Delete existing item
+// @Description Deletes an item by its ID
+// @Tags {{.StructNamePluralRequestPath}}
 // @Accept json
 // @Produce json
 // @Param id path int true "{{.StructName}} ID"

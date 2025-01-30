@@ -310,7 +310,7 @@ paths:
     delete:
       consumes:
       - application/json
-      description: Deletes a BuyItem by its ID
+      description: Deletes an item by its ID
       parameters:
       - description: BuyItem ID
         in: path
@@ -330,13 +330,13 @@ paths:
           description: Internal Server Error (Deletion failed)
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
-      summary: Delete a BuyItem
+      summary: Delete existing item
       tags:
-      - BuyItem
+      - buy-items
     get:
       consumes:
       - application/json
-      description: Retrieves a list of all BuyItem without pagination.
+      description: Retrieves a list without pagination.
       produces:
       - application/json
       responses:
@@ -352,13 +352,13 @@ paths:
           description: Internal Server Error (Data processing failure)
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
-      summary: Get all BuyItem
+      summary: Get all
       tags:
-      - BuyItem
+      - buy-items
     post:
       consumes:
       - application/json
-      description: Create BuyItem handler
+      description: Create new item handler
       parameters:
       - description: Create input
         in: body
@@ -374,20 +374,20 @@ paths:
           schema:
             $ref: '#/definitions/v1.buyItemResponse'
         "400":
-          description: Bad Request
+          description: Bad Request (Invalid request payload)
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
-      summary: Create new BuyItem
+      summary: Create new item
       tags:
-      - BuyItem
+      - buy-items
     put:
       consumes:
       - application/json
-      description: Update BuyItem handler
+      description: Updates an item by its ID
       parameters:
       - description: Update input
         in: body
@@ -410,14 +410,14 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
-      summary: Update existing BuyItem
+      summary: Update existing item
       tags:
-      - BuyItem
+      - buy-items
   /api/v1/buy-items/pageable:
     get:
       consumes:
       - application/json
-      description: Retrieves a paginated list of BuyItem with pagination parameters.
+      description: Retrieves a paginated list using pagination parameters.
       parameters:
       - description: 'Page number (default: 1)'
         in: query
@@ -446,14 +446,14 @@ paths:
           description: Internal Server Error (Data processing failure)
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
-      summary: Get paginated list of BuyItem
+      summary: Get paginated list
       tags:
-      - BuyItem
+      - buy-items
   /api/v1/buys:
     delete:
       consumes:
       - application/json
-      description: Deletes a Buy by its ID
+      description: Deletes an item by its ID
       parameters:
       - description: Buy ID
         in: path
@@ -473,13 +473,13 @@ paths:
           description: Internal Server Error (Deletion failed)
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
-      summary: Delete a Buy
+      summary: Delete existing item
       tags:
-      - Buy
+      - buys
     get:
       consumes:
       - application/json
-      description: Retrieves a list of all Buy without pagination.
+      description: Retrieves a list without pagination.
       produces:
       - application/json
       responses:
@@ -495,13 +495,13 @@ paths:
           description: Internal Server Error (Data processing failure)
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
-      summary: Get all Buy
+      summary: Get all
       tags:
-      - Buy
+      - buys
     post:
       consumes:
       - application/json
-      description: Create Buy handler
+      description: Create new item handler
       parameters:
       - description: Create input
         in: body
@@ -517,20 +517,20 @@ paths:
           schema:
             $ref: '#/definitions/v1.buyResponse'
         "400":
-          description: Bad Request
+          description: Bad Request (Invalid request payload)
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
-      summary: Create new Buy
+      summary: Create new item
       tags:
-      - Buy
+      - buys
     put:
       consumes:
       - application/json
-      description: Update Buy handler
+      description: Updates an item by its ID
       parameters:
       - description: Update input
         in: body
@@ -553,14 +553,14 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
-      summary: Update existing Buy
+      summary: Update existing item
       tags:
-      - Buy
+      - buys
   /api/v1/buys/pageable:
     get:
       consumes:
       - application/json
-      description: Retrieves a paginated list of Buy with pagination parameters.
+      description: Retrieves a paginated list using pagination parameters.
       parameters:
       - description: 'Page number (default: 1)'
         in: query
@@ -589,14 +589,14 @@ paths:
           description: Internal Server Error (Data processing failure)
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
-      summary: Get paginated list of Buy
+      summary: Get paginated list
       tags:
-      - Buy
+      - buys
   /api/v1/categories:
     delete:
       consumes:
       - application/json
-      description: Deletes a Category by its ID
+      description: Deletes an item by its ID
       parameters:
       - description: Category ID
         in: path
@@ -616,13 +616,13 @@ paths:
           description: Internal Server Error (Deletion failed)
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
-      summary: Delete a Category
+      summary: Delete existing item
       tags:
-      - Category
+      - categories
     get:
       consumes:
       - application/json
-      description: Retrieves a list of all Category without pagination.
+      description: Retrieves a list without pagination.
       produces:
       - application/json
       responses:
@@ -638,13 +638,13 @@ paths:
           description: Internal Server Error (Data processing failure)
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
-      summary: Get all Category
+      summary: Get all
       tags:
-      - Category
+      - categories
     post:
       consumes:
       - application/json
-      description: Create Category handler
+      description: Create new item handler
       parameters:
       - description: Create input
         in: body
@@ -660,20 +660,20 @@ paths:
           schema:
             $ref: '#/definitions/v1.categoryResponse'
         "400":
-          description: Bad Request
+          description: Bad Request (Invalid request payload)
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
-      summary: Create new Category
+      summary: Create new item
       tags:
-      - Category
+      - categories
     put:
       consumes:
       - application/json
-      description: Update Category handler
+      description: Updates an item by its ID
       parameters:
       - description: Update input
         in: body
@@ -696,14 +696,14 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
-      summary: Update existing Category
+      summary: Update existing item
       tags:
-      - Category
+      - categories
   /api/v1/categories/pageable:
     get:
       consumes:
       - application/json
-      description: Retrieves a paginated list of Category with pagination parameters.
+      description: Retrieves a paginated list using pagination parameters.
       parameters:
       - description: 'Page number (default: 1)'
         in: query
@@ -732,14 +732,14 @@ paths:
           description: Internal Server Error (Data processing failure)
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
-      summary: Get paginated list of Category
+      summary: Get paginated list
       tags:
-      - Category
+      - categories
   /api/v1/clients:
     delete:
       consumes:
       - application/json
-      description: Deletes a Client by its ID
+      description: Deletes an item by its ID
       parameters:
       - description: Client ID
         in: path
@@ -759,13 +759,13 @@ paths:
           description: Internal Server Error (Deletion failed)
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
-      summary: Delete a Client
+      summary: Delete existing item
       tags:
-      - Client
+      - clients
     get:
       consumes:
       - application/json
-      description: Retrieves a list of all Client without pagination.
+      description: Retrieves a list without pagination.
       produces:
       - application/json
       responses:
@@ -781,13 +781,13 @@ paths:
           description: Internal Server Error (Data processing failure)
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
-      summary: Get all Client
+      summary: Get all
       tags:
-      - Client
+      - clients
     post:
       consumes:
       - application/json
-      description: Create Client handler
+      description: Create new item handler
       parameters:
       - description: Create input
         in: body
@@ -803,20 +803,20 @@ paths:
           schema:
             $ref: '#/definitions/v1.clientResponse'
         "400":
-          description: Bad Request
+          description: Bad Request (Invalid request payload)
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
-      summary: Create new Client
+      summary: Create new item
       tags:
-      - Client
+      - clients
     put:
       consumes:
       - application/json
-      description: Update Client handler
+      description: Updates an item by its ID
       parameters:
       - description: Update input
         in: body
@@ -839,14 +839,14 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
-      summary: Update existing Client
+      summary: Update existing item
       tags:
-      - Client
+      - clients
   /api/v1/clients/pageable:
     get:
       consumes:
       - application/json
-      description: Retrieves a paginated list of Client with pagination parameters.
+      description: Retrieves a paginated list using pagination parameters.
       parameters:
       - description: 'Page number (default: 1)'
         in: query
@@ -875,14 +875,14 @@ paths:
           description: Internal Server Error (Data processing failure)
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
-      summary: Get paginated list of Client
+      summary: Get paginated list
       tags:
-      - Client
+      - clients
   /api/v1/products:
     delete:
       consumes:
       - application/json
-      description: Deletes a Product by its ID
+      description: Deletes an item by its ID
       parameters:
       - description: Product ID
         in: path
@@ -902,13 +902,13 @@ paths:
           description: Internal Server Error (Deletion failed)
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
-      summary: Delete a Product
+      summary: Delete existing item
       tags:
-      - Product
+      - products
     get:
       consumes:
       - application/json
-      description: Retrieves a list of all Product without pagination.
+      description: Retrieves a list without pagination.
       produces:
       - application/json
       responses:
@@ -924,13 +924,13 @@ paths:
           description: Internal Server Error (Data processing failure)
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
-      summary: Get all Product
+      summary: Get all
       tags:
-      - Product
+      - products
     post:
       consumes:
       - application/json
-      description: Create Product handler
+      description: Create new item handler
       parameters:
       - description: Create input
         in: body
@@ -946,20 +946,20 @@ paths:
           schema:
             $ref: '#/definitions/v1.productResponse'
         "400":
-          description: Bad Request
+          description: Bad Request (Invalid request payload)
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
-      summary: Create new Product
+      summary: Create new item
       tags:
-      - Product
+      - products
     put:
       consumes:
       - application/json
-      description: Update Product handler
+      description: Updates an item by its ID
       parameters:
       - description: Update input
         in: body
@@ -982,14 +982,14 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
-      summary: Update existing Product
+      summary: Update existing item
       tags:
-      - Product
+      - products
   /api/v1/products/pageable:
     get:
       consumes:
       - application/json
-      description: Retrieves a paginated list of Product with pagination parameters.
+      description: Retrieves a paginated list using pagination parameters.
       parameters:
       - description: 'Page number (default: 1)'
         in: query
@@ -1018,7 +1018,7 @@ paths:
           description: Internal Server Error (Data processing failure)
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
-      summary: Get paginated list of Product
+      summary: Get paginated list
       tags:
-      - Product
+      - products
 swagger: "2.0"

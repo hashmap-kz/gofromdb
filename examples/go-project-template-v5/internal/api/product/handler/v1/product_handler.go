@@ -25,14 +25,14 @@ func NewProductHTTPHandler(productService service.ProductService) *ProductHTTPHa
 
 // Save
 //
-// @Summary Create new Product
-// @Description Create Product handler
-// @Tags Product
+// @Summary Create new item
+// @Description Create new item handler
+// @Tags products
 // @Accept json
 // @Produce json
 // @Param request body productCreateRequest true "Create input"
 // @Success 201 {object} productResponse
-// @Failure 400 {object} httputils.ErrorResponse "Bad Request"
+// @Failure 400 {object} httputils.ErrorResponse "Bad Request (Invalid request payload)"
 // @Failure 500 {object} httputils.ErrorResponse "Internal Server Error"
 // @Router /api/v1/products [post]
 func (h *ProductHTTPHandler) Save(w http.ResponseWriter, r *http.Request) {
@@ -71,11 +71,11 @@ func (h *ProductHTTPHandler) Save(w http.ResponseWriter, r *http.Request) {
 	httputils.WriteJSON(w, http.StatusOK, dtoToPayload)
 }
 
-// GetAll retrieves all Product.
+// GetAll
 //
-// @Summary Get all Product
-// @Description Retrieves a list of all Product without pagination.
-// @Tags Product
+// @Summary Get all
+// @Description Retrieves a list without pagination.
+// @Tags products
 // @Accept json
 // @Produce  json
 // @Success 200 {object} productResponseList "List of all BuyItems"
@@ -103,11 +103,11 @@ func (h *ProductHTTPHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// GetAllPaginated retrieves a paginated list of Product.
+// GetAllPaginated
 //
-// @Summary Get paginated list of Product
-// @Description Retrieves a paginated list of Product with pagination parameters.
-// @Tags Product
+// @Summary Get paginated list
+// @Description Retrieves a paginated list using pagination parameters.
+// @Tags products
 // @Accept json
 // @Produce json
 // @Param page query int false "Page number (default: 1)"
@@ -147,9 +147,9 @@ func (h *ProductHTTPHandler) GetAllPaginated(w http.ResponseWriter, r *http.Requ
 
 // Update
 //
-// @Summary Update existing Product
-// @Description Update Product handler
-// @Tags Product
+// @Summary Update existing item
+// @Description Updates an item by its ID
+// @Tags products
 // @Accept json
 // @Produce json
 // @Param request body productUpdateRequest true "Update input"
@@ -192,11 +192,11 @@ func (h *ProductHTTPHandler) Update(w http.ResponseWriter, r *http.Request) {
 	httputils.WriteJSON(w, http.StatusCreated, dtoToPayload)
 }
 
-// Delete handles the deletion of a Product.
+// Delete
 //
-// @Summary Delete a Product
-// @Description Deletes a Product by its ID
-// @Tags Product
+// @Summary Delete existing item
+// @Description Deletes an item by its ID
+// @Tags products
 // @Accept json
 // @Produce json
 // @Param id path int true "Product ID"

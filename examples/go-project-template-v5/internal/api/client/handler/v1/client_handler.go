@@ -25,14 +25,14 @@ func NewClientHTTPHandler(clientService service.ClientService) *ClientHTTPHandle
 
 // Save
 //
-// @Summary Create new Client
-// @Description Create Client handler
-// @Tags Client
+// @Summary Create new item
+// @Description Create new item handler
+// @Tags clients
 // @Accept json
 // @Produce json
 // @Param request body clientCreateRequest true "Create input"
 // @Success 201 {object} clientResponse
-// @Failure 400 {object} httputils.ErrorResponse "Bad Request"
+// @Failure 400 {object} httputils.ErrorResponse "Bad Request (Invalid request payload)"
 // @Failure 500 {object} httputils.ErrorResponse "Internal Server Error"
 // @Router /api/v1/clients [post]
 func (h *ClientHTTPHandler) Save(w http.ResponseWriter, r *http.Request) {
@@ -69,11 +69,11 @@ func (h *ClientHTTPHandler) Save(w http.ResponseWriter, r *http.Request) {
 	httputils.WriteJSON(w, http.StatusOK, dtoToPayload)
 }
 
-// GetAll retrieves all Client.
+// GetAll
 //
-// @Summary Get all Client
-// @Description Retrieves a list of all Client without pagination.
-// @Tags Client
+// @Summary Get all
+// @Description Retrieves a list without pagination.
+// @Tags clients
 // @Accept json
 // @Produce  json
 // @Success 200 {object} clientResponseList "List of all BuyItems"
@@ -101,11 +101,11 @@ func (h *ClientHTTPHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// GetAllPaginated retrieves a paginated list of Client.
+// GetAllPaginated
 //
-// @Summary Get paginated list of Client
-// @Description Retrieves a paginated list of Client with pagination parameters.
-// @Tags Client
+// @Summary Get paginated list
+// @Description Retrieves a paginated list using pagination parameters.
+// @Tags clients
 // @Accept json
 // @Produce json
 // @Param page query int false "Page number (default: 1)"
@@ -145,9 +145,9 @@ func (h *ClientHTTPHandler) GetAllPaginated(w http.ResponseWriter, r *http.Reque
 
 // Update
 //
-// @Summary Update existing Client
-// @Description Update Client handler
-// @Tags Client
+// @Summary Update existing item
+// @Description Updates an item by its ID
+// @Tags clients
 // @Accept json
 // @Produce json
 // @Param request body clientUpdateRequest true "Update input"
@@ -188,11 +188,11 @@ func (h *ClientHTTPHandler) Update(w http.ResponseWriter, r *http.Request) {
 	httputils.WriteJSON(w, http.StatusCreated, dtoToPayload)
 }
 
-// Delete handles the deletion of a Client.
+// Delete
 //
-// @Summary Delete a Client
-// @Description Deletes a Client by its ID
-// @Tags Client
+// @Summary Delete existing item
+// @Description Deletes an item by its ID
+// @Tags clients
 // @Accept json
 // @Produce json
 // @Param id path int true "Client ID"

@@ -25,14 +25,14 @@ func NewCategoryHTTPHandler(categoryService service.CategoryService) *CategoryHT
 
 // Save
 //
-// @Summary Create new Category
-// @Description Create Category handler
-// @Tags Category
+// @Summary Create new item
+// @Description Create new item handler
+// @Tags categories
 // @Accept json
 // @Produce json
 // @Param request body categoryCreateRequest true "Create input"
 // @Success 201 {object} categoryResponse
-// @Failure 400 {object} httputils.ErrorResponse "Bad Request"
+// @Failure 400 {object} httputils.ErrorResponse "Bad Request (Invalid request payload)"
 // @Failure 500 {object} httputils.ErrorResponse "Internal Server Error"
 // @Router /api/v1/categories [post]
 func (h *CategoryHTTPHandler) Save(w http.ResponseWriter, r *http.Request) {
@@ -70,11 +70,11 @@ func (h *CategoryHTTPHandler) Save(w http.ResponseWriter, r *http.Request) {
 	httputils.WriteJSON(w, http.StatusOK, dtoToPayload)
 }
 
-// GetAll retrieves all Category.
+// GetAll
 //
-// @Summary Get all Category
-// @Description Retrieves a list of all Category without pagination.
-// @Tags Category
+// @Summary Get all
+// @Description Retrieves a list without pagination.
+// @Tags categories
 // @Accept json
 // @Produce  json
 // @Success 200 {object} categoryResponseList "List of all BuyItems"
@@ -102,11 +102,11 @@ func (h *CategoryHTTPHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// GetAllPaginated retrieves a paginated list of Category.
+// GetAllPaginated
 //
-// @Summary Get paginated list of Category
-// @Description Retrieves a paginated list of Category with pagination parameters.
-// @Tags Category
+// @Summary Get paginated list
+// @Description Retrieves a paginated list using pagination parameters.
+// @Tags categories
 // @Accept json
 // @Produce json
 // @Param page query int false "Page number (default: 1)"
@@ -146,9 +146,9 @@ func (h *CategoryHTTPHandler) GetAllPaginated(w http.ResponseWriter, r *http.Req
 
 // Update
 //
-// @Summary Update existing Category
-// @Description Update Category handler
-// @Tags Category
+// @Summary Update existing item
+// @Description Updates an item by its ID
+// @Tags categories
 // @Accept json
 // @Produce json
 // @Param request body categoryUpdateRequest true "Update input"
@@ -190,11 +190,11 @@ func (h *CategoryHTTPHandler) Update(w http.ResponseWriter, r *http.Request) {
 	httputils.WriteJSON(w, http.StatusCreated, dtoToPayload)
 }
 
-// Delete handles the deletion of a Category.
+// Delete
 //
-// @Summary Delete a Category
-// @Description Deletes a Category by its ID
-// @Tags Category
+// @Summary Delete existing item
+// @Description Deletes an item by its ID
+// @Tags categories
 // @Accept json
 // @Produce json
 // @Param id path int true "Category ID"

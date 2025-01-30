@@ -25,14 +25,14 @@ func NewBuyItemHTTPHandler(buyItemService service.BuyItemService) *BuyItemHTTPHa
 
 // Save
 //
-// @Summary Create new BuyItem
-// @Description Create BuyItem handler
-// @Tags BuyItem
+// @Summary Create new item
+// @Description Create new item handler
+// @Tags buy-items
 // @Accept json
 // @Produce json
 // @Param request body buyItemCreateRequest true "Create input"
 // @Success 201 {object} buyItemResponse
-// @Failure 400 {object} httputils.ErrorResponse "Bad Request"
+// @Failure 400 {object} httputils.ErrorResponse "Bad Request (Invalid request payload)"
 // @Failure 500 {object} httputils.ErrorResponse "Internal Server Error"
 // @Router /api/v1/buy-items [post]
 func (h *BuyItemHTTPHandler) Save(w http.ResponseWriter, r *http.Request) {
@@ -72,11 +72,11 @@ func (h *BuyItemHTTPHandler) Save(w http.ResponseWriter, r *http.Request) {
 	httputils.WriteJSON(w, http.StatusOK, dtoToPayload)
 }
 
-// GetAll retrieves all BuyItem.
+// GetAll
 //
-// @Summary Get all BuyItem
-// @Description Retrieves a list of all BuyItem without pagination.
-// @Tags BuyItem
+// @Summary Get all
+// @Description Retrieves a list without pagination.
+// @Tags buy-items
 // @Accept json
 // @Produce  json
 // @Success 200 {object} buyItemResponseList "List of all BuyItems"
@@ -104,11 +104,11 @@ func (h *BuyItemHTTPHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// GetAllPaginated retrieves a paginated list of BuyItem.
+// GetAllPaginated
 //
-// @Summary Get paginated list of BuyItem
-// @Description Retrieves a paginated list of BuyItem with pagination parameters.
-// @Tags BuyItem
+// @Summary Get paginated list
+// @Description Retrieves a paginated list using pagination parameters.
+// @Tags buy-items
 // @Accept json
 // @Produce json
 // @Param page query int false "Page number (default: 1)"
@@ -148,9 +148,9 @@ func (h *BuyItemHTTPHandler) GetAllPaginated(w http.ResponseWriter, r *http.Requ
 
 // Update
 //
-// @Summary Update existing BuyItem
-// @Description Update BuyItem handler
-// @Tags BuyItem
+// @Summary Update existing item
+// @Description Updates an item by its ID
+// @Tags buy-items
 // @Accept json
 // @Produce json
 // @Param request body buyItemUpdateRequest true "Update input"
@@ -194,11 +194,11 @@ func (h *BuyItemHTTPHandler) Update(w http.ResponseWriter, r *http.Request) {
 	httputils.WriteJSON(w, http.StatusCreated, dtoToPayload)
 }
 
-// Delete handles the deletion of a BuyItem.
+// Delete
 //
-// @Summary Delete a BuyItem
-// @Description Deletes a BuyItem by its ID
-// @Tags BuyItem
+// @Summary Delete existing item
+// @Description Deletes an item by its ID
+// @Tags buy-items
 // @Accept json
 // @Produce json
 // @Param id path int true "BuyItem ID"

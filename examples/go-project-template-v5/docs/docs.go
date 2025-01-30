@@ -17,7 +17,7 @@ const docTemplate = `{
     "paths": {
         "/api/v1/buy-items": {
             "get": {
-                "description": "Retrieves a list of all BuyItem without pagination.",
+                "description": "Retrieves a list without pagination.",
                 "consumes": [
                     "application/json"
                 ],
@@ -25,9 +25,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "BuyItem"
+                    "buy-items"
                 ],
-                "summary": "Get all BuyItem",
+                "summary": "Get all",
                 "responses": {
                     "200": {
                         "description": "List of all BuyItems",
@@ -50,7 +50,7 @@ const docTemplate = `{
                 }
             },
             "put": {
-                "description": "Update BuyItem handler",
+                "description": "Updates an item by its ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -58,9 +58,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "BuyItem"
+                    "buy-items"
                 ],
-                "summary": "Update existing BuyItem",
+                "summary": "Update existing item",
                 "parameters": [
                     {
                         "description": "Update input",
@@ -94,7 +94,7 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "description": "Create BuyItem handler",
+                "description": "Create new item handler",
                 "consumes": [
                     "application/json"
                 ],
@@ -102,9 +102,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "BuyItem"
+                    "buy-items"
                 ],
-                "summary": "Create new BuyItem",
+                "summary": "Create new item",
                 "parameters": [
                     {
                         "description": "Create input",
@@ -124,7 +124,7 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Bad Request (Invalid request payload)",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
@@ -138,7 +138,7 @@ const docTemplate = `{
                 }
             },
             "delete": {
-                "description": "Deletes a BuyItem by its ID",
+                "description": "Deletes an item by its ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -146,9 +146,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "BuyItem"
+                    "buy-items"
                 ],
-                "summary": "Delete a BuyItem",
+                "summary": "Delete existing item",
                 "parameters": [
                     {
                         "type": "integer",
@@ -179,7 +179,7 @@ const docTemplate = `{
         },
         "/api/v1/buy-items/pageable": {
             "get": {
-                "description": "Retrieves a paginated list of BuyItem with pagination parameters.",
+                "description": "Retrieves a paginated list using pagination parameters.",
                 "consumes": [
                     "application/json"
                 ],
@@ -187,9 +187,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "BuyItem"
+                    "buy-items"
                 ],
-                "summary": "Get paginated list of BuyItem",
+                "summary": "Get paginated list",
                 "parameters": [
                     {
                         "type": "integer",
@@ -234,7 +234,7 @@ const docTemplate = `{
         },
         "/api/v1/buys": {
             "get": {
-                "description": "Retrieves a list of all Buy without pagination.",
+                "description": "Retrieves a list without pagination.",
                 "consumes": [
                     "application/json"
                 ],
@@ -242,9 +242,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Buy"
+                    "buys"
                 ],
-                "summary": "Get all Buy",
+                "summary": "Get all",
                 "responses": {
                     "200": {
                         "description": "List of all BuyItems",
@@ -267,7 +267,7 @@ const docTemplate = `{
                 }
             },
             "put": {
-                "description": "Update Buy handler",
+                "description": "Updates an item by its ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -275,9 +275,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Buy"
+                    "buys"
                 ],
-                "summary": "Update existing Buy",
+                "summary": "Update existing item",
                 "parameters": [
                     {
                         "description": "Update input",
@@ -311,7 +311,7 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "description": "Create Buy handler",
+                "description": "Create new item handler",
                 "consumes": [
                     "application/json"
                 ],
@@ -319,9 +319,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Buy"
+                    "buys"
                 ],
-                "summary": "Create new Buy",
+                "summary": "Create new item",
                 "parameters": [
                     {
                         "description": "Create input",
@@ -341,7 +341,7 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Bad Request (Invalid request payload)",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
@@ -355,7 +355,7 @@ const docTemplate = `{
                 }
             },
             "delete": {
-                "description": "Deletes a Buy by its ID",
+                "description": "Deletes an item by its ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -363,9 +363,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Buy"
+                    "buys"
                 ],
-                "summary": "Delete a Buy",
+                "summary": "Delete existing item",
                 "parameters": [
                     {
                         "type": "integer",
@@ -396,7 +396,7 @@ const docTemplate = `{
         },
         "/api/v1/buys/pageable": {
             "get": {
-                "description": "Retrieves a paginated list of Buy with pagination parameters.",
+                "description": "Retrieves a paginated list using pagination parameters.",
                 "consumes": [
                     "application/json"
                 ],
@@ -404,9 +404,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Buy"
+                    "buys"
                 ],
-                "summary": "Get paginated list of Buy",
+                "summary": "Get paginated list",
                 "parameters": [
                     {
                         "type": "integer",
@@ -451,7 +451,7 @@ const docTemplate = `{
         },
         "/api/v1/categories": {
             "get": {
-                "description": "Retrieves a list of all Category without pagination.",
+                "description": "Retrieves a list without pagination.",
                 "consumes": [
                     "application/json"
                 ],
@@ -459,9 +459,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Category"
+                    "categories"
                 ],
-                "summary": "Get all Category",
+                "summary": "Get all",
                 "responses": {
                     "200": {
                         "description": "List of all BuyItems",
@@ -484,7 +484,7 @@ const docTemplate = `{
                 }
             },
             "put": {
-                "description": "Update Category handler",
+                "description": "Updates an item by its ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -492,9 +492,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Category"
+                    "categories"
                 ],
-                "summary": "Update existing Category",
+                "summary": "Update existing item",
                 "parameters": [
                     {
                         "description": "Update input",
@@ -528,7 +528,7 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "description": "Create Category handler",
+                "description": "Create new item handler",
                 "consumes": [
                     "application/json"
                 ],
@@ -536,9 +536,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Category"
+                    "categories"
                 ],
-                "summary": "Create new Category",
+                "summary": "Create new item",
                 "parameters": [
                     {
                         "description": "Create input",
@@ -558,7 +558,7 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Bad Request (Invalid request payload)",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
@@ -572,7 +572,7 @@ const docTemplate = `{
                 }
             },
             "delete": {
-                "description": "Deletes a Category by its ID",
+                "description": "Deletes an item by its ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -580,9 +580,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Category"
+                    "categories"
                 ],
-                "summary": "Delete a Category",
+                "summary": "Delete existing item",
                 "parameters": [
                     {
                         "type": "integer",
@@ -613,7 +613,7 @@ const docTemplate = `{
         },
         "/api/v1/categories/pageable": {
             "get": {
-                "description": "Retrieves a paginated list of Category with pagination parameters.",
+                "description": "Retrieves a paginated list using pagination parameters.",
                 "consumes": [
                     "application/json"
                 ],
@@ -621,9 +621,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Category"
+                    "categories"
                 ],
-                "summary": "Get paginated list of Category",
+                "summary": "Get paginated list",
                 "parameters": [
                     {
                         "type": "integer",
@@ -668,7 +668,7 @@ const docTemplate = `{
         },
         "/api/v1/clients": {
             "get": {
-                "description": "Retrieves a list of all Client without pagination.",
+                "description": "Retrieves a list without pagination.",
                 "consumes": [
                     "application/json"
                 ],
@@ -676,9 +676,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Client"
+                    "clients"
                 ],
-                "summary": "Get all Client",
+                "summary": "Get all",
                 "responses": {
                     "200": {
                         "description": "List of all BuyItems",
@@ -701,7 +701,7 @@ const docTemplate = `{
                 }
             },
             "put": {
-                "description": "Update Client handler",
+                "description": "Updates an item by its ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -709,9 +709,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Client"
+                    "clients"
                 ],
-                "summary": "Update existing Client",
+                "summary": "Update existing item",
                 "parameters": [
                     {
                         "description": "Update input",
@@ -745,7 +745,7 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "description": "Create Client handler",
+                "description": "Create new item handler",
                 "consumes": [
                     "application/json"
                 ],
@@ -753,9 +753,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Client"
+                    "clients"
                 ],
-                "summary": "Create new Client",
+                "summary": "Create new item",
                 "parameters": [
                     {
                         "description": "Create input",
@@ -775,7 +775,7 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Bad Request (Invalid request payload)",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
@@ -789,7 +789,7 @@ const docTemplate = `{
                 }
             },
             "delete": {
-                "description": "Deletes a Client by its ID",
+                "description": "Deletes an item by its ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -797,9 +797,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Client"
+                    "clients"
                 ],
-                "summary": "Delete a Client",
+                "summary": "Delete existing item",
                 "parameters": [
                     {
                         "type": "integer",
@@ -830,7 +830,7 @@ const docTemplate = `{
         },
         "/api/v1/clients/pageable": {
             "get": {
-                "description": "Retrieves a paginated list of Client with pagination parameters.",
+                "description": "Retrieves a paginated list using pagination parameters.",
                 "consumes": [
                     "application/json"
                 ],
@@ -838,9 +838,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Client"
+                    "clients"
                 ],
-                "summary": "Get paginated list of Client",
+                "summary": "Get paginated list",
                 "parameters": [
                     {
                         "type": "integer",
@@ -885,7 +885,7 @@ const docTemplate = `{
         },
         "/api/v1/products": {
             "get": {
-                "description": "Retrieves a list of all Product without pagination.",
+                "description": "Retrieves a list without pagination.",
                 "consumes": [
                     "application/json"
                 ],
@@ -893,9 +893,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Product"
+                    "products"
                 ],
-                "summary": "Get all Product",
+                "summary": "Get all",
                 "responses": {
                     "200": {
                         "description": "List of all BuyItems",
@@ -918,7 +918,7 @@ const docTemplate = `{
                 }
             },
             "put": {
-                "description": "Update Product handler",
+                "description": "Updates an item by its ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -926,9 +926,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Product"
+                    "products"
                 ],
-                "summary": "Update existing Product",
+                "summary": "Update existing item",
                 "parameters": [
                     {
                         "description": "Update input",
@@ -962,7 +962,7 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "description": "Create Product handler",
+                "description": "Create new item handler",
                 "consumes": [
                     "application/json"
                 ],
@@ -970,9 +970,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Product"
+                    "products"
                 ],
-                "summary": "Create new Product",
+                "summary": "Create new item",
                 "parameters": [
                     {
                         "description": "Create input",
@@ -992,7 +992,7 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Bad Request (Invalid request payload)",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
@@ -1006,7 +1006,7 @@ const docTemplate = `{
                 }
             },
             "delete": {
-                "description": "Deletes a Product by its ID",
+                "description": "Deletes an item by its ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -1014,9 +1014,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Product"
+                    "products"
                 ],
-                "summary": "Delete a Product",
+                "summary": "Delete existing item",
                 "parameters": [
                     {
                         "type": "integer",
@@ -1047,7 +1047,7 @@ const docTemplate = `{
         },
         "/api/v1/products/pageable": {
             "get": {
-                "description": "Retrieves a paginated list of Product with pagination parameters.",
+                "description": "Retrieves a paginated list using pagination parameters.",
                 "consumes": [
                     "application/json"
                 ],
@@ -1055,9 +1055,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Product"
+                    "products"
                 ],
-                "summary": "Get paginated list of Product",
+                "summary": "Get paginated list",
                 "parameters": [
                     {
                         "type": "integer",

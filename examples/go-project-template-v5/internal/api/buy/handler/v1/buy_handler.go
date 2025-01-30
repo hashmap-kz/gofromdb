@@ -25,14 +25,14 @@ func NewBuyHTTPHandler(buyService service.BuyService) *BuyHTTPHandler {
 
 // Save
 //
-// @Summary Create new Buy
-// @Description Create Buy handler
-// @Tags Buy
+// @Summary Create new item
+// @Description Create new item handler
+// @Tags buys
 // @Accept json
 // @Produce json
 // @Param request body buyCreateRequest true "Create input"
 // @Success 201 {object} buyResponse
-// @Failure 400 {object} httputils.ErrorResponse "Bad Request"
+// @Failure 400 {object} httputils.ErrorResponse "Bad Request (Invalid request payload)"
 // @Failure 500 {object} httputils.ErrorResponse "Internal Server Error"
 // @Router /api/v1/buys [post]
 func (h *BuyHTTPHandler) Save(w http.ResponseWriter, r *http.Request) {
@@ -70,11 +70,11 @@ func (h *BuyHTTPHandler) Save(w http.ResponseWriter, r *http.Request) {
 	httputils.WriteJSON(w, http.StatusOK, dtoToPayload)
 }
 
-// GetAll retrieves all Buy.
+// GetAll
 //
-// @Summary Get all Buy
-// @Description Retrieves a list of all Buy without pagination.
-// @Tags Buy
+// @Summary Get all
+// @Description Retrieves a list without pagination.
+// @Tags buys
 // @Accept json
 // @Produce  json
 // @Success 200 {object} buyResponseList "List of all BuyItems"
@@ -102,11 +102,11 @@ func (h *BuyHTTPHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// GetAllPaginated retrieves a paginated list of Buy.
+// GetAllPaginated
 //
-// @Summary Get paginated list of Buy
-// @Description Retrieves a paginated list of Buy with pagination parameters.
-// @Tags Buy
+// @Summary Get paginated list
+// @Description Retrieves a paginated list using pagination parameters.
+// @Tags buys
 // @Accept json
 // @Produce json
 // @Param page query int false "Page number (default: 1)"
@@ -146,9 +146,9 @@ func (h *BuyHTTPHandler) GetAllPaginated(w http.ResponseWriter, r *http.Request)
 
 // Update
 //
-// @Summary Update existing Buy
-// @Description Update Buy handler
-// @Tags Buy
+// @Summary Update existing item
+// @Description Updates an item by its ID
+// @Tags buys
 // @Accept json
 // @Produce json
 // @Param request body buyUpdateRequest true "Update input"
@@ -190,11 +190,11 @@ func (h *BuyHTTPHandler) Update(w http.ResponseWriter, r *http.Request) {
 	httputils.WriteJSON(w, http.StatusCreated, dtoToPayload)
 }
 
-// Delete handles the deletion of a Buy.
+// Delete
 //
-// @Summary Delete a Buy
-// @Description Deletes a Buy by its ID
-// @Tags Buy
+// @Summary Delete existing item
+// @Description Deletes an item by its ID
+// @Tags buys
 // @Accept json
 // @Produce json
 // @Param id path int true "Buy ID"
