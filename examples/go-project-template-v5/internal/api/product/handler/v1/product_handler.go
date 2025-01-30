@@ -23,6 +23,16 @@ func NewProductHTTPHandler(productService service.ProductService) *ProductHTTPHa
 	}
 }
 
+// Save
+//
+// @Summary Create new Product
+// @Description Create Product handler
+// @Tags Product
+// @Accept json
+// @Produce json
+// @Param request body productCreateRequest true "Create input"
+// @Success 201 {object} productResponse
+// @Router /api/v1/products [post]
 func (h *ProductHTTPHandler) Save(w http.ResponseWriter, r *http.Request) {
 	// read RequestBody
 	req := &productCreateRequest{}
@@ -108,6 +118,16 @@ func (h *ProductHTTPHandler) GetAllPaginated(w http.ResponseWriter, r *http.Requ
 	})
 }
 
+// Update
+//
+// @Summary Update existing Product
+// @Description Update Product handler
+// @Tags Product
+// @Accept json
+// @Produce json
+// @Param request body productUpdateRequest true "Update input"
+// @Success 201 {object} productResponse
+// @Router /api/v1/products [put]
 func (h *ProductHTTPHandler) Update(w http.ResponseWriter, r *http.Request) {
 	id, err := httputils.PathValueI64(r, "id")
 	if err != nil {
@@ -122,7 +142,7 @@ func (h *ProductHTTPHandler) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// TODO: types - int(id)
-	_, err = h.productService.Update(r.Context(), int(id), &dto.ProductUpdateDto{
+	resp, err := h.productService.Update(r.Context(), int(id), &dto.ProductUpdateDto{
 		CategoryID:  req.CategoryID,
 		Name:        req.Name,
 		Description: req.Description,
@@ -132,8 +152,15 @@ func (h *ProductHTTPHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// convert service-model to handler-payload
+	dtoToPayload, err := mapDtoToPayload(resp)
+	if err != nil {
+		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
+		return
+	}
+
 	// 201 OK
-	w.WriteHeader(http.StatusCreated)
+	httputils.WriteJSON(w, http.StatusCreated, dtoToPayload)
 }
 
 func (h *ProductHTTPHandler) Delete(w http.ResponseWriter, r *http.Request) {

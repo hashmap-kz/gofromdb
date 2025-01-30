@@ -23,6 +23,16 @@ func NewClientHTTPHandler(clientService service.ClientService) *ClientHTTPHandle
 	}
 }
 
+// Save
+//
+// @Summary Create new Client
+// @Description Create Client handler
+// @Tags Client
+// @Accept json
+// @Produce json
+// @Param request body clientCreateRequest true "Create input"
+// @Success 201 {object} clientResponse
+// @Router /api/v1/clients [post]
 func (h *ClientHTTPHandler) Save(w http.ResponseWriter, r *http.Request) {
 	// read RequestBody
 	req := &clientCreateRequest{}
@@ -106,6 +116,16 @@ func (h *ClientHTTPHandler) GetAllPaginated(w http.ResponseWriter, r *http.Reque
 	})
 }
 
+// Update
+//
+// @Summary Update existing Client
+// @Description Update Client handler
+// @Tags Client
+// @Accept json
+// @Produce json
+// @Param request body clientUpdateRequest true "Update input"
+// @Success 201 {object} clientResponse
+// @Router /api/v1/clients [put]
 func (h *ClientHTTPHandler) Update(w http.ResponseWriter, r *http.Request) {
 	id, err := httputils.PathValueI64(r, "id")
 	if err != nil {
@@ -120,7 +140,7 @@ func (h *ClientHTTPHandler) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// TODO: types - int(id)
-	_, err = h.clientService.Update(r.Context(), int(id), &dto.ClientUpdateDto{
+	resp, err := h.clientService.Update(r.Context(), int(id), &dto.ClientUpdateDto{
 		Email: req.Email,
 	})
 	if err != nil {
@@ -128,8 +148,15 @@ func (h *ClientHTTPHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// convert service-model to handler-payload
+	dtoToPayload, err := mapDtoToPayload(resp)
+	if err != nil {
+		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
+		return
+	}
+
 	// 201 OK
-	w.WriteHeader(http.StatusCreated)
+	httputils.WriteJSON(w, http.StatusCreated, dtoToPayload)
 }
 
 func (h *ClientHTTPHandler) Delete(w http.ResponseWriter, r *http.Request) {

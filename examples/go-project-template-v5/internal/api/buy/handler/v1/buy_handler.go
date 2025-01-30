@@ -23,6 +23,16 @@ func NewBuyHTTPHandler(buyService service.BuyService) *BuyHTTPHandler {
 	}
 }
 
+// Save
+//
+// @Summary Create new Buy
+// @Description Create Buy handler
+// @Tags Buy
+// @Accept json
+// @Produce json
+// @Param request body buyCreateRequest true "Create input"
+// @Success 201 {object} buyResponse
+// @Router /api/v1/buys [post]
 func (h *BuyHTTPHandler) Save(w http.ResponseWriter, r *http.Request) {
 	// read RequestBody
 	req := &buyCreateRequest{}
@@ -107,6 +117,16 @@ func (h *BuyHTTPHandler) GetAllPaginated(w http.ResponseWriter, r *http.Request)
 	})
 }
 
+// Update
+//
+// @Summary Update existing Buy
+// @Description Update Buy handler
+// @Tags Buy
+// @Accept json
+// @Produce json
+// @Param request body buyUpdateRequest true "Update input"
+// @Success 201 {object} buyResponse
+// @Router /api/v1/buys [put]
 func (h *BuyHTTPHandler) Update(w http.ResponseWriter, r *http.Request) {
 	id, err := httputils.PathValueI64(r, "id")
 	if err != nil {
@@ -121,7 +141,7 @@ func (h *BuyHTTPHandler) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// TODO: types - int(id)
-	_, err = h.buyService.Update(r.Context(), int(id), &dto.BuyUpdateDto{
+	resp, err := h.buyService.Update(r.Context(), int(id), &dto.BuyUpdateDto{
 		ClientID:    req.ClientID,
 		Description: req.Description,
 	})
@@ -130,8 +150,15 @@ func (h *BuyHTTPHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// convert service-model to handler-payload
+	dtoToPayload, err := mapDtoToPayload(resp)
+	if err != nil {
+		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
+		return
+	}
+
 	// 201 OK
-	w.WriteHeader(http.StatusCreated)
+	httputils.WriteJSON(w, http.StatusCreated, dtoToPayload)
 }
 
 func (h *BuyHTTPHandler) Delete(w http.ResponseWriter, r *http.Request) {

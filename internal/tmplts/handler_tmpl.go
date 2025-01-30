@@ -89,6 +89,16 @@ func New{{.ImplName}}({{.ServiceVarName}} service.{{.ServiceInterfaceName}}) *{{
 	}
 }
 
+// Save
+//
+// @Summary Create new {{.StructName}}
+// @Description Create {{.StructName}} handler
+// @Tags {{.StructName}}
+// @Accept json
+// @Produce json
+// @Param request body {{.CreateRequestName}} true "Create input"
+// @Success 201 {object} {{.ResponseName}}
+// @Router /api/v1/{{.StructNamePluralRequestPath}} [post]
 func (h *{{.ImplName}}) Save(w http.ResponseWriter, r *http.Request) {
 	// read RequestBody
 	req := &{{.CreateRequestName}}{}
@@ -174,6 +184,16 @@ func (h *{{.ImplName}}) GetAllPaginated(w http.ResponseWriter, r *http.Request) 
 	})
 }
 
+// Update
+//
+// @Summary Update existing {{.StructName}}
+// @Description Update {{.StructName}} handler
+// @Tags {{.StructName}}
+// @Accept json
+// @Produce json
+// @Param request body {{.UpdateRequestName}} true "Update input"
+// @Success 201 {object} {{.ResponseName}}
+// @Router /api/v1/{{.StructNamePluralRequestPath}} [put]
 func (h *{{.ImplName}}) Update(w http.ResponseWriter, r *http.Request) {
 	id, err := httputils.PathValueI64(r, "id")
 	if err != nil {
@@ -188,7 +208,7 @@ func (h *{{.ImplName}}) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// TODO: types - int(id)
-	_, err = h.{{.ServiceVarName}}.Update(r.Context(), int(id), &dto.{{.DtoUpdateName}}{
+	resp, err := h.{{.ServiceVarName}}.Update(r.Context(), int(id), &dto.{{.DtoUpdateName}}{
 {{- range .DtoFieldsNoPkeysNoDefaults}}
 	{{.FieldName}}: req.{{.FieldName}},
 {{- end}}
@@ -198,8 +218,15 @@ func (h *{{.ImplName}}) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// convert service-model to handler-payload
+	dtoToPayload, err := mapDtoToPayload(resp)
+	if err != nil {
+		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
+		return
+	}
+
 	// 201 OK
-	w.WriteHeader(http.StatusCreated)
+	httputils.WriteJSON(w, http.StatusCreated, dtoToPayload)
 }
 
 func (h *{{.ImplName}}) Delete(w http.ResponseWriter, r *http.Request) {

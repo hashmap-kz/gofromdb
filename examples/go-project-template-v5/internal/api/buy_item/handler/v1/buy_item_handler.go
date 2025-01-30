@@ -23,6 +23,16 @@ func NewBuyItemHTTPHandler(buyItemService service.BuyItemService) *BuyItemHTTPHa
 	}
 }
 
+// Save
+//
+// @Summary Create new BuyItem
+// @Description Create BuyItem handler
+// @Tags BuyItem
+// @Accept json
+// @Produce json
+// @Param request body buyItemCreateRequest true "Create input"
+// @Success 201 {object} buyItemResponse
+// @Router /api/v1/buy-items [post]
 func (h *BuyItemHTTPHandler) Save(w http.ResponseWriter, r *http.Request) {
 	// read RequestBody
 	req := &buyItemCreateRequest{}
@@ -109,6 +119,16 @@ func (h *BuyItemHTTPHandler) GetAllPaginated(w http.ResponseWriter, r *http.Requ
 	})
 }
 
+// Update
+//
+// @Summary Update existing BuyItem
+// @Description Update BuyItem handler
+// @Tags BuyItem
+// @Accept json
+// @Produce json
+// @Param request body buyItemUpdateRequest true "Update input"
+// @Success 201 {object} buyItemResponse
+// @Router /api/v1/buy-items [put]
 func (h *BuyItemHTTPHandler) Update(w http.ResponseWriter, r *http.Request) {
 	id, err := httputils.PathValueI64(r, "id")
 	if err != nil {
@@ -123,7 +143,7 @@ func (h *BuyItemHTTPHandler) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// TODO: types - int(id)
-	_, err = h.buyItemService.Update(r.Context(), int(id), &dto.BuyItemUpdateDto{
+	resp, err := h.buyItemService.Update(r.Context(), int(id), &dto.BuyItemUpdateDto{
 		BuyID:     req.BuyID,
 		ProductID: req.ProductID,
 		Quantity:  req.Quantity,
@@ -134,8 +154,15 @@ func (h *BuyItemHTTPHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// convert service-model to handler-payload
+	dtoToPayload, err := mapDtoToPayload(resp)
+	if err != nil {
+		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
+		return
+	}
+
 	// 201 OK
-	w.WriteHeader(http.StatusCreated)
+	httputils.WriteJSON(w, http.StatusCreated, dtoToPayload)
 }
 
 func (h *BuyItemHTTPHandler) Delete(w http.ResponseWriter, r *http.Request) {

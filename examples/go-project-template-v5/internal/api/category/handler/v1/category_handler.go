@@ -23,6 +23,16 @@ func NewCategoryHTTPHandler(categoryService service.CategoryService) *CategoryHT
 	}
 }
 
+// Save
+//
+// @Summary Create new Category
+// @Description Create Category handler
+// @Tags Category
+// @Accept json
+// @Produce json
+// @Param request body categoryCreateRequest true "Create input"
+// @Success 201 {object} categoryResponse
+// @Router /api/v1/categories [post]
 func (h *CategoryHTTPHandler) Save(w http.ResponseWriter, r *http.Request) {
 	// read RequestBody
 	req := &categoryCreateRequest{}
@@ -107,6 +117,16 @@ func (h *CategoryHTTPHandler) GetAllPaginated(w http.ResponseWriter, r *http.Req
 	})
 }
 
+// Update
+//
+// @Summary Update existing Category
+// @Description Update Category handler
+// @Tags Category
+// @Accept json
+// @Produce json
+// @Param request body categoryUpdateRequest true "Update input"
+// @Success 201 {object} categoryResponse
+// @Router /api/v1/categories [put]
 func (h *CategoryHTTPHandler) Update(w http.ResponseWriter, r *http.Request) {
 	id, err := httputils.PathValueI64(r, "id")
 	if err != nil {
@@ -121,7 +141,7 @@ func (h *CategoryHTTPHandler) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// TODO: types - int(id)
-	_, err = h.categoryService.Update(r.Context(), int(id), &dto.CategoryUpdateDto{
+	resp, err := h.categoryService.Update(r.Context(), int(id), &dto.CategoryUpdateDto{
 		Name:     req.Name,
 		ParentID: req.ParentID,
 	})
@@ -130,8 +150,15 @@ func (h *CategoryHTTPHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// convert service-model to handler-payload
+	dtoToPayload, err := mapDtoToPayload(resp)
+	if err != nil {
+		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
+		return
+	}
+
 	// 201 OK
-	w.WriteHeader(http.StatusCreated)
+	httputils.WriteJSON(w, http.StatusCreated, dtoToPayload)
 }
 
 func (h *CategoryHTTPHandler) Delete(w http.ResponseWriter, r *http.Request) {
