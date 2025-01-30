@@ -24,16 +24,15 @@ func NewBuyItemService(_ context.Context, repo repository.BuyItemRepository) ser
 }
 
 func (s *buyItemService) Save(ctx context.Context, input *dto.BuyItemCreateDto) (*dto.BuyItemDto, error) {
-	save, err := s.repo.Save(ctx, &dbModel.BuyItem{
-		BuyID:     input.BuyID,
-		ProductID: input.ProductID,
-		Quantity:  input.Quantity,
-		Price:     input.Price,
-	})
+	entityToCreate, err := fromCreateDtoToEntity(input)
 	if err != nil {
 		return nil, err
 	}
-	toDto, err := mapEntityToDto(save)
+	save, err := s.repo.Save(ctx, entityToCreate)
+	if err != nil {
+		return nil, err
+	}
+	toDto, err := fromEntityToDto(save)
 	if err != nil {
 		return nil, err
 	}
@@ -45,7 +44,7 @@ func (s *buyItemService) GetAll(ctx context.Context) ([]dto.BuyItemDto, error) {
 	if err != nil {
 		return nil, err
 	}
-	toDtos, err := mapEntitiesToDtos(entities)
+	toDtos, err := fromEntitiesToDtos(entities)
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +56,7 @@ func (s *buyItemService) GetAllPaginated(ctx context.Context, pq *pageable.Pagin
 	if err != nil {
 		return nil, pageable.Page{}, err
 	}
-	toDtos, err := mapEntitiesToDtos(entities)
+	toDtos, err := fromEntitiesToDtos(entities)
 	if err != nil {
 		return nil, pageable.Page{}, err
 	}
@@ -65,23 +64,18 @@ func (s *buyItemService) GetAllPaginated(ctx context.Context, pq *pageable.Pagin
 }
 
 func (s *buyItemService) Update(ctx context.Context, entityId int, input *dto.BuyItemUpdateDto) (*dto.BuyItemDto, error) {
-	// update dbModel
-	updatedResult, err := s.repo.Update(ctx, entityId, &dbModel.BuyItem{
-		BuyID:     input.BuyID,
-		ProductID: input.ProductID,
-		Quantity:  input.Quantity,
-		Price:     input.Price,
-	})
+	entityToUpdate, err := fromUpdateDtoToEntity(input)
 	if err != nil {
 		return nil, err
 	}
-
-	// convert dbModel to internal dto
-	toDto, err := mapEntityToDto(updatedResult)
+	updatedResult, err := s.repo.Update(ctx, entityId, entityToUpdate)
 	if err != nil {
 		return nil, err
 	}
-
+	toDto, err := fromEntityToDto(updatedResult)
+	if err != nil {
+		return nil, err
+	}
 	return &toDto, err
 }
 
@@ -90,27 +84,47 @@ func (s *buyItemService) Delete(ctx context.Context, id int) error {
 }
 
 func (s *buyItemService) GetByID(ctx context.Context, id int) (*dto.BuyItemDto, error) {
-	// retrieve dbModel by id
 	entityById, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
-
-	// convert dbModel to internal dto
-	toDto, err := mapEntityToDto(entityById)
+	toDto, err := fromEntityToDto(entityById)
 	if err != nil {
 		return nil, err
 	}
-
 	return &toDto, err
 }
 
 // mappers
 
-func mapEntitiesToDtos(inputEntities []dbModel.BuyItem) ([]dto.BuyItemDto, error) {
+func fromCreateDtoToEntity(input *dto.BuyItemCreateDto) (*dbModel.BuyItem, error) {
+	if input == nil {
+		return nil, fmt.Errorf("convert BuyItemCreateDto->BuyItem: input dto cannot be nil")
+	}
+	return &dbModel.BuyItem{
+		BuyID:     input.BuyID,
+		ProductID: input.ProductID,
+		Quantity:  input.Quantity,
+		Price:     input.Price,
+	}, nil
+}
+
+func fromUpdateDtoToEntity(input *dto.BuyItemUpdateDto) (*dbModel.BuyItem, error) {
+	if input == nil {
+		return nil, fmt.Errorf("convert BuyItemUpdateDto->BuyItem: input dto cannot be nil")
+	}
+	return &dbModel.BuyItem{
+		BuyID:     input.BuyID,
+		ProductID: input.ProductID,
+		Quantity:  input.Quantity,
+		Price:     input.Price,
+	}, nil
+}
+
+func fromEntitiesToDtos(inputEntities []dbModel.BuyItem) ([]dto.BuyItemDto, error) {
 	var outputDtos []dto.BuyItemDto
 	for _, inputEntity := range inputEntities {
-		toDto, err := mapEntityToDto(&inputEntity)
+		toDto, err := fromEntityToDto(&inputEntity)
 		if err != nil {
 			return nil, err
 		}
@@ -119,7 +133,7 @@ func mapEntitiesToDtos(inputEntities []dbModel.BuyItem) ([]dto.BuyItemDto, error
 	return outputDtos, nil
 }
 
-func mapEntityToDto(inputEntity *dbModel.BuyItem) (dto.BuyItemDto, error) {
+func fromEntityToDto(inputEntity *dbModel.BuyItem) (dto.BuyItemDto, error) {
 	if inputEntity == nil {
 		return dto.BuyItemDto{}, fmt.Errorf("unexpected nil input for mapping between BuyItem->BuyItemDto")
 	}

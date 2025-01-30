@@ -1,9 +1,8 @@
 package dto
 
 import (
-	"time"
-
 	"go-project-template-v5/pkg/pageable"
+	"time"
 )
 
 // buyItemCreateRequest represents items in a purchase, including quantity and price.

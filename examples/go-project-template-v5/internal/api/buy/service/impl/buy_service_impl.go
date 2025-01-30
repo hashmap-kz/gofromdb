@@ -24,14 +24,15 @@ func NewBuyService(_ context.Context, repo repository.BuyRepository) service.Buy
 }
 
 func (s *buyService) Save(ctx context.Context, input *dto.BuyCreateDto) (*dto.BuyDto, error) {
-	save, err := s.repo.Save(ctx, &dbModel.Buy{
-		ClientID:    input.ClientID,
-		Description: input.Description,
-	})
+	entityToCreate, err := fromCreateDtoToEntity(input)
 	if err != nil {
 		return nil, err
 	}
-	toDto, err := mapEntityToDto(save)
+	save, err := s.repo.Save(ctx, entityToCreate)
+	if err != nil {
+		return nil, err
+	}
+	toDto, err := fromEntityToDto(save)
 	if err != nil {
 		return nil, err
 	}
@@ -43,7 +44,7 @@ func (s *buyService) GetAll(ctx context.Context) ([]dto.BuyDto, error) {
 	if err != nil {
 		return nil, err
 	}
-	toDtos, err := mapEntitiesToDtos(entities)
+	toDtos, err := fromEntitiesToDtos(entities)
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +56,7 @@ func (s *buyService) GetAllPaginated(ctx context.Context, pq *pageable.Paginatio
 	if err != nil {
 		return nil, pageable.Page{}, err
 	}
-	toDtos, err := mapEntitiesToDtos(entities)
+	toDtos, err := fromEntitiesToDtos(entities)
 	if err != nil {
 		return nil, pageable.Page{}, err
 	}
@@ -63,21 +64,18 @@ func (s *buyService) GetAllPaginated(ctx context.Context, pq *pageable.Paginatio
 }
 
 func (s *buyService) Update(ctx context.Context, entityId int, input *dto.BuyUpdateDto) (*dto.BuyDto, error) {
-	// update dbModel
-	updatedResult, err := s.repo.Update(ctx, entityId, &dbModel.Buy{
-		ClientID:    input.ClientID,
-		Description: input.Description,
-	})
+	entityToUpdate, err := fromUpdateDtoToEntity(input)
 	if err != nil {
 		return nil, err
 	}
-
-	// convert dbModel to internal dto
-	toDto, err := mapEntityToDto(updatedResult)
+	updatedResult, err := s.repo.Update(ctx, entityId, entityToUpdate)
 	if err != nil {
 		return nil, err
 	}
-
+	toDto, err := fromEntityToDto(updatedResult)
+	if err != nil {
+		return nil, err
+	}
 	return &toDto, err
 }
 
@@ -86,27 +84,43 @@ func (s *buyService) Delete(ctx context.Context, id int) error {
 }
 
 func (s *buyService) GetByID(ctx context.Context, id int) (*dto.BuyDto, error) {
-	// retrieve dbModel by id
 	entityById, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
-
-	// convert dbModel to internal dto
-	toDto, err := mapEntityToDto(entityById)
+	toDto, err := fromEntityToDto(entityById)
 	if err != nil {
 		return nil, err
 	}
-
 	return &toDto, err
 }
 
 // mappers
 
-func mapEntitiesToDtos(inputEntities []dbModel.Buy) ([]dto.BuyDto, error) {
+func fromCreateDtoToEntity(input *dto.BuyCreateDto) (*dbModel.Buy, error) {
+	if input == nil {
+		return nil, fmt.Errorf("convert BuyCreateDto->Buy: input dto cannot be nil")
+	}
+	return &dbModel.Buy{
+		ClientID:    input.ClientID,
+		Description: input.Description,
+	}, nil
+}
+
+func fromUpdateDtoToEntity(input *dto.BuyUpdateDto) (*dbModel.Buy, error) {
+	if input == nil {
+		return nil, fmt.Errorf("convert BuyUpdateDto->Buy: input dto cannot be nil")
+	}
+	return &dbModel.Buy{
+		ClientID:    input.ClientID,
+		Description: input.Description,
+	}, nil
+}
+
+func fromEntitiesToDtos(inputEntities []dbModel.Buy) ([]dto.BuyDto, error) {
 	var outputDtos []dto.BuyDto
 	for _, inputEntity := range inputEntities {
-		toDto, err := mapEntityToDto(&inputEntity)
+		toDto, err := fromEntityToDto(&inputEntity)
 		if err != nil {
 			return nil, err
 		}
@@ -115,7 +129,7 @@ func mapEntitiesToDtos(inputEntities []dbModel.Buy) ([]dto.BuyDto, error) {
 	return outputDtos, nil
 }
 
-func mapEntityToDto(inputEntity *dbModel.Buy) (dto.BuyDto, error) {
+func fromEntityToDto(inputEntity *dbModel.Buy) (dto.BuyDto, error) {
 	if inputEntity == nil {
 		return dto.BuyDto{}, fmt.Errorf("unexpected nil input for mapping between Buy->BuyDto")
 	}

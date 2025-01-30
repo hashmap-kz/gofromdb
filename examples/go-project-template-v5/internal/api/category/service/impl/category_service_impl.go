@@ -24,14 +24,15 @@ func NewCategoryService(_ context.Context, repo repository.CategoryRepository) s
 }
 
 func (s *categoryService) Save(ctx context.Context, input *dto.CategoryCreateDto) (*dto.CategoryDto, error) {
-	save, err := s.repo.Save(ctx, &dbModel.Category{
-		Name:     input.Name,
-		ParentID: input.ParentID,
-	})
+	entityToCreate, err := fromCreateDtoToEntity(input)
 	if err != nil {
 		return nil, err
 	}
-	toDto, err := mapEntityToDto(save)
+	save, err := s.repo.Save(ctx, entityToCreate)
+	if err != nil {
+		return nil, err
+	}
+	toDto, err := fromEntityToDto(save)
 	if err != nil {
 		return nil, err
 	}
@@ -43,7 +44,7 @@ func (s *categoryService) GetAll(ctx context.Context) ([]dto.CategoryDto, error)
 	if err != nil {
 		return nil, err
 	}
-	toDtos, err := mapEntitiesToDtos(entities)
+	toDtos, err := fromEntitiesToDtos(entities)
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +56,7 @@ func (s *categoryService) GetAllPaginated(ctx context.Context, pq *pageable.Pagi
 	if err != nil {
 		return nil, pageable.Page{}, err
 	}
-	toDtos, err := mapEntitiesToDtos(entities)
+	toDtos, err := fromEntitiesToDtos(entities)
 	if err != nil {
 		return nil, pageable.Page{}, err
 	}
@@ -63,21 +64,18 @@ func (s *categoryService) GetAllPaginated(ctx context.Context, pq *pageable.Pagi
 }
 
 func (s *categoryService) Update(ctx context.Context, entityId int, input *dto.CategoryUpdateDto) (*dto.CategoryDto, error) {
-	// update dbModel
-	updatedResult, err := s.repo.Update(ctx, entityId, &dbModel.Category{
-		Name:     input.Name,
-		ParentID: input.ParentID,
-	})
+	entityToUpdate, err := fromUpdateDtoToEntity(input)
 	if err != nil {
 		return nil, err
 	}
-
-	// convert dbModel to internal dto
-	toDto, err := mapEntityToDto(updatedResult)
+	updatedResult, err := s.repo.Update(ctx, entityId, entityToUpdate)
 	if err != nil {
 		return nil, err
 	}
-
+	toDto, err := fromEntityToDto(updatedResult)
+	if err != nil {
+		return nil, err
+	}
 	return &toDto, err
 }
 
@@ -86,27 +84,43 @@ func (s *categoryService) Delete(ctx context.Context, id int) error {
 }
 
 func (s *categoryService) GetByID(ctx context.Context, id int) (*dto.CategoryDto, error) {
-	// retrieve dbModel by id
 	entityById, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
-
-	// convert dbModel to internal dto
-	toDto, err := mapEntityToDto(entityById)
+	toDto, err := fromEntityToDto(entityById)
 	if err != nil {
 		return nil, err
 	}
-
 	return &toDto, err
 }
 
 // mappers
 
-func mapEntitiesToDtos(inputEntities []dbModel.Category) ([]dto.CategoryDto, error) {
+func fromCreateDtoToEntity(input *dto.CategoryCreateDto) (*dbModel.Category, error) {
+	if input == nil {
+		return nil, fmt.Errorf("convert CategoryCreateDto->Category: input dto cannot be nil")
+	}
+	return &dbModel.Category{
+		Name:     input.Name,
+		ParentID: input.ParentID,
+	}, nil
+}
+
+func fromUpdateDtoToEntity(input *dto.CategoryUpdateDto) (*dbModel.Category, error) {
+	if input == nil {
+		return nil, fmt.Errorf("convert CategoryUpdateDto->Category: input dto cannot be nil")
+	}
+	return &dbModel.Category{
+		Name:     input.Name,
+		ParentID: input.ParentID,
+	}, nil
+}
+
+func fromEntitiesToDtos(inputEntities []dbModel.Category) ([]dto.CategoryDto, error) {
 	var outputDtos []dto.CategoryDto
 	for _, inputEntity := range inputEntities {
-		toDto, err := mapEntityToDto(&inputEntity)
+		toDto, err := fromEntityToDto(&inputEntity)
 		if err != nil {
 			return nil, err
 		}
@@ -115,7 +129,7 @@ func mapEntitiesToDtos(inputEntities []dbModel.Category) ([]dto.CategoryDto, err
 	return outputDtos, nil
 }
 
-func mapEntityToDto(inputEntity *dbModel.Category) (dto.CategoryDto, error) {
+func fromEntityToDto(inputEntity *dbModel.Category) (dto.CategoryDto, error) {
 	if inputEntity == nil {
 		return dto.CategoryDto{}, fmt.Errorf("unexpected nil input for mapping between Category->CategoryDto")
 	}

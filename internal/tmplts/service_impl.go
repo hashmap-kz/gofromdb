@@ -71,15 +71,15 @@ func New{{.InterfaceName}}(_ context.Context, repo repository.{{.RepositoryName}
 }
 
 func (s *{{.ImplName}}) Save(ctx context.Context, input *dto.{{.DtoCreateName}}) (*dto.{{.DtoName}}, error) {
-	save, err := s.repo.Save(ctx, &dbModel.{{.StructName}}{
-{{- range .StructFieldsNoPKeys}}
-		{{.}}: input.{{.}},
-{{- end }}
-	})
+	entityToCreate, err := fromCreateDtoToEntity(input)
+	if err != nil {
+		return nil, err
+	}	
+	save, err := s.repo.Save(ctx, entityToCreate)
 	if err != nil {
 		return nil, err
 	}
-	toDto, err := mapEntityToDto(save)
+	toDto, err := fromEntityToDto(save)
 	if err != nil {
 		return nil, err
 	}
@@ -91,7 +91,7 @@ func (s *{{.ImplName}}) GetAll(ctx context.Context) ([]dto.{{.DtoName}}, error) 
 	if err != nil {
 		return nil, err
 	}
-	toDtos, err := mapEntitiesToDtos(entities)
+	toDtos, err := fromEntitiesToDtos(entities)
 	if err != nil {
 		return nil, err
 	}
@@ -103,7 +103,7 @@ func (s *{{.ImplName}}) GetAllPaginated(ctx context.Context, pq *pageable.Pagina
 	if err != nil {
 		return nil, pageable.Page{}, err
 	}
-	toDtos, err := mapEntitiesToDtos(entities)
+	toDtos, err := fromEntitiesToDtos(entities)
 	if err != nil {
 		return nil, pageable.Page{}, err
 	}
@@ -111,22 +111,18 @@ func (s *{{.ImplName}}) GetAllPaginated(ctx context.Context, pq *pageable.Pagina
 }
 
 func (s *{{.ImplName}}) Update(ctx context.Context, entityId int, input *dto.{{.DtoUpdateName}}) (*dto.{{.DtoName}}, error) {
-	// update dbModel
-	updatedResult, err := s.repo.Update(ctx, entityId, &dbModel.{{.StructName}}{
-{{- range .StructFieldsNoPKeys}}
-		{{.}}: input.{{.}},
-{{- end }}
-	})
+	entityToUpdate, err := fromUpdateDtoToEntity(input)
 	if err != nil {
 		return nil, err
 	}
-
-	// convert dbModel to internal dto
-	toDto, err := mapEntityToDto(updatedResult)
+	updatedResult, err := s.repo.Update(ctx, entityId, entityToUpdate)
 	if err != nil {
 		return nil, err
 	}
-
+	toDto, err := fromEntityToDto(updatedResult)
+	if err != nil {
+		return nil, err
+	}
 	return &toDto, err
 }
 
@@ -135,27 +131,45 @@ func (s *{{.ImplName}}) Delete(ctx context.Context, id int) error {
 }
 
 func (s *{{.ImplName}}) GetByID(ctx context.Context, id int) (*dto.{{.DtoName}}, error) {
-	// retrieve dbModel by id
 	entityById, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
-
-	// convert dbModel to internal dto
-	toDto, err := mapEntityToDto(entityById)
+	toDto, err := fromEntityToDto(entityById)
 	if err != nil {
 		return nil, err
 	}
-
 	return &toDto, err
 }
 
 // mappers
 
-func mapEntitiesToDtos(inputEntities []dbModel.{{.StructName}}) ([]dto.{{.DtoName}}, error) {
+func fromCreateDtoToEntity(input *dto.{{.DtoCreateName}}) (*dbModel.{{.StructName}}, error) {
+	if input == nil {
+		return nil, fmt.Errorf("convert {{.DtoCreateName}}->{{.StructName}}: input dto cannot be nil")
+	}
+	return &dbModel.{{.StructName}}{
+{{- range .StructFieldsNoPKeys}}
+		{{.}}: input.{{.}},
+{{- end }}
+	}, nil
+}
+
+func fromUpdateDtoToEntity(input *dto.{{.DtoUpdateName}}) (*dbModel.{{.StructName}}, error) {
+	if input == nil {
+		return nil, fmt.Errorf("convert {{.DtoUpdateName}}->{{.StructName}}: input dto cannot be nil")
+	}
+	return &dbModel.{{.StructName}}{
+{{- range .StructFieldsNoPKeys}}
+		{{.}}: input.{{.}},
+{{- end }}
+	}, nil
+}
+
+func fromEntitiesToDtos(inputEntities []dbModel.{{.StructName}}) ([]dto.{{.DtoName}}, error) {
 	var outputDtos []dto.{{.DtoName}}
 	for _, inputEntity := range inputEntities {
-		toDto, err := mapEntityToDto(&inputEntity)
+		toDto, err := fromEntityToDto(&inputEntity)
 		if err != nil {
 			return nil, err
 		}
@@ -164,7 +178,7 @@ func mapEntitiesToDtos(inputEntities []dbModel.{{.StructName}}) ([]dto.{{.DtoNam
 	return outputDtos, nil
 }
 
-func mapEntityToDto(inputEntity *dbModel.{{.StructName}}) (dto.{{.DtoName}}, error) {
+func fromEntityToDto(inputEntity *dbModel.{{.StructName}}) (dto.{{.DtoName}}, error) {
 	if inputEntity == nil {
 		return dto.{{.DtoName}}{}, fmt.Errorf("unexpected nil input for mapping between {{.StructName}}->{{.DtoName}}")
 	}

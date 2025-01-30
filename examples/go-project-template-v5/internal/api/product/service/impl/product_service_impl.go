@@ -24,15 +24,15 @@ func NewProductService(_ context.Context, repo repository.ProductRepository) ser
 }
 
 func (s *productService) Save(ctx context.Context, input *dto.ProductCreateDto) (*dto.ProductDto, error) {
-	save, err := s.repo.Save(ctx, &dbModel.Product{
-		CategoryID:  input.CategoryID,
-		Name:        input.Name,
-		Description: input.Description,
-	})
+	entityToCreate, err := fromCreateDtoToEntity(input)
 	if err != nil {
 		return nil, err
 	}
-	toDto, err := mapEntityToDto(save)
+	save, err := s.repo.Save(ctx, entityToCreate)
+	if err != nil {
+		return nil, err
+	}
+	toDto, err := fromEntityToDto(save)
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +44,7 @@ func (s *productService) GetAll(ctx context.Context) ([]dto.ProductDto, error) {
 	if err != nil {
 		return nil, err
 	}
-	toDtos, err := mapEntitiesToDtos(entities)
+	toDtos, err := fromEntitiesToDtos(entities)
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +56,7 @@ func (s *productService) GetAllPaginated(ctx context.Context, pq *pageable.Pagin
 	if err != nil {
 		return nil, pageable.Page{}, err
 	}
-	toDtos, err := mapEntitiesToDtos(entities)
+	toDtos, err := fromEntitiesToDtos(entities)
 	if err != nil {
 		return nil, pageable.Page{}, err
 	}
@@ -64,22 +64,18 @@ func (s *productService) GetAllPaginated(ctx context.Context, pq *pageable.Pagin
 }
 
 func (s *productService) Update(ctx context.Context, entityId int, input *dto.ProductUpdateDto) (*dto.ProductDto, error) {
-	// update dbModel
-	updatedResult, err := s.repo.Update(ctx, entityId, &dbModel.Product{
-		CategoryID:  input.CategoryID,
-		Name:        input.Name,
-		Description: input.Description,
-	})
+	entityToUpdate, err := fromUpdateDtoToEntity(input)
 	if err != nil {
 		return nil, err
 	}
-
-	// convert dbModel to internal dto
-	toDto, err := mapEntityToDto(updatedResult)
+	updatedResult, err := s.repo.Update(ctx, entityId, entityToUpdate)
 	if err != nil {
 		return nil, err
 	}
-
+	toDto, err := fromEntityToDto(updatedResult)
+	if err != nil {
+		return nil, err
+	}
 	return &toDto, err
 }
 
@@ -88,27 +84,45 @@ func (s *productService) Delete(ctx context.Context, id int) error {
 }
 
 func (s *productService) GetByID(ctx context.Context, id int) (*dto.ProductDto, error) {
-	// retrieve dbModel by id
 	entityById, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
-
-	// convert dbModel to internal dto
-	toDto, err := mapEntityToDto(entityById)
+	toDto, err := fromEntityToDto(entityById)
 	if err != nil {
 		return nil, err
 	}
-
 	return &toDto, err
 }
 
 // mappers
 
-func mapEntitiesToDtos(inputEntities []dbModel.Product) ([]dto.ProductDto, error) {
+func fromCreateDtoToEntity(input *dto.ProductCreateDto) (*dbModel.Product, error) {
+	if input == nil {
+		return nil, fmt.Errorf("convert ProductCreateDto->Product: input dto cannot be nil")
+	}
+	return &dbModel.Product{
+		CategoryID:  input.CategoryID,
+		Name:        input.Name,
+		Description: input.Description,
+	}, nil
+}
+
+func fromUpdateDtoToEntity(input *dto.ProductUpdateDto) (*dbModel.Product, error) {
+	if input == nil {
+		return nil, fmt.Errorf("convert ProductUpdateDto->Product: input dto cannot be nil")
+	}
+	return &dbModel.Product{
+		CategoryID:  input.CategoryID,
+		Name:        input.Name,
+		Description: input.Description,
+	}, nil
+}
+
+func fromEntitiesToDtos(inputEntities []dbModel.Product) ([]dto.ProductDto, error) {
 	var outputDtos []dto.ProductDto
 	for _, inputEntity := range inputEntities {
-		toDto, err := mapEntityToDto(&inputEntity)
+		toDto, err := fromEntityToDto(&inputEntity)
 		if err != nil {
 			return nil, err
 		}
@@ -117,7 +131,7 @@ func mapEntitiesToDtos(inputEntities []dbModel.Product) ([]dto.ProductDto, error
 	return outputDtos, nil
 }
 
-func mapEntityToDto(inputEntity *dbModel.Product) (dto.ProductDto, error) {
+func fromEntityToDto(inputEntity *dbModel.Product) (dto.ProductDto, error) {
 	if inputEntity == nil {
 		return dto.ProductDto{}, fmt.Errorf("unexpected nil input for mapping between Product->ProductDto")
 	}

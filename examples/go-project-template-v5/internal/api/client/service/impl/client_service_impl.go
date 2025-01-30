@@ -24,13 +24,15 @@ func NewClientService(_ context.Context, repo repository.ClientRepository) servi
 }
 
 func (s *clientService) Save(ctx context.Context, input *dto.ClientCreateDto) (*dto.ClientDto, error) {
-	save, err := s.repo.Save(ctx, &dbModel.Client{
-		Email: input.Email,
-	})
+	entityToCreate, err := fromCreateDtoToEntity(input)
 	if err != nil {
 		return nil, err
 	}
-	toDto, err := mapEntityToDto(save)
+	save, err := s.repo.Save(ctx, entityToCreate)
+	if err != nil {
+		return nil, err
+	}
+	toDto, err := fromEntityToDto(save)
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +44,7 @@ func (s *clientService) GetAll(ctx context.Context) ([]dto.ClientDto, error) {
 	if err != nil {
 		return nil, err
 	}
-	toDtos, err := mapEntitiesToDtos(entities)
+	toDtos, err := fromEntitiesToDtos(entities)
 	if err != nil {
 		return nil, err
 	}
@@ -54,7 +56,7 @@ func (s *clientService) GetAllPaginated(ctx context.Context, pq *pageable.Pagina
 	if err != nil {
 		return nil, pageable.Page{}, err
 	}
-	toDtos, err := mapEntitiesToDtos(entities)
+	toDtos, err := fromEntitiesToDtos(entities)
 	if err != nil {
 		return nil, pageable.Page{}, err
 	}
@@ -62,20 +64,18 @@ func (s *clientService) GetAllPaginated(ctx context.Context, pq *pageable.Pagina
 }
 
 func (s *clientService) Update(ctx context.Context, entityId int, input *dto.ClientUpdateDto) (*dto.ClientDto, error) {
-	// update dbModel
-	updatedResult, err := s.repo.Update(ctx, entityId, &dbModel.Client{
-		Email: input.Email,
-	})
+	entityToUpdate, err := fromUpdateDtoToEntity(input)
 	if err != nil {
 		return nil, err
 	}
-
-	// convert dbModel to internal dto
-	toDto, err := mapEntityToDto(updatedResult)
+	updatedResult, err := s.repo.Update(ctx, entityId, entityToUpdate)
 	if err != nil {
 		return nil, err
 	}
-
+	toDto, err := fromEntityToDto(updatedResult)
+	if err != nil {
+		return nil, err
+	}
 	return &toDto, err
 }
 
@@ -84,27 +84,41 @@ func (s *clientService) Delete(ctx context.Context, id int) error {
 }
 
 func (s *clientService) GetByID(ctx context.Context, id int) (*dto.ClientDto, error) {
-	// retrieve dbModel by id
 	entityById, err := s.repo.GetByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
-
-	// convert dbModel to internal dto
-	toDto, err := mapEntityToDto(entityById)
+	toDto, err := fromEntityToDto(entityById)
 	if err != nil {
 		return nil, err
 	}
-
 	return &toDto, err
 }
 
 // mappers
 
-func mapEntitiesToDtos(inputEntities []dbModel.Client) ([]dto.ClientDto, error) {
+func fromCreateDtoToEntity(input *dto.ClientCreateDto) (*dbModel.Client, error) {
+	if input == nil {
+		return nil, fmt.Errorf("convert ClientCreateDto->Client: input dto cannot be nil")
+	}
+	return &dbModel.Client{
+		Email: input.Email,
+	}, nil
+}
+
+func fromUpdateDtoToEntity(input *dto.ClientUpdateDto) (*dbModel.Client, error) {
+	if input == nil {
+		return nil, fmt.Errorf("convert ClientUpdateDto->Client: input dto cannot be nil")
+	}
+	return &dbModel.Client{
+		Email: input.Email,
+	}, nil
+}
+
+func fromEntitiesToDtos(inputEntities []dbModel.Client) ([]dto.ClientDto, error) {
 	var outputDtos []dto.ClientDto
 	for _, inputEntity := range inputEntities {
-		toDto, err := mapEntityToDto(&inputEntity)
+		toDto, err := fromEntityToDto(&inputEntity)
 		if err != nil {
 			return nil, err
 		}
@@ -113,7 +127,7 @@ func mapEntitiesToDtos(inputEntities []dbModel.Client) ([]dto.ClientDto, error) 
 	return outputDtos, nil
 }
 
-func mapEntityToDto(inputEntity *dbModel.Client) (dto.ClientDto, error) {
+func fromEntityToDto(inputEntity *dbModel.Client) (dto.ClientDto, error) {
 	if inputEntity == nil {
 		return dto.ClientDto{}, fmt.Errorf("unexpected nil input for mapping between Client->ClientDto")
 	}
