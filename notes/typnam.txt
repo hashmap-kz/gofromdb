@@ -80,7 +80,7 @@ with zeroes as (select $t$''$t$                    as str,
                        $t$'0'::numeric$t$          as num,
                        $t$'{}'::json$t$            as jsn,
                        $t$'{}'::jsonb$t$           as jsb,
-                       $t$'0001-01-01 00:00:00'$t$ as t),
+                       $t$'0001-01-01 00:00:00'$t$ as dtz),
      type_map as
          (values
               -- Arrays
@@ -115,11 +115,11 @@ with zeroes as (select $t$''$t$                    as str,
               ('float4', 'float32', '0'),
               ('float8', 'float64', '0'),
               -- Date/Time Types
-              ('date', 'time.Time', (select t from zeroes) || '::date'),
-              ('time', 'time.Time', (select t from zeroes) || '::time'),
-              ('timetz', 'time.Time', (select t from zeroes) || '::timetz'),
-              ('timestamp', 'time.Time', (select t from zeroes) || '::timestamp'),
-              ('timestamptz', 'time.Time', (select t from zeroes) || '::timestamptz'),
+              ('date', 'time.Time', (select dtz from zeroes) || '::date'),
+              ('time', 'time.Time', (select dtz from zeroes) || '::time'),
+              ('timetz', 'time.Time', (select dtz from zeroes) || '::timetz'),
+              ('timestamp', 'time.Time', (select dtz from zeroes) || '::timestamp'),
+              ('timestamptz', 'time.Time', (select dtz from zeroes) || '::timestamptz'),
               ('interval', 'string', $t$'0'::interval$t$),
               -- Character Types
               ('bpchar', 'string', (select str from zeroes)),
