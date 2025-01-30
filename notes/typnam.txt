@@ -19,6 +19,32 @@ WHERE typname IN ('text', 'varchar', 'char', 'int4', 'int8', 'numeric', 'float4'
                   'daterange', 'tsrange', 'tstzrange');
 ;
 
+CREATE FUNCTION get_default_value(datatype TEXT) RETURNS TEXT AS $$
+BEGIN
+    RETURN CASE
+        WHEN datatype IN ('text', 'varchar', 'char') THEN ''
+        WHEN datatype IN ('int4', 'int8', 'numeric', 'float4', 'float8') THEN '0'
+        WHEN datatype = 'bool' THEN 'false'
+        WHEN datatype IN ('date', 'timestamp', 'timestamptz') THEN '1970-01-01 00:00:00'
+        WHEN datatype = 'interval' THEN '0 seconds'
+        WHEN datatype IN ('json', 'jsonb') THEN '{}'
+        WHEN datatype = 'uuid' THEN '00000000-0000-0000-0000-000000000000'
+        WHEN datatype = 'bytea' THEN ''::bytea
+        WHEN datatype = 'int4range' THEN 'empty'::int4range
+        WHEN datatype = 'numrange' THEN 'empty'::numrange
+        WHEN datatype = 'daterange' THEN 'empty'::daterange
+        WHEN datatype = 'tsrange' THEN 'empty'::tsrange
+        WHEN datatype = 'tstzrange' THEN 'empty'::tstzrange
+        -- Handling Arrays
+        WHEN datatype = 'int4[]' THEN '{}'::int4[]
+        WHEN datatype = 'text[]' THEN '{}'::text[]
+        WHEN datatype = 'bool[]' THEN '{}'::bool[]
+        WHEN datatype = 'jsonb[]' THEN '{}'::jsonb[]
+        ELSE 'NULL'
+    END;
+END; $$ LANGUAGE plpgsql;
+
+
 with type_map as (values
                       -- numeric types
                       ('_bool', '[]bool', '{}'),
