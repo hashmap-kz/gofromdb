@@ -137,6 +137,17 @@ func (h *{{.ImplName}}) Save(w http.ResponseWriter, r *http.Request) {
 	httputils.WriteJSON(w, http.StatusOK, dtoToPayload)
 }
 
+// GetAll retrieves all {{.StructName}}.
+//
+// @Summary Get all {{.StructName}}
+// @Description Retrieves a list of all {{.StructName}} without pagination.
+// @Tags {{.StructName}}
+// @Accept json
+// @Produce  json
+// @Success 200 {object} {{.ResponseName}}List "List of all BuyItems"
+// @Failure 400 {object} httputils.ErrorResponse "Bad Request (Service failure)"
+// @Failure 500 {object} httputils.ErrorResponse "Internal Server Error (Data processing failure)"
+// @Router /api/v1/{{.StructNamePluralRequestPath}} [get]
 func (h *{{.ImplName}}) GetAll(w http.ResponseWriter, r *http.Request) {
 	// call service
 	resp, err := h.{{.ServiceVarName}}.GetAll(r.Context())
@@ -158,6 +169,20 @@ func (h *{{.ImplName}}) GetAll(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// GetAllPaginated retrieves a paginated list of {{.StructName}}.
+//
+// @Summary Get paginated list of {{.StructName}}
+// @Description Retrieves a paginated list of {{.StructName}} with pagination parameters.
+// @Tags {{.StructName}}
+// @Accept json
+// @Produce json
+// @Param page query int false "Page number (default: 1)"
+// @Param size query int false "Number of items per page (default: 10)"
+// @Param sort query string false "Sort order, e.g., 'name,asc'"
+// @Success 200 {object} {{.ResponseName}}List "Paginated list of {{.StructName}}"
+// @Failure 400 {object} httputils.ErrorResponse "Bad Request (Invalid pagination parameters or service failure)"
+// @Failure 500 {object} httputils.ErrorResponse "Internal Server Error (Data processing failure)"
+// @Router /api/v1/{{.StructNamePluralRequestPath}}/pageable [get]
 func (h *{{.ImplName}}) GetAllPaginated(w http.ResponseWriter, r *http.Request) {
 	pq, err := pageable.GetPaginationFromCtx(r)
 	if err != nil {

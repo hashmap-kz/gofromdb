@@ -32,6 +32,8 @@ func NewProductHTTPHandler(productService service.ProductService) *ProductHTTPHa
 // @Produce json
 // @Param request body productCreateRequest true "Create input"
 // @Success 201 {object} productResponse
+// @Failure 400 {object} httputils.ErrorResponse "Bad Request"
+// @Failure 500 {object} httputils.ErrorResponse "Internal Server Error"
 // @Router /api/v1/products [post]
 func (h *ProductHTTPHandler) Save(w http.ResponseWriter, r *http.Request) {
 	// read RequestBody
@@ -69,6 +71,17 @@ func (h *ProductHTTPHandler) Save(w http.ResponseWriter, r *http.Request) {
 	httputils.WriteJSON(w, http.StatusOK, dtoToPayload)
 }
 
+// GetAll retrieves all Product.
+//
+// @Summary Get all Product
+// @Description Retrieves a list of all Product without pagination.
+// @Tags Product
+// @Accept json
+// @Produce  json
+// @Success 200 {object} productResponseList "List of all BuyItems"
+// @Failure 400 {object} httputils.ErrorResponse "Bad Request (Service failure)"
+// @Failure 500 {object} httputils.ErrorResponse "Internal Server Error (Data processing failure)"
+// @Router /api/v1/products [get]
 func (h *ProductHTTPHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	// call service
 	resp, err := h.productService.GetAll(r.Context())
@@ -90,6 +103,20 @@ func (h *ProductHTTPHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// GetAllPaginated retrieves a paginated list of Product.
+//
+// @Summary Get paginated list of Product
+// @Description Retrieves a paginated list of Product with pagination parameters.
+// @Tags Product
+// @Accept json
+// @Produce json
+// @Param page query int false "Page number (default: 1)"
+// @Param size query int false "Number of items per page (default: 10)"
+// @Param sort query string false "Sort order, e.g., 'name,asc'"
+// @Success 200 {object} productResponseList "Paginated list of Product"
+// @Failure 400 {object} httputils.ErrorResponse "Bad Request (Invalid pagination parameters or service failure)"
+// @Failure 500 {object} httputils.ErrorResponse "Internal Server Error (Data processing failure)"
+// @Router /api/v1/products/pageable [get]
 func (h *ProductHTTPHandler) GetAllPaginated(w http.ResponseWriter, r *http.Request) {
 	pq, err := pageable.GetPaginationFromCtx(r)
 	if err != nil {
@@ -127,6 +154,8 @@ func (h *ProductHTTPHandler) GetAllPaginated(w http.ResponseWriter, r *http.Requ
 // @Produce json
 // @Param request body productUpdateRequest true "Update input"
 // @Success 201 {object} productResponse
+// @Failure 400 {object} httputils.ErrorResponse "Bad Request"
+// @Failure 500 {object} httputils.ErrorResponse "Internal Server Error"
 // @Router /api/v1/products [put]
 func (h *ProductHTTPHandler) Update(w http.ResponseWriter, r *http.Request) {
 	id, err := httputils.PathValueI64(r, "id")

@@ -32,6 +32,8 @@ func NewBuyItemHTTPHandler(buyItemService service.BuyItemService) *BuyItemHTTPHa
 // @Produce json
 // @Param request body buyItemCreateRequest true "Create input"
 // @Success 201 {object} buyItemResponse
+// @Failure 400 {object} httputils.ErrorResponse "Bad Request"
+// @Failure 500 {object} httputils.ErrorResponse "Internal Server Error"
 // @Router /api/v1/buy-items [post]
 func (h *BuyItemHTTPHandler) Save(w http.ResponseWriter, r *http.Request) {
 	// read RequestBody
@@ -70,6 +72,17 @@ func (h *BuyItemHTTPHandler) Save(w http.ResponseWriter, r *http.Request) {
 	httputils.WriteJSON(w, http.StatusOK, dtoToPayload)
 }
 
+// GetAll retrieves all BuyItem.
+//
+// @Summary Get all BuyItem
+// @Description Retrieves a list of all BuyItem without pagination.
+// @Tags BuyItem
+// @Accept json
+// @Produce  json
+// @Success 200 {object} buyItemResponseList "List of all BuyItems"
+// @Failure 400 {object} httputils.ErrorResponse "Bad Request (Service failure)"
+// @Failure 500 {object} httputils.ErrorResponse "Internal Server Error (Data processing failure)"
+// @Router /api/v1/buy-items [get]
 func (h *BuyItemHTTPHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	// call service
 	resp, err := h.buyItemService.GetAll(r.Context())
@@ -91,6 +104,20 @@ func (h *BuyItemHTTPHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// GetAllPaginated retrieves a paginated list of BuyItem.
+//
+// @Summary Get paginated list of BuyItem
+// @Description Retrieves a paginated list of BuyItem with pagination parameters.
+// @Tags BuyItem
+// @Accept json
+// @Produce json
+// @Param page query int false "Page number (default: 1)"
+// @Param size query int false "Number of items per page (default: 10)"
+// @Param sort query string false "Sort order, e.g., 'name,asc'"
+// @Success 200 {object} buyItemResponseList "Paginated list of BuyItem"
+// @Failure 400 {object} httputils.ErrorResponse "Bad Request (Invalid pagination parameters or service failure)"
+// @Failure 500 {object} httputils.ErrorResponse "Internal Server Error (Data processing failure)"
+// @Router /api/v1/buy-items/pageable [get]
 func (h *BuyItemHTTPHandler) GetAllPaginated(w http.ResponseWriter, r *http.Request) {
 	pq, err := pageable.GetPaginationFromCtx(r)
 	if err != nil {
@@ -128,6 +155,8 @@ func (h *BuyItemHTTPHandler) GetAllPaginated(w http.ResponseWriter, r *http.Requ
 // @Produce json
 // @Param request body buyItemUpdateRequest true "Update input"
 // @Success 201 {object} buyItemResponse
+// @Failure 400 {object} httputils.ErrorResponse "Bad Request"
+// @Failure 500 {object} httputils.ErrorResponse "Internal Server Error"
 // @Router /api/v1/buy-items [put]
 func (h *BuyItemHTTPHandler) Update(w http.ResponseWriter, r *http.Request) {
 	id, err := httputils.PathValueI64(r, "id")

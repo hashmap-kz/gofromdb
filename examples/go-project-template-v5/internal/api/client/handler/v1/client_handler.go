@@ -32,6 +32,8 @@ func NewClientHTTPHandler(clientService service.ClientService) *ClientHTTPHandle
 // @Produce json
 // @Param request body clientCreateRequest true "Create input"
 // @Success 201 {object} clientResponse
+// @Failure 400 {object} httputils.ErrorResponse "Bad Request"
+// @Failure 500 {object} httputils.ErrorResponse "Internal Server Error"
 // @Router /api/v1/clients [post]
 func (h *ClientHTTPHandler) Save(w http.ResponseWriter, r *http.Request) {
 	// read RequestBody
@@ -67,6 +69,17 @@ func (h *ClientHTTPHandler) Save(w http.ResponseWriter, r *http.Request) {
 	httputils.WriteJSON(w, http.StatusOK, dtoToPayload)
 }
 
+// GetAll retrieves all Client.
+//
+// @Summary Get all Client
+// @Description Retrieves a list of all Client without pagination.
+// @Tags Client
+// @Accept json
+// @Produce  json
+// @Success 200 {object} clientResponseList "List of all BuyItems"
+// @Failure 400 {object} httputils.ErrorResponse "Bad Request (Service failure)"
+// @Failure 500 {object} httputils.ErrorResponse "Internal Server Error (Data processing failure)"
+// @Router /api/v1/clients [get]
 func (h *ClientHTTPHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	// call service
 	resp, err := h.clientService.GetAll(r.Context())
@@ -88,6 +101,20 @@ func (h *ClientHTTPHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// GetAllPaginated retrieves a paginated list of Client.
+//
+// @Summary Get paginated list of Client
+// @Description Retrieves a paginated list of Client with pagination parameters.
+// @Tags Client
+// @Accept json
+// @Produce json
+// @Param page query int false "Page number (default: 1)"
+// @Param size query int false "Number of items per page (default: 10)"
+// @Param sort query string false "Sort order, e.g., 'name,asc'"
+// @Success 200 {object} clientResponseList "Paginated list of Client"
+// @Failure 400 {object} httputils.ErrorResponse "Bad Request (Invalid pagination parameters or service failure)"
+// @Failure 500 {object} httputils.ErrorResponse "Internal Server Error (Data processing failure)"
+// @Router /api/v1/clients/pageable [get]
 func (h *ClientHTTPHandler) GetAllPaginated(w http.ResponseWriter, r *http.Request) {
 	pq, err := pageable.GetPaginationFromCtx(r)
 	if err != nil {
@@ -125,6 +152,8 @@ func (h *ClientHTTPHandler) GetAllPaginated(w http.ResponseWriter, r *http.Reque
 // @Produce json
 // @Param request body clientUpdateRequest true "Update input"
 // @Success 201 {object} clientResponse
+// @Failure 400 {object} httputils.ErrorResponse "Bad Request"
+// @Failure 500 {object} httputils.ErrorResponse "Internal Server Error"
 // @Router /api/v1/clients [put]
 func (h *ClientHTTPHandler) Update(w http.ResponseWriter, r *http.Request) {
 	id, err := httputils.PathValueI64(r, "id")

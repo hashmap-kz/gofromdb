@@ -32,6 +32,8 @@ func NewCategoryHTTPHandler(categoryService service.CategoryService) *CategoryHT
 // @Produce json
 // @Param request body categoryCreateRequest true "Create input"
 // @Success 201 {object} categoryResponse
+// @Failure 400 {object} httputils.ErrorResponse "Bad Request"
+// @Failure 500 {object} httputils.ErrorResponse "Internal Server Error"
 // @Router /api/v1/categories [post]
 func (h *CategoryHTTPHandler) Save(w http.ResponseWriter, r *http.Request) {
 	// read RequestBody
@@ -68,6 +70,17 @@ func (h *CategoryHTTPHandler) Save(w http.ResponseWriter, r *http.Request) {
 	httputils.WriteJSON(w, http.StatusOK, dtoToPayload)
 }
 
+// GetAll retrieves all Category.
+//
+// @Summary Get all Category
+// @Description Retrieves a list of all Category without pagination.
+// @Tags Category
+// @Accept json
+// @Produce  json
+// @Success 200 {object} categoryResponseList "List of all BuyItems"
+// @Failure 400 {object} httputils.ErrorResponse "Bad Request (Service failure)"
+// @Failure 500 {object} httputils.ErrorResponse "Internal Server Error (Data processing failure)"
+// @Router /api/v1/categories [get]
 func (h *CategoryHTTPHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	// call service
 	resp, err := h.categoryService.GetAll(r.Context())
@@ -89,6 +102,20 @@ func (h *CategoryHTTPHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// GetAllPaginated retrieves a paginated list of Category.
+//
+// @Summary Get paginated list of Category
+// @Description Retrieves a paginated list of Category with pagination parameters.
+// @Tags Category
+// @Accept json
+// @Produce json
+// @Param page query int false "Page number (default: 1)"
+// @Param size query int false "Number of items per page (default: 10)"
+// @Param sort query string false "Sort order, e.g., 'name,asc'"
+// @Success 200 {object} categoryResponseList "Paginated list of Category"
+// @Failure 400 {object} httputils.ErrorResponse "Bad Request (Invalid pagination parameters or service failure)"
+// @Failure 500 {object} httputils.ErrorResponse "Internal Server Error (Data processing failure)"
+// @Router /api/v1/categories/pageable [get]
 func (h *CategoryHTTPHandler) GetAllPaginated(w http.ResponseWriter, r *http.Request) {
 	pq, err := pageable.GetPaginationFromCtx(r)
 	if err != nil {
@@ -126,6 +153,8 @@ func (h *CategoryHTTPHandler) GetAllPaginated(w http.ResponseWriter, r *http.Req
 // @Produce json
 // @Param request body categoryUpdateRequest true "Update input"
 // @Success 201 {object} categoryResponse
+// @Failure 400 {object} httputils.ErrorResponse "Bad Request"
+// @Failure 500 {object} httputils.ErrorResponse "Internal Server Error"
 // @Router /api/v1/categories [put]
 func (h *CategoryHTTPHandler) Update(w http.ResponseWriter, r *http.Request) {
 	id, err := httputils.PathValueI64(r, "id")
