@@ -1,0 +1,20 @@
+SELECT typname AS type,
+       CASE
+           WHEN typname IN ('text', 'varchar', 'char') THEN ''
+           WHEN typname IN ('int4', 'int8', 'numeric', 'float4', 'float8') THEN '0'
+           WHEN typname = 'bool' THEN 'false'
+           WHEN typname IN ('date', 'timestamp', 'timestamptz') THEN '1970-01-01 00:00:00'
+           WHEN typname = 'interval' THEN '0 seconds'
+           WHEN typname IN ('json', 'jsonb') THEN '{}'
+           WHEN typname LIKE 'int%' OR typname LIKE 'float%' THEN '0'
+           WHEN typname = 'uuid' THEN '00000000-0000-0000-0000-000000000000'
+           WHEN typname = 'bytea' THEN ''::bytea
+           WHEN typname IN ('int4range', 'numrange', 'daterange', 'tsrange', 'tstzrange') THEN 'empty'
+           ELSE 'NULL'
+       END AS default_value
+FROM pg_type
+WHERE typname IN ('text', 'varchar', 'char', 'int4', 'int8', 'numeric', 'float4', 'float8',
+                  'bool', 'date', 'timestamp', 'timestamptz', 'interval',
+                  'json', 'jsonb', 'uuid', 'bytea', 'int4range', 'numrange',
+                  'daterange', 'tsrange', 'tstzrange');
+;
