@@ -23,6 +23,16 @@ type GenRepo struct {
 	RepoImpl      string
 }
 
+type queriesResults struct {
+	repoSaveQueryResult            string
+	repoUpdateQueryResult          string
+	repoDeleteQueryResult          string
+	repoGetByIdQueryResult         string
+	repoGetAllQueryResult          string
+	repoCountQueryResult           string
+	repoGetAllPaginatedQueryResult string
+}
+
 func GenRepository(s TableToStructInfo) GenRepo {
 	// Entity template
 	entityTemplateResult := ExecTemplate("entity", tmplts.EntityTemplate,
@@ -42,6 +52,40 @@ func GenRepository(s TableToStructInfo) GenRepo {
 
 	// Impl
 
+	structFieldsWithoutPkeysAndDefaults := s.GetStructFieldsAsString(false, true)
+	structFieldsWithPkeysAndDefaults := s.GetStructFieldsAsString(true, false)
+
+	structFieldsUpdate := []string{pkeyStructFieldName}
+	structFieldsUpdate = append(structFieldsUpdate, structFieldsWithoutPkeysAndDefaults...)
+
+	queries := genQueries(s)
+
+	repoImplTemplateResult := ExecTemplate("funcs", tmplts.RepoImplTemplate,
+		map[string]any{
+			"RepoSaveQuery":            queries.repoSaveQueryResult,
+			"RepoUpdateQuery":          queries.repoUpdateQueryResult,
+			"RepoDeleteQuery":          queries.repoDeleteQueryResult,
+			"RepoGetByIdQuery":         queries.repoGetByIdQueryResult,
+			"RepoGetAllQuery":          queries.repoGetAllQueryResult,
+			"RepoCountQuery":           queries.repoCountQueryResult,
+			"RepoGetAllPaginatedQuery": queries.repoGetAllPaginatedQueryResult,
+			"StructName":               s.StructName,
+			"PackageName":              strings.ToLower(s.DbTableName),
+			"InterfaceName":            s.StructName + "Repository",
+			"ImplName":                 LowerFirstLetter(s.StructName) + "Repository",
+			"StructFieldsUpdate":       structFieldsUpdate,
+			"StructFieldsNoPKeys":      structFieldsWithoutPkeysAndDefaults,
+			"StructFieldsWithPKeys":    structFieldsWithPkeysAndDefaults,
+		}, FuncMap)
+
+	return GenRepo{
+		RepoEntity:    PrintFormatted(entityTemplateResult),
+		RepoInterface: PrintFormatted(interfaceTemplateResult),
+		RepoImpl:      PrintFormatted(repoImplTemplateResult),
+	}
+}
+
+func genQueries(s TableToStructInfo) queriesResults {
 	fieldsWithoutPkeysAndDefaults := s.GetDbFieldsAsString(false, true)
 	fieldsWithPkeysAndDefaults := s.GetDbFieldsAsString(true, false)
 	updateSets := GenUpdateSets(fieldsWithoutPkeysAndDefaults)
@@ -64,35 +108,13 @@ func GenRepository(s TableToStructInfo) GenRepo {
 	repoCountQueryResult := ExecTemplate("query-count", tmplts.RepoCountQueryTemplate, queryTemplatesData, FuncMap)
 	repoGetAllPaginatedQueryResult := ExecTemplate("query-get-all-paginated", tmplts.RepoGetAllPaginatedQueryTemplate, queryTemplatesData, FuncMap)
 
-	// Function template
-
-	structFieldsWithoutPkeysAndDefaults := s.GetStructFieldsAsString(false, true)
-	structFieldsWithPkeysAndDefaults := s.GetStructFieldsAsString(true, false)
-
-	structFieldsUpdate := []string{pkeyStructFieldName}
-	structFieldsUpdate = append(structFieldsUpdate, structFieldsWithoutPkeysAndDefaults...)
-
-	repoImplTemplateResult := ExecTemplate("funcs", tmplts.RepoImplTemplate,
-		map[string]any{
-			"RepoSaveQuery":            repoSaveQueryResult,
-			"RepoUpdateQuery":          repoUpdateQueryResult,
-			"RepoDeleteQuery":          repoDeleteQueryResult,
-			"RepoGetByIdQuery":         repoGetByIdQueryResult,
-			"RepoGetAllQuery":          repoGetAllQueryResult,
-			"RepoCountQuery":           repoCountQueryResult,
-			"RepoGetAllPaginatedQuery": repoGetAllPaginatedQueryResult,
-			"StructName":               s.StructName,
-			"PackageName":              strings.ToLower(s.DbTableName),
-			"InterfaceName":            s.StructName + "Repository",
-			"ImplName":                 LowerFirstLetter(s.StructName) + "Repository",
-			"StructFieldsUpdate":       structFieldsUpdate,
-			"StructFieldsNoPKeys":      structFieldsWithoutPkeysAndDefaults,
-			"StructFieldsWithPKeys":    structFieldsWithPkeysAndDefaults,
-		}, FuncMap)
-
-	return GenRepo{
-		RepoEntity:    PrintFormatted(entityTemplateResult),
-		RepoInterface: PrintFormatted(interfaceTemplateResult),
-		RepoImpl:      PrintFormatted(repoImplTemplateResult),
+	return queriesResults{
+		repoSaveQueryResult:            repoSaveQueryResult,
+		repoUpdateQueryResult:          repoUpdateQueryResult,
+		repoDeleteQueryResult:          repoDeleteQueryResult,
+		repoGetByIdQueryResult:         repoGetByIdQueryResult,
+		repoGetAllQueryResult:          repoGetAllQueryResult,
+		repoCountQueryResult:           repoCountQueryResult,
+		repoGetAllPaginatedQueryResult: repoGetAllPaginatedQueryResult,
 	}
 }
