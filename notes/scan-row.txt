@@ -1,0 +1,16 @@
+// scanBuyEntity scans the database row into a Buy entity.
+func scanBuyEntity(row pgx.Row) (*dbModel.Buy, error) {
+	var entity dbModel.Buy
+	err := row.Scan(
+		&entity.RecordID,
+		&entity.ClientID,
+		&entity.Description,
+		&entity.CreatedAt,
+		&entity.UpdatedAt,
+		&entity.Guid,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &entity, nil
+}
