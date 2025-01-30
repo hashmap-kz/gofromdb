@@ -73,27 +73,28 @@ SELECT 'empty'::tstzrange;  -- Empty timestamp range
 
 
 
+
 -- https://postgrespro.ru/docs/postgresql/17/datatype?lang=en
-with zeroes as (select $T$''$T$                    as str,
-                       $T$''::bytea$T$             as byt,
-                       $T$'0'::numeric$T$          as num,
-                       $T$'{}'::json$T$            as jsn,
-                       $T$'{}'::jsonb$T$           as jsb,
-                       $T$'0001-01-01 00:00:00'$T$ as t),
+with zeroes as (select $t$''$t$                    as str,
+                       $t$''::bytea$t$             as byt,
+                       $t$'0'::numeric$t$          as num,
+                       $t$'{}'::json$t$            as jsn,
+                       $t$'{}'::jsonb$t$           as jsb,
+                       $t$'0001-01-01 00:00:00'$t$ as t),
      type_map as
          (values
               -- Arrays
-              ('_bool', '[]bool', $T$'{}'::bool[]$T$),
-              ('_date', '[]time.Time', '{}'),
-              ('_float4', '[]float32', '{}'),
-              ('_float8', '[]float64', '{}'),
-              ('_int2', '[]int16', '{}'),
-              ('_int4', '[]int', '{}'),
-              ('_int8', '[]int64', '{}'),
-              ('_numeric', '[]string', '{}'),
-              ('_text', '[]string', '{}'),
-              ('_uuid', '[]string', '{}'),
-              ('_varchar', '[]string', '{}'),
+              ('_bool', '[]bool', $t$'{}'::bool[]$t$),
+              ('_date', '[]time.Time', $t$'{}'::date[]$t$),
+              ('_float4', '[]float32', $t$'{}'::float4[]$t$),
+              ('_float8', '[]float64', $t$'{}'::float8[]$t$),
+              ('_int2', '[]int16', $t$'{}'::int2[]$t$),
+              ('_int4', '[]int', $t$'{}'::int4[]$t$),
+              ('_int8', '[]int64', $t$'{}'::int8[]$t$),
+              ('_numeric', '[]string', $t$'{}'::numeric[]$t$),
+              ('_text', '[]string', $t$'{}'::text[]$t$),
+              ('_uuid', '[]string', $t$'{}'::uuid[]$t$),
+              ('_varchar', '[]string', $t$'{}'::varchar[]$t$),
               -- Bytea
               ('bytea', '[]byte', (select byt from zeroes)),
               -- Integer Types
@@ -119,7 +120,7 @@ with zeroes as (select $T$''$T$                    as str,
               ('timetz', 'time.Time', (select t from zeroes) || '::timetz'),
               ('timestamp', 'time.Time', (select t from zeroes) || '::timestamp'),
               ('timestamptz', 'time.Time', (select t from zeroes) || '::timestamptz'),
-              ('interval', 'string', $T$'0'::interval$T$),
+              ('interval', 'string', $t$'0'::interval$t$),
               -- Character Types
               ('bpchar', 'string', (select str from zeroes)),
               ('char', 'string', (select str from zeroes)),
