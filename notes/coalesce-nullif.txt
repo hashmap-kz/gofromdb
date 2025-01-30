@@ -1,11 +1,9 @@
 UPDATE news
-SET
-    title = COALESCE(NULLIF($1, ''), title),                 -- String (TEXT, VARCHAR)
-    views = COALESCE(NULLIF($2::TEXT, '')::INTEGER, views),  -- Integer
-    is_published = COALESCE(NULLIF($3, '')::BOOLEAN, is_published),  -- Boolean
+SET title        = COALESCE(NULLIF($1, ''), title),                   -- String (TEXT, VARCHAR)
+    views        = COALESCE(NULLIF($2::TEXT, '')::INTEGER, views),    -- Integer
+    is_published = COALESCE(NULLIF($3, '')::BOOLEAN, is_published),   -- Boolean
     published_at = COALESCE(NULLIF($4, '')::TIMESTAMP, published_at), -- DateTime
-    metadata = COALESCE(NULLIF($5, '')::JSONB, metadata),    -- JSONB
-    updated_at = now()
+    metadata     = COALESCE(NULLIF($5, '')::JSONB, metadata),         -- JSONB
+    updated_at   = now()
 WHERE news_id = $6
 RETURNING *;
-
