@@ -108,15 +108,15 @@ with ti as (select (select cls.relnamespace::regnamespace::text || '.' || cls.re
 
      zeroes as (select $t$''$t$                                           as str,
                        $t$''::bytea$t$                                    as byt,
-                       $t$0::numeric$t$                                 as num,
+                       $t$0::numeric$t$                                   as num,
                        $t$'{}'::json$t$                                   as jsn,
                        $t$'{}'::jsonb$t$                                  as jsb,
                        $t$'0001-01-01 00:00:00'$t$                        as dtz,
-                       $t$0::int2$t$                                    as i16,
-                       $t$0::int4$t$                                    as i32,
-                       $t$0::int8$t$                                    as i64,
-                       $t$0::float4$t$                                  as f32,
-                       $t$0::float4$t$                                  as f64,
+                       $t$0::int2$t$                                      as i16,
+                       $t$0::int4$t$                                      as i32,
+                       $t$0::int8$t$                                      as i64,
+                       $t$0::float4$t$                                    as f32,
+                       $t$0::float4$t$                                    as f64,
                        $t$'false'::bool$t$                                as bol,
                        $t$'empty'::int4range$t$                           as ri4,
                        $t$'empty'::int8range$t$                           as ri8,
@@ -125,7 +125,10 @@ with ti as (select (select cls.relnamespace::regnamespace::text || '.' || cls.re
                        $t$'empty'::tsrange$t$                             as rts,
                        $t$'empty'::tstzrange$t$                           as rtz,
                        $t$'00000000-0000-0000-0000-000000000000'::uuid$t$ as gid,
-                       $t$'0'::interval$t$                                as itv),
+                       $t$'0'::interval$t$                                as itv,
+                       $t$'0'::cid$t$                                     as ecd,
+                       $t$'0'::oid$t$                                     as eod,
+                       $t$'0'::xid$t$                                     as exd),
      typemap_tab as
          (values
               -- Arrays
@@ -189,9 +192,9 @@ with ti as (select (select cls.relnamespace::regnamespace::text || '.' || cls.re
               -- ETC
               ('name', 'string', (select str from zeroes)),
               ('uuid', 'string', (select gid from zeroes)),
-              ('cid', 'uint32', '0'),
-              ('oid', 'uint32', '0'),
-              ('xid', 'uint32', '0'),
+              ('cid', 'uint32', (select ecd from zeroes)),
+              ('oid', 'uint32', (select eod from zeroes)),
+              ('xid', 'uint32', (select exd from zeroes)),
               ('pg_lsn', 'string', (select str from zeroes)),
               ('regclass', 'string', (select str from zeroes)),
               ('regproc', 'string', (select str from zeroes)),
@@ -219,7 +222,9 @@ select ti.relpath,
                then ''
            else
                case
-                   when (not ti.attnotnull) and (not tmt.column2 ilike '%[]%') then
+                   -- is nullable, and not an array, make a pointer to a type
+                   -- slices are already pointers
+                   when (not ti.attnotnull) and (not tmt.column2 ilike '[]%') then
                        '*' || tmt.column2
                    else
                        tmt.column2
