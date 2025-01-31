@@ -49,16 +49,21 @@ func (h *ClientHTTPHandler) Save(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// convert handler-request-payload into service-dto
+	createInput, err := mapCreateRequestToCreateInputDto(req)
+	if err := validator.ValidateStruct(req); err != nil {
+		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
+		return
+	}
+
 	// call service
-	resp, err := h.clientService.Save(r.Context(), &dto.ClientCreateDto{
-		Email: req.Email,
-	})
+	resp, err := h.clientService.Save(r.Context(), createInput)
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
 		return
 	}
 
-	// convert service-model to handler-payload
+	// convert service-dto into handler-response-payload
 	dtoToPayload, err := mapDtoToPayload(resp)
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
@@ -168,16 +173,22 @@ func (h *ClientHTTPHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// convert handler-request-payload into service-dto
+	updateInput, err := mapUpdateRequestToUpdateInputDto(req)
+	if err := validator.ValidateStruct(req); err != nil {
+		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
+		return
+	}
+
+	// call service
 	// TODO: types - int(id)
-	resp, err := h.clientService.Update(r.Context(), int(id), &dto.ClientUpdateDto{
-		Email: req.Email,
-	})
+	resp, err := h.clientService.Update(r.Context(), int(id), updateInput)
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
 		return
 	}
 
-	// convert service-model to handler-payload
+	// convert service-dto into handler-response-payload
 	dtoToPayload, err := mapDtoToPayload(resp)
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
@@ -240,6 +251,24 @@ func (h *ClientHTTPHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 }
 
 // mappers
+
+func mapCreateRequestToCreateInputDto(inputRequest *clientCreateRequest) (*dto.ClientCreateDto, error) {
+	if inputRequest == nil {
+		return nil, fmt.Errorf("unexpected nil input for mapping between clientCreateRequest->ClientCreateDto")
+	}
+	return &dto.ClientCreateDto{
+		Email: inputRequest.Email,
+	}, nil
+}
+
+func mapUpdateRequestToUpdateInputDto(inputRequest *clientUpdateRequest) (*dto.ClientUpdateDto, error) {
+	if inputRequest == nil {
+		return nil, fmt.Errorf("unexpected nil input for mapping between clientUpdateRequest->ClientUpdateDto")
+	}
+	return &dto.ClientUpdateDto{
+		Email: inputRequest.Email,
+	}, nil
+}
 
 func mapDtosToPayloads(inputDtos []dto.ClientDto) ([]clientResponse, error) {
 	var outputResponses []clientResponse

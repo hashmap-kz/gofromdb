@@ -49,19 +49,21 @@ func (h *BuyItemHTTPHandler) Save(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// convert handler-request-payload into service-dto
+	createInput, err := mapCreateRequestToCreateInputDto(req)
+	if err := validator.ValidateStruct(req); err != nil {
+		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
+		return
+	}
+
 	// call service
-	resp, err := h.buyItemService.Save(r.Context(), &dto.BuyItemCreateDto{
-		BuyID:     req.BuyID,
-		ProductID: req.ProductID,
-		Quantity:  req.Quantity,
-		Price:     req.Price,
-	})
+	resp, err := h.buyItemService.Save(r.Context(), createInput)
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
 		return
 	}
 
-	// convert service-model to handler-payload
+	// convert service-dto into handler-response-payload
 	dtoToPayload, err := mapDtoToPayload(resp)
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
@@ -171,19 +173,22 @@ func (h *BuyItemHTTPHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// convert handler-request-payload into service-dto
+	updateInput, err := mapUpdateRequestToUpdateInputDto(req)
+	if err := validator.ValidateStruct(req); err != nil {
+		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
+		return
+	}
+
+	// call service
 	// TODO: types - int(id)
-	resp, err := h.buyItemService.Update(r.Context(), int(id), &dto.BuyItemUpdateDto{
-		BuyID:     req.BuyID,
-		ProductID: req.ProductID,
-		Quantity:  req.Quantity,
-		Price:     req.Price,
-	})
+	resp, err := h.buyItemService.Update(r.Context(), int(id), updateInput)
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
 		return
 	}
 
-	// convert service-model to handler-payload
+	// convert service-dto into handler-response-payload
 	dtoToPayload, err := mapDtoToPayload(resp)
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
@@ -246,6 +251,30 @@ func (h *BuyItemHTTPHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 }
 
 // mappers
+
+func mapCreateRequestToCreateInputDto(inputRequest *buyItemCreateRequest) (*dto.BuyItemCreateDto, error) {
+	if inputRequest == nil {
+		return nil, fmt.Errorf("unexpected nil input for mapping between buyItemCreateRequest->BuyItemCreateDto")
+	}
+	return &dto.BuyItemCreateDto{
+		BuyID:     inputRequest.BuyID,
+		ProductID: inputRequest.ProductID,
+		Quantity:  inputRequest.Quantity,
+		Price:     inputRequest.Price,
+	}, nil
+}
+
+func mapUpdateRequestToUpdateInputDto(inputRequest *buyItemUpdateRequest) (*dto.BuyItemUpdateDto, error) {
+	if inputRequest == nil {
+		return nil, fmt.Errorf("unexpected nil input for mapping between buyItemUpdateRequest->BuyItemUpdateDto")
+	}
+	return &dto.BuyItemUpdateDto{
+		BuyID:     inputRequest.BuyID,
+		ProductID: inputRequest.ProductID,
+		Quantity:  inputRequest.Quantity,
+		Price:     inputRequest.Price,
+	}, nil
+}
 
 func mapDtosToPayloads(inputDtos []dto.BuyItemDto) ([]buyItemResponse, error) {
 	var outputResponses []buyItemResponse

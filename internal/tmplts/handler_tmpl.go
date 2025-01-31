@@ -115,18 +115,21 @@ func (h *{{.ImplName}}) Save(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// convert handler-request-payload into service-dto
+	createInput, err := mapCreateRequestToCreateInputDto(req)
+	if err := validator.ValidateStruct(req); err != nil {
+		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
+		return
+	}
+
 	// call service
-	resp, err := h.{{.ServiceVarName}}.Save(r.Context(), &dto.{{.DtoCreateName}}{
-{{- range .DtoFieldsNoPkeysNoDefaults}}
-	{{.FieldName}}: req.{{.FieldName}},
-{{- end}}	
-	})
+	resp, err := h.{{.ServiceVarName}}.Save(r.Context(), createInput)
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
 		return
 	}
 
-	// convert service-model to handler-payload
+	// convert service-dto into handler-response-payload
 	dtoToPayload, err := mapDtoToPayload(resp)
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
@@ -236,18 +239,22 @@ func (h *{{.ImplName}}) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// convert handler-request-payload into service-dto
+	updateInput, err := mapUpdateRequestToUpdateInputDto(req)
+	if err := validator.ValidateStruct(req); err != nil {
+		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
+		return
+	}
+
+	// call service
 	// TODO: types - int(id)
-	resp, err := h.{{.ServiceVarName}}.Update(r.Context(), int(id), &dto.{{.DtoUpdateName}}{
-{{- range .DtoFieldsNoPkeysNoDefaults}}
-	{{.FieldName}}: req.{{.FieldName}},
-{{- end}}
-	})
+	resp, err := h.{{.ServiceVarName}}.Update(r.Context(), int(id), updateInput)
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
 		return
 	}
 
-	// convert service-model to handler-payload
+	// convert service-dto into handler-response-payload
 	dtoToPayload, err := mapDtoToPayload(resp)
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
@@ -310,6 +317,28 @@ func (h *{{.ImplName}}) GetByID(w http.ResponseWriter, r *http.Request) {
 }
 
 // mappers
+
+func mapCreateRequestToCreateInputDto(inputRequest *{{.CreateRequestName}}) (*dto.{{.DtoCreateName}}, error) {
+	if inputRequest == nil {
+		return nil, fmt.Errorf("unexpected nil input for mapping between {{.CreateRequestName}}->{{.DtoCreateName}}")
+	}
+	return &dto.{{.DtoCreateName}} {
+{{- range .DtoFieldsNoPkeysNoDefaults}}
+	{{.FieldName}}: inputRequest.{{.FieldName}},
+{{- end}}
+	}, nil
+}
+
+func mapUpdateRequestToUpdateInputDto(inputRequest *{{.UpdateRequestName}}) (*dto.{{.DtoUpdateName}}, error) {
+	if inputRequest == nil {
+		return nil, fmt.Errorf("unexpected nil input for mapping between {{.UpdateRequestName}}->{{.DtoUpdateName}}")
+	}
+	return &dto.{{.DtoUpdateName}} {
+{{- range .DtoFieldsNoPkeysNoDefaults}}
+	{{.FieldName}}: inputRequest.{{.FieldName}},
+{{- end}}
+	}, nil
+}
 
 func mapDtosToPayloads(inputDtos []dto.{{.DtoName}}) ([]{{.ResponseName}}, error) {
 	var outputResponses []{{.ResponseName}}

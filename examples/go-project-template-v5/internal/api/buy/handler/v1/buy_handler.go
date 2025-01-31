@@ -49,17 +49,21 @@ func (h *BuyHTTPHandler) Save(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// convert handler-request-payload into service-dto
+	createInput, err := mapCreateRequestToCreateInputDto(req)
+	if err := validator.ValidateStruct(req); err != nil {
+		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
+		return
+	}
+
 	// call service
-	resp, err := h.buyService.Save(r.Context(), &dto.BuyCreateDto{
-		ClientID:    req.ClientID,
-		Description: req.Description,
-	})
+	resp, err := h.buyService.Save(r.Context(), createInput)
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
 		return
 	}
 
-	// convert service-model to handler-payload
+	// convert service-dto into handler-response-payload
 	dtoToPayload, err := mapDtoToPayload(resp)
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
@@ -169,17 +173,22 @@ func (h *BuyHTTPHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// convert handler-request-payload into service-dto
+	updateInput, err := mapUpdateRequestToUpdateInputDto(req)
+	if err := validator.ValidateStruct(req); err != nil {
+		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
+		return
+	}
+
+	// call service
 	// TODO: types - int(id)
-	resp, err := h.buyService.Update(r.Context(), int(id), &dto.BuyUpdateDto{
-		ClientID:    req.ClientID,
-		Description: req.Description,
-	})
+	resp, err := h.buyService.Update(r.Context(), int(id), updateInput)
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
 		return
 	}
 
-	// convert service-model to handler-payload
+	// convert service-dto into handler-response-payload
 	dtoToPayload, err := mapDtoToPayload(resp)
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
@@ -242,6 +251,26 @@ func (h *BuyHTTPHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 }
 
 // mappers
+
+func mapCreateRequestToCreateInputDto(inputRequest *buyCreateRequest) (*dto.BuyCreateDto, error) {
+	if inputRequest == nil {
+		return nil, fmt.Errorf("unexpected nil input for mapping between buyCreateRequest->BuyCreateDto")
+	}
+	return &dto.BuyCreateDto{
+		ClientID:    inputRequest.ClientID,
+		Description: inputRequest.Description,
+	}, nil
+}
+
+func mapUpdateRequestToUpdateInputDto(inputRequest *buyUpdateRequest) (*dto.BuyUpdateDto, error) {
+	if inputRequest == nil {
+		return nil, fmt.Errorf("unexpected nil input for mapping between buyUpdateRequest->BuyUpdateDto")
+	}
+	return &dto.BuyUpdateDto{
+		ClientID:    inputRequest.ClientID,
+		Description: inputRequest.Description,
+	}, nil
+}
 
 func mapDtosToPayloads(inputDtos []dto.BuyDto) ([]buyResponse, error) {
 	var outputResponses []buyResponse

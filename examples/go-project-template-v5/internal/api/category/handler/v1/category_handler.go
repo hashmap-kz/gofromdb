@@ -49,17 +49,21 @@ func (h *CategoryHTTPHandler) Save(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// convert handler-request-payload into service-dto
+	createInput, err := mapCreateRequestToCreateInputDto(req)
+	if err := validator.ValidateStruct(req); err != nil {
+		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
+		return
+	}
+
 	// call service
-	resp, err := h.categoryService.Save(r.Context(), &dto.CategoryCreateDto{
-		Name:     req.Name,
-		ParentID: req.ParentID,
-	})
+	resp, err := h.categoryService.Save(r.Context(), createInput)
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
 		return
 	}
 
-	// convert service-model to handler-payload
+	// convert service-dto into handler-response-payload
 	dtoToPayload, err := mapDtoToPayload(resp)
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
@@ -169,17 +173,22 @@ func (h *CategoryHTTPHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// convert handler-request-payload into service-dto
+	updateInput, err := mapUpdateRequestToUpdateInputDto(req)
+	if err := validator.ValidateStruct(req); err != nil {
+		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
+		return
+	}
+
+	// call service
 	// TODO: types - int(id)
-	resp, err := h.categoryService.Update(r.Context(), int(id), &dto.CategoryUpdateDto{
-		Name:     req.Name,
-		ParentID: req.ParentID,
-	})
+	resp, err := h.categoryService.Update(r.Context(), int(id), updateInput)
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
 		return
 	}
 
-	// convert service-model to handler-payload
+	// convert service-dto into handler-response-payload
 	dtoToPayload, err := mapDtoToPayload(resp)
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
@@ -242,6 +251,26 @@ func (h *CategoryHTTPHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 }
 
 // mappers
+
+func mapCreateRequestToCreateInputDto(inputRequest *categoryCreateRequest) (*dto.CategoryCreateDto, error) {
+	if inputRequest == nil {
+		return nil, fmt.Errorf("unexpected nil input for mapping between categoryCreateRequest->CategoryCreateDto")
+	}
+	return &dto.CategoryCreateDto{
+		Name:     inputRequest.Name,
+		ParentID: inputRequest.ParentID,
+	}, nil
+}
+
+func mapUpdateRequestToUpdateInputDto(inputRequest *categoryUpdateRequest) (*dto.CategoryUpdateDto, error) {
+	if inputRequest == nil {
+		return nil, fmt.Errorf("unexpected nil input for mapping between categoryUpdateRequest->CategoryUpdateDto")
+	}
+	return &dto.CategoryUpdateDto{
+		Name:     inputRequest.Name,
+		ParentID: inputRequest.ParentID,
+	}, nil
+}
 
 func mapDtosToPayloads(inputDtos []dto.CategoryDto) ([]categoryResponse, error) {
 	var outputResponses []categoryResponse
