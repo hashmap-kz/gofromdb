@@ -56,9 +56,9 @@ func (r *{{.ImplName}}) Save(ctx context.Context, inputEntity *dbModel.{{.Struct
 
 	var scannedEntity dbModel.{{.StructName}}
 	err := r.db.Pool.QueryRow(ctx, query,
-{{- range .StructFieldsNoPKeys}}
-		inputEntity.{{.}},
-{{- end }}
+{{- range .DtoFieldsNoPkeysNoDefaults}}
+		inputEntity.{{.FieldName}},
+{{- end}}
 	).Scan(
 {{- range .StructFieldsWithPKeys}}
 		&scannedEntity.{{.}},
@@ -79,9 +79,9 @@ func (r *{{.ImplName}}) UpdateByID(ctx context.Context, entityId int, inputEntit
 	var scannedEntity dbModel.{{.StructName}}
 	err := r.db.Pool.QueryRow(ctx, query,
 		entityId,
-{{- range .StructFieldsNoPKeys}}
-		inputEntity.{{.}},
-{{- end }}
+{{- range .DtoFieldsNoPkeysNoDefaults}}
+		inputEntity.{{.FieldName}},
+{{- end}}
 	).Scan(
 {{- range .StructFieldsWithPKeys}}
 		&scannedEntity.{{.}},
