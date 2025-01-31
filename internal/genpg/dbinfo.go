@@ -23,6 +23,7 @@ type ColumnInfo struct {
 	Def        *string
 	IsPK       bool
 	GoType     string
+	NullifRhs  string
 }
 
 func GetDBInfo() map[string][]ColumnInfo {
@@ -64,6 +65,7 @@ func GetDBInfo() map[string][]ColumnInfo {
 			&row.Def,
 			&row.IsPK,
 			&row.GoType,
+			&row.NullifRhs,
 		); err != nil {
 			log.Fatalf("Failed to scan row: %v\n", err)
 		}

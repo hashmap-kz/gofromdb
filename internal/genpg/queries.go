@@ -106,59 +106,92 @@ with ti as (select (select cls.relnamespace::regnamespace::text || '.' || cls.re
                and pa.atthasdef
              order by relpath, pa.attnum),
 
-     type_map AS (SELECT '{
-       "_bool": "[]bool",
-       "_date": "[]time.Time",
-       "_float4": "[]float32",
-       "_float8": "[]float64",
-       "_int2": "[]int16",
-       "_int4": "[]int",
-       "_int8": "[]int64",
-       "_numeric": "[]string",
-       "_text": "[]string",
-       "_uuid": "[]string",
-       "_varchar": "[]string",
-       "bytea": "[]byte",
-       "bigserial": "int64",
-       "bool": "bool",
-       "bpchar": "string",
-       "char": "string",
-       "cid": "uint32",
-       "date": "time.Time",
-       "decimal": "string",
-       "float4": "float32",
-       "float8": "float64",
-       "int2": "int16",
-       "int4": "int",
-       "int8": "int64",
-       "interval": "string",
-       "json": "string",
-       "jsonb": "string",
-       "name": "string",
-       "numeric": "string",
-       "oid": "uint32",
-       "pg_lsn": "string",
-       "regclass": "string",
-       "regproc": "string",
-       "regtype": "string",
-       "serial": "int",
-       "smallserial": "int16",
-       "text": "string",
-       "time": "time.Time",
-       "timestamp": "time.Time",
-       "timestamptz": "time.Time",
-       "timetz": "time.Time",
-       "tsquery": "string",
-       "tsvector": "string",
-       "uuid": "string",
-       "varchar": "string",
-       "xid": "uint32",
-       "xml": "string"
-     }'::jsonb AS mapping),
-
-     typemap_tab as (SELECT key   AS pg_type,
-                            value AS go_type
-                     FROM jsonb_each_text((SELECT mapping FROM type_map)))
+     zeroes as (select $t$''$t$                                           as str,
+                       $t$''::bytea$t$                                    as byt,
+                       $t$'0'::numeric$t$                                 as num,
+                       $t$'{}'::json$t$                                   as jsn,
+                       $t$'{}'::jsonb$t$                                  as jsb,
+                       $t$'0001-01-01 00:00:00'$t$                        as dtz,
+                       $t$'0'::int2$t$                                    as i16,
+                       $t$'0'::int4$t$                                    as i32,
+                       $t$'0'::int8$t$                                    as i64,
+                       $t$'0'::float4$t$                                  as f32,
+                       $t$'0'::float4$t$                                  as f64,
+                       $t$'false'::bool$t$                                as bol,
+                       $t$'empty'::int4range$t$                           as ri4,
+                       $t$'empty'::int8range$t$                           as ri8,
+                       $t$'empty'::numrange$t$                            as rnm,
+                       $t$'empty'::daterange$t$                           as rdt,
+                       $t$'empty'::tsrange$t$                             as rts,
+                       $t$'empty'::tstzrange$t$                           as rtz,
+                       $t$'00000000-0000-0000-0000-000000000000'::uuid$t$ as gid),
+     typemap_tab as
+         (values
+              -- Arrays
+              ('_bool', '[]bool', $t$'{}'::bool[]$t$),
+              ('_date', '[]time.Time', $t$'{}'::date[]$t$),
+              ('_float4', '[]float32', $t$'{}'::float4[]$t$),
+              ('_float8', '[]float64', $t$'{}'::float8[]$t$),
+              ('_int2', '[]int16', $t$'{}'::int2[]$t$),
+              ('_int4', '[]int', $t$'{}'::int4[]$t$),
+              ('_int8', '[]int64', $t$'{}'::int8[]$t$),
+              ('_numeric', '[]string', $t$'{}'::numeric[]$t$),
+              ('_text', '[]string', $t$'{}'::text[]$t$),
+              ('_uuid', '[]string', $t$'{}'::uuid[]$t$),
+              ('_varchar', '[]string', $t$'{}'::varchar[]$t$),
+              -- Bytea
+              ('bytea', '[]byte', (select byt from zeroes)),
+              -- Serial Types
+              ('smallserial', 'int16', (select i16 from zeroes)),
+              ('serial', 'int', (select i32 from zeroes)),
+              ('bigserial', 'int64', (select i64 from zeroes)),
+              -- Integer Types
+              ('int2', 'int16', (select i16 from zeroes)),
+              ('int4', 'int', (select i32 from zeroes)),
+              ('int8', 'int64', (select i64 from zeroes)),
+              -- Arbitrary Precision Numbers
+              ('decimal', 'string', (select num from zeroes)),
+              ('numeric', 'string', (select num from zeroes)),
+              -- Floating-Point Types
+              ('float4', 'float32', (select f32 from zeroes)),
+              ('float8', 'float64', (select f64 from zeroes)),
+              -- Date/Time Types
+              ('date', 'time.Time', (select dtz from zeroes) || '::date'),
+              ('time', 'time.Time', (select dtz from zeroes) || '::time'),
+              ('timetz', 'time.Time', (select dtz from zeroes) || '::timetz'),
+              ('timestamp', 'time.Time', (select dtz from zeroes) || '::timestamp'),
+              ('timestamptz', 'time.Time', (select dtz from zeroes) || '::timestamptz'),
+              ('interval', 'string', $t$'0'::interval$t$),
+              -- Character Types
+              ('bpchar', 'string', (select str from zeroes)),
+              ('char', 'string', (select str from zeroes)),
+              ('text', 'string', (select str from zeroes)),
+              ('varchar', 'string', (select str from zeroes)),
+              -- Boolean
+              ('bool', 'bool', (select bol from zeroes)),
+              -- Range types
+              ('int4range', 'string', (select ri4 from zeroes)),
+              ('int8range', 'string', (select ri8 from zeroes)),
+              ('numrange', 'string', (select rnm from zeroes)),
+              ('daterange', 'string', (select rdt from zeroes)),
+              ('tsrange', 'string', (select rts from zeroes)),
+              ('tstzrange', 'string', (select rtz from zeroes)),
+              -- JSON
+              ('json', 'string', (select jsn from zeroes)),
+              ('jsonb', 'string', (select jsb from zeroes)),
+              -- ETC
+              ('name', 'string', (select str from zeroes)),
+              ('uuid', 'string', (select gid from zeroes)),
+              ('cid', 'uint32', '0'),
+              ('oid', 'uint32', '0'),
+              ('xid', 'uint32', '0'),
+              ('pg_lsn', 'string', (select str from zeroes)),
+              ('regclass', 'string', (select str from zeroes)),
+              ('regproc', 'string', (select str from zeroes)),
+              ('regtype', 'string', (select str from zeroes)),
+              ('tsquery', 'string', (select str from zeroes)),
+              ('tsvector', 'string', (select str from zeroes)),
+              ('xml', 'string', (select str from zeroes)))
 
 select ti.relpath,
        ti.attname,
@@ -175,26 +208,22 @@ select ti.relpath,
        def.def,
        ti.is_pk,
        case
-           when coalesce(tmt.go_type, '') = ''
+           when coalesce(tmt.column2, '') = ''
                then ''
            else
                case
-                   when not ti.attnotnull then
-                       case
-                           when tmt.go_type ilike '%[]%' then
-                               replace(tmt.go_type, '[]', '[]*')
-                           else
-                               '*' || tmt.go_type
-                           end
+                   when (not ti.attnotnull) and (not tmt.column2 ilike '%[]%') then
+                       '*' || tmt.column2
                    else
-                       tmt.go_type
+                       tmt.column2
                    end
-           end as                    go_type
+           end     as                go_type,
+       tmt.column3 as                nullif_rhs
 from ti
          left join fk on fk.con_relpath = ti.relpath and fk.conkey_first = ti.attnum
          left join limits l on l.relpath = ti.relpath and l.attnum = ti.attnum
          left join def on def.relpath = ti.relpath and def.attnum = ti.attnum
-         left join typemap_tab tmt on tmt.pg_type = ti.atttype2
+         left join typemap_tab tmt on tmt.column1 = ti.atttype2
 where ti.relpath ~* 'public'
   and ti.relpath !~* 'migrate_'
 order by ti.relpath, ti.attnum
