@@ -1,0 +1,35 @@
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+	"time"
+
+	"github.com/jackc/pgx/v5"
+)
+
+func main() {
+	conn, err := pgx.Connect(context.Background(), "postgres://user:password@localhost/dbname")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer conn.Close(context.Background())
+
+	var timeStr string
+	err = conn.QueryRow(context.Background(), "SELECT '12:34:56'::time").Scan(&timeStr)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Raw time:", timeStr)
+
+	// Parse it into Go's time.Time (with a dummy date)
+	parsedTime, err := time.Parse("15:04:05", timeStr)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Parsed time:", parsedTime.Format("15:04:05")) // Output: "12:34:56"
+}
+
