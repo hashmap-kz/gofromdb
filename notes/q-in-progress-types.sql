@@ -157,6 +157,9 @@ with ti as (select (select cls.relnamespace::regnamespace::text || '.' || cls.re
               ('date', 'time.Time', (select dtz from zeroes) || '::date'),
               ('timestamp', 'time.Time', (select dtz from zeroes) || '::timestamp'),
               ('timestamptz', 'time.Time', (select dtz from zeroes) || '::timestamptz'),
+              ('time', 'time.Time', (select dtz from zeroes) || '::time'),
+              -- NOTE: should be parsed from string during scan - time.Parse("15:04:05-07", timetzStr)
+              ('timetz', 'string', (select dtz from zeroes) || '::timetz'),
               -- Character Types
               ('bpchar', 'string', (select str from zeroes)),
               ('char', 'string', (select str from zeroes)),
@@ -174,8 +177,6 @@ with ti as (select (select cls.relnamespace::regnamespace::text || '.' || cls.re
               ('tsrange', 'pgtype.Range[time.Time]', (select rts from zeroes)),
               ('tstzrange', 'pgtype.Range[time.Time]', (select rtz from zeroes)),
               -- Date/Time Types
-              ('time', 'pgtype.Time', (select dtz from zeroes) || '::time'),
-              ('timetz', 'pgtype.Time', (select dtz from zeroes) || '::timetz'),
               ('interval', 'pgtype.Interval', (select itv from zeroes)),
               -- pgtype handled types --
 
