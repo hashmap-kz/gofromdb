@@ -12,18 +12,13 @@ type GenHandl struct {
 }
 
 func GenHandler(s TableToStructInfo) GenHandl {
-	structFieldsWithoutPkeysAndDefaults := s.GetStructFields(Filters{
-		WithInsertableOnly: true,
-		WithInternals:      false,
-	})
-
 	data := map[string]any{
-		"PackageName":                 strings.ToLower(s.DbTableName),
-		"StructNameLowerFirstLetter":  s.StructNameLowerFirstLetter,
 		"StructName":                  s.StructName,
-		"StructNamePluralRequestPath": s.StructNamePluralRequestPath,
 		"StructComment":               s.StructComment,
+		"PackageName":                 strings.ToLower(s.DbTableName),
 		"ImplName":                    s.StructName + "HTTPHandler",
+		"StructNameLowerFirstLetter":  s.StructNameLowerFirstLetter,
+		"StructNamePluralRequestPath": s.StructNamePluralRequestPath,
 		"ServiceVarName":              s.StructNameLowerFirstLetter + "Service",
 		"ServiceInterfaceName":        s.StructName + "Service",
 		"CreateRequestName":           s.StructNameLowerFirstLetter + "CreateRequest",
@@ -33,8 +28,14 @@ func GenHandler(s TableToStructInfo) GenHandl {
 		"DtoName":                     s.StructName + "Dto",
 		"DtoUpdateName":               s.StructName + "UpdateDto",
 		"DtoCreateName":               s.StructName + "CreateDto",
-		"DtoFieldsFull":               s.Fields,
-		"DtoFieldsNoPkeysNoDefaults":  structFieldsWithoutPkeysAndDefaults,
+		"DtoFieldsFull": s.GetStructFields(Filters{
+			WithInsertableOnly: false,
+			WithInternals:      true,
+		}),
+		"DtoFieldsNoPkeysNoDefaults": s.GetStructFields(Filters{
+			WithInsertableOnly: true,
+			WithInternals:      false,
+		}),
 	}
 
 	dtosResult := ExecTemplate("handler-dtos", tmplts.HandlerPayloadsTmpl, data, FuncMap)
