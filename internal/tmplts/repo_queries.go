@@ -1,49 +1,49 @@
 package tmplts
 
 var RepoSaveQueryTemplate = `
-insert into {{.SchemaName}}.{{.TableName}} (
-{{.FieldsNoPKeys | AddPadding}}
+insert into {{.QSchemaName}}.{{.QTableName}} (
+{{.QFieldsNoPKeys | AddPadding}}
 )
-values ({{.ValuesPlaceholders}})
+values ({{.QInsertPlaceholders}})
 returning
-{{.FieldsWithPKeys | AddPadding}}
+{{.QFieldsWithPKeys | AddPadding}}
 `
 
 var RepoUpdateQueryTemplate = `
-update {{.SchemaName}}.{{.TableName}}
+update {{.QSchemaName}}.{{.QTableName}}
 set 
-{{.FieldsNoPKeysWithPlaceholders | AddPadding}}
-where {{.PkeyFieldName}} = $1
+{{.QUpdateSets | AddPadding}}
+where {{.QPkeyFieldName}} = $1
 returning 
-{{.FieldsWithPKeys | AddPadding}}
+{{.QFieldsWithPKeys | AddPadding}}
 `
 
 var RepoDeleteQueryTemplate = `
-delete from only {{.SchemaName}}.{{.TableName}}
-where {{.PkeyFieldName}} = $1
+delete from only {{.QSchemaName}}.{{.QTableName}}
+where {{.QPkeyFieldName}} = $1
 `
 
 var RepoGetByIdQueryTemplate = `
 select
-{{.FieldsWithPKeys | AddPadding}}
-from {{.SchemaName}}.{{.TableName}}
-where {{.PkeyFieldName}} = $1
-order by {{.PkeyFieldName}}
+{{.QFieldsWithPKeys | AddPadding}}
+from {{.QSchemaName}}.{{.QTableName}}
+where {{.QPkeyFieldName}} = $1
+order by {{.QPkeyFieldName}}
 `
 
 var RepoGetAllQueryTemplate = `
 select
-{{.FieldsWithPKeys | AddPadding}}
-from {{.SchemaName}}.{{.TableName}}
-order by {{.PkeyFieldName}}
+{{.QFieldsWithPKeys | AddPadding}}
+from {{.QSchemaName}}.{{.QTableName}}
+order by {{.QPkeyFieldName}}
 `
 
-var RepoCountQueryTemplate = `select count({{.PkeyFieldName}}) from {{.SchemaName}}.{{.TableName}}`
+var RepoCountQueryTemplate = `select count({{.QPkeyFieldName}}) from {{.QSchemaName}}.{{.QTableName}}`
 
 var RepoGetAllPaginatedQueryTemplate = `
 select
-{{.FieldsWithPKeys | AddPadding}}
-from {{.SchemaName}}.{{.TableName}}
-order by {{.PkeyFieldName}}
+{{.QFieldsWithPKeys | AddPadding}}
+from {{.QSchemaName}}.{{.QTableName}}
+order by {{.QPkeyFieldName}}
 offset $1 limit $2
 `

@@ -104,13 +104,13 @@ func genQueries(s TableToStructInfo) queriesResults {
 	updateSets := GenUpdateSets(structFieldsWithoutPkeysAndDefaults)
 
 	queryTemplatesData := map[string]any{
-		"SchemaName":                    "public",
-		"TableName":                     s.DbTableName,
-		"FieldsNoPKeys":                 strings.Join(fieldsWithoutPkeysAndDefaults, ",\n"),
-		"FieldsWithPKeys":               strings.Join(fieldsWithPkeysAndDefaults, ",\n"),
-		"PkeyFieldName":                 pkeyDatabaseFieldName,
-		"ValuesPlaceholders":            strings.Join(CreatePlaceholders(len(fieldsWithoutPkeysAndDefaults)), ", "),
-		"FieldsNoPKeysWithPlaceholders": strings.Join(updateSets, ",\n"),
+		"QSchemaName":         "public",
+		"QTableName":          s.DbTableName,
+		"QFieldsNoPKeys":      strings.Join(fieldsWithoutPkeysAndDefaults, ",\n"),
+		"QFieldsWithPKeys":    strings.Join(fieldsWithPkeysAndDefaults, ",\n"),
+		"QPkeyFieldName":      pkeyDatabaseFieldName,
+		"QInsertPlaceholders": strings.Join(CreatePlaceholders(len(fieldsWithoutPkeysAndDefaults)), ", "),
+		"QUpdateSets":         strings.Join(updateSets, ",\n"),
 	}
 
 	repoSaveQueryResult := ExecTemplate("query-save", tmplts.RepoSaveQueryTemplate, queryTemplatesData, FuncMap)
