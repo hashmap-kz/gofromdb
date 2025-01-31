@@ -1,3 +1,5 @@
+package main
+
 import (
 	"context"
 	"fmt"
@@ -8,13 +10,13 @@ import (
 )
 
 func main() {
-	conn, err := pgx.Connect(context.Background(), "postgres://user:password@localhost/dbname")
+	conn, err := pgx.Connect(context.Background(), "postgres://postgres:postgres@localhost:5432/bookstore")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer conn.Close(context.Background())
 
-	var int4Range pgtype.Int4range
+	var int4Range pgtype.Range[int]
 	err = conn.QueryRow(context.Background(), "SELECT '[1,10]'::int4range").Scan(&int4Range)
 	if err != nil {
 		log.Fatal(err)
@@ -24,4 +26,3 @@ func main() {
 		int4Range.Lower, int4Range.Upper,
 		int4Range.LowerType, int4Range.UpperType)
 }
-
