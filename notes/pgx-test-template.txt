@@ -1,0 +1,27 @@
+import (
+	"context"
+	"fmt"
+	"log"
+
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgtype"
+)
+
+func main() {
+	conn, err := pgx.Connect(context.Background(), "postgres://user:password@localhost/dbname")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer conn.Close(context.Background())
+
+	var int4Range pgtype.Int4range
+	err = conn.QueryRow(context.Background(), "SELECT '[1,10]'::int4range").Scan(&int4Range)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("Lower: %v, Upper: %v, Inclusive: %v, %v\n",
+		int4Range.Lower, int4Range.Upper,
+		int4Range.LowerType, int4Range.UpperType)
+}
+
