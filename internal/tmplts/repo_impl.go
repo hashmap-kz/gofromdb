@@ -60,9 +60,9 @@ func (r *{{.ImplName}}) Save(ctx context.Context, inputEntity *dbModel.{{.Struct
 		inputEntity.{{.FieldName}},
 {{- end}}
 	).Scan(
-{{- range .StructFieldsWithPKeys}}
-		&scannedEntity.{{.}},
-{{- end }}
+{{- range .DtoFieldsFull}}
+		&scannedEntity.{{.FieldName}},
+{{- end}}
 	) 
 
 	if err != nil {
@@ -83,9 +83,9 @@ func (r *{{.ImplName}}) UpdateByID(ctx context.Context, entityId int, inputEntit
 		inputEntity.{{.FieldName}},
 {{- end}}
 	).Scan(
-{{- range .StructFieldsWithPKeys}}
-		&scannedEntity.{{.}},
-{{- end }}
+{{- range .DtoFieldsFull}}
+		&scannedEntity.{{.FieldName}},
+{{- end}}
 	)
 
 	if err != nil {
@@ -113,9 +113,9 @@ func (r *{{.ImplName}}) FindByID(ctx context.Context, entityId int) (*dbModel.{{
 
 	var scannedEntity dbModel.{{.StructName}}
 	err := r.db.Pool.QueryRow(ctx, query, entityId).Scan(
-{{- range .StructFieldsWithPKeys}}
-		&scannedEntity.{{.}},
-{{- end }}
+{{- range .DtoFieldsFull}}
+		&scannedEntity.{{.FieldName}},
+{{- end}}
 	)
 
 	if err != nil {
@@ -139,9 +139,9 @@ func (r *{{.ImplName}}) FindAll(ctx context.Context) ([]dbModel.{{.StructName}},
 	for rows.Next() {
 		var scannedEntity dbModel.{{.StructName}}
 		err = rows.Scan(
-{{- range .StructFieldsWithPKeys}}
-			&scannedEntity.{{.}},
-{{- end }}
+{{- range .DtoFieldsFull}}
+			&scannedEntity.{{.FieldName}},
+{{- end}}
 		)
 		if err != nil {
 			return nil, fmt.Errorf("%s: %w", tag, err)
@@ -186,9 +186,9 @@ func (r *{{.ImplName}}) FindAllPageable(ctx context.Context, pq *pageable.Pagina
 	for rows.Next() {
 		var scannedEntity dbModel.{{.StructName}}
 		err = rows.Scan(
-{{- range .StructFieldsWithPKeys}}
-			&scannedEntity.{{.}},
-{{- end }}
+{{- range .DtoFieldsFull}}
+			&scannedEntity.{{.FieldName}},
+{{- end}}
 		)
 		if err != nil {
 			return nil, pageable.Page{}, fmt.Errorf("%s: %w", tag, err)

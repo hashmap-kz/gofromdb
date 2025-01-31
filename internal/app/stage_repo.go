@@ -52,33 +52,29 @@ func GenRepository(s TableToStructInfo) GenRepo {
 
 	// Impl
 
-	structFieldsWithoutPkeysAndDefaults := s.GetStructFields(Filters{
-		WithInsertableOnly: true,
-		WithInternals:      false,
-	})
-
-	structFieldsWithPkeysAndDefaults := s.GetStructFieldsAsString(Filters{
-		WithInsertableOnly: false,
-		WithInternals:      true,
-	})
-
 	queries := genQueries(s)
 
 	repoImplTemplateResult := ExecTemplate("funcs", tmplts.RepoImplTemplate,
 		map[string]any{
-			"RepoSaveQuery":              queries.repoSaveQueryResult,
-			"RepoUpdateQuery":            queries.repoUpdateQueryResult,
-			"RepoDeleteQuery":            queries.repoDeleteQueryResult,
-			"RepoGetByIdQuery":           queries.repoGetByIdQueryResult,
-			"RepoGetAllQuery":            queries.repoGetAllQueryResult,
-			"RepoCountQuery":             queries.repoCountQueryResult,
-			"RepoGetAllPaginatedQuery":   queries.repoGetAllPaginatedQueryResult,
-			"StructName":                 s.StructName,
-			"PackageName":                strings.ToLower(s.DbTableName),
-			"InterfaceName":              s.StructName + "Repository",
-			"ImplName":                   LowerFirstLetter(s.StructName) + "Repository",
-			"DtoFieldsNoPkeysNoDefaults": structFieldsWithoutPkeysAndDefaults,
-			"StructFieldsWithPKeys":      structFieldsWithPkeysAndDefaults,
+			"RepoSaveQuery":            queries.repoSaveQueryResult,
+			"RepoUpdateQuery":          queries.repoUpdateQueryResult,
+			"RepoDeleteQuery":          queries.repoDeleteQueryResult,
+			"RepoGetByIdQuery":         queries.repoGetByIdQueryResult,
+			"RepoGetAllQuery":          queries.repoGetAllQueryResult,
+			"RepoCountQuery":           queries.repoCountQueryResult,
+			"RepoGetAllPaginatedQuery": queries.repoGetAllPaginatedQueryResult,
+			"StructName":               s.StructName,
+			"PackageName":              strings.ToLower(s.DbTableName),
+			"InterfaceName":            s.StructName + "Repository",
+			"ImplName":                 LowerFirstLetter(s.StructName) + "Repository",
+			"DtoFieldsNoPkeysNoDefaults": s.GetStructFields(Filters{
+				WithInsertableOnly: true,
+				WithInternals:      false,
+			}),
+			"DtoFieldsFull": s.GetStructFields(Filters{
+				WithInsertableOnly: false,
+				WithInternals:      true,
+			}),
 		}, FuncMap)
 
 	return GenRepo{
