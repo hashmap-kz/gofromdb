@@ -92,16 +92,16 @@ func genQueries(s TableToStructInfo) queriesResults {
 		WithPkeys:     false,
 		WithInternals: false,
 	})
+
 	fieldsWithPkeysAndDefaults := s.GetDbFieldsAsString(Filters{
 		WithPkeys:     true,
 		WithInternals: true,
 	})
 
-	structFieldsWithoutPkeysAndDefaults := s.GetStructFields(Filters{
+	updateSets := GenUpdateSets(s.GetStructFields(Filters{
 		WithPkeys:     false,
 		WithInternals: false,
-	})
-	updateSets := GenUpdateSets(structFieldsWithoutPkeysAndDefaults)
+	}))
 
 	queryTemplatesData := map[string]any{
 		"QSchemaName":         "public",
