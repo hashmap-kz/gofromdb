@@ -45,46 +45,34 @@ func GenStructs(connString string) []TableToStructInfo {
 	return structs
 }
 
-func (s *TableToStructInfo) GetDbFieldsAsString(withPkeys, skipIfHasDefault bool) []string {
-	r := []string{}
+func (s *TableToStructInfo) GetStructFields(withPkeys, skipIfHasDefault bool) []TableToStructFieldInfo {
+	var result []TableToStructFieldInfo
 	for _, f := range s.Fields {
 		if !withPkeys && f.DbIsPk {
 			continue
 		}
-		if skipIfHasDefault && f.DbHasDefault {
+		if skipIfHasDefault && f.DbHasDefault && !f.DbIsPk {
 			continue
 		}
-		r = append(r, f.DbFieldName)
+		result = append(result, f)
 	}
-	return r
+	return result
 }
 
 func (s *TableToStructInfo) GetStructFieldsAsString(withPkeys, skipIfHasDefault bool) []string {
-	r := []string{}
-	for _, f := range s.Fields {
-		if !withPkeys && f.DbIsPk {
-			continue
-		}
-		if skipIfHasDefault && f.DbHasDefault && !f.DbIsPk {
-			continue
-		}
-		r = append(r, f.FieldName)
+	var result []string
+	for _, f := range s.GetStructFields(withPkeys, skipIfHasDefault) {
+		result = append(result, f.FieldName)
 	}
-	return r
+	return result
 }
 
-func (s *TableToStructInfo) GetStructFields(withPkeys, skipIfHasDefault bool) []TableToStructFieldInfo {
-	r := []TableToStructFieldInfo{}
-	for _, f := range s.Fields {
-		if !withPkeys && f.DbIsPk {
-			continue
-		}
-		if skipIfHasDefault && f.DbHasDefault && !f.DbIsPk {
-			continue
-		}
-		r = append(r, f)
+func (s *TableToStructInfo) GetDbFieldsAsString(withPkeys, skipIfHasDefault bool) []string {
+	var result []string
+	for _, f := range s.GetStructFields(withPkeys, skipIfHasDefault) {
+		result = append(result, f.DbFieldName)
 	}
-	return r
+	return result
 }
 
 func makeOneStruct(relPath string, cols []genpg.ColumnInfo) TableToStructInfo {
