@@ -11,20 +11,13 @@ type GenInterf struct {
 }
 
 func GenInterfaces(structs []TableToStructInfo) GenInterf {
-	serviceInterfaceResult := ExecTemplate("service-interface-general", tmplts.ServiceInterfaceGeneral,
-		map[string]any{
-			"Structs": structs,
-		}, FuncMap)
+	data := map[string]any{
+		"Structs": structs,
+	}
 
-	repoInterfaceResult := ExecTemplate("repo-interface-general", tmplts.RepoInterfaceGeneral,
-		map[string]any{
-			"Structs": structs,
-		}, FuncMap)
-
-	handlerInterfaceResult := ExecTemplate("habdler-interface-general", tmplts.HandlerInterfaceGeneral,
-		map[string]any{
-			"Structs": structs,
-		}, FuncMap)
+	serviceInterfaceResult := ExecTemplate("service-interface-general", tmplts.ServiceInterfaceGeneral, data, FuncMap)
+	repoInterfaceResult := ExecTemplate("repo-interface-general", tmplts.RepoInterfaceGeneral, data, FuncMap)
+	handlerInterfaceResult := ExecTemplate("handler-interface-general", tmplts.HandlerInterfaceGeneral, data, FuncMap)
 
 	return GenInterf{
 		ServiceInterface: PrintFormatted(serviceInterfaceResult),
