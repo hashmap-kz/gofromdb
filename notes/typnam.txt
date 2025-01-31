@@ -86,7 +86,13 @@ with zeroes as (select $t$''$t$                    as str,
                        $t$'0'::int8$t$             as i64,
                        $t$'0'::float4$t$           as f32,
                        $t$'0'::float4$t$           as f64,
-                       $t$'false'::bool$t$         as bol),
+                       $t$'false'::bool$t$         as bol,
+                       $t$'empty'::int4range$t$    as ri4,
+                       $t$'empty'::int8range$t$    as ri8,
+                       $t$'empty'::numrange$t$     as rnm,
+                       $t$'empty'::daterange$t$    as rdt,
+                       $t$'empty'::tsrange$t$      as rts,
+                       $t$'empty'::tstzrange$t$    as rtz),
      type_map as
          (values
               -- Arrays
@@ -131,6 +137,13 @@ with zeroes as (select $t$''$t$                    as str,
               ('varchar', 'string', (select str from zeroes)),
               -- Boolean
               ('bool', 'bool', (select bol from zeroes)),
+              -- Range types
+              ('int4range', 'string', (select ri4 from zeroes)),
+              ('int8range', 'string', (select ri8 from zeroes)),
+              ('numrange', 'string', (select rnm from zeroes)),
+              ('daterange', 'string', (select rdt from zeroes)),
+              ('tsrange', 'string', (select rts from zeroes)),
+              ('tstzrange', 'string', (select rtz from zeroes)),
               -- ETC
               ('json', 'string', (select jsn from zeroes)),
               ('jsonb', 'string', (select jsb from zeroes)),
