@@ -78,14 +78,6 @@ func (s *TableToStructInfo) GetStructFields(filters Filters) []TableToStructFiel
 	return result
 }
 
-func (s *TableToStructInfo) GetStructFieldsAsString(filters Filters) []string {
-	var result []string
-	for _, f := range s.GetStructFields(filters) {
-		result = append(result, f.FieldName)
-	}
-	return result
-}
-
 func (s *TableToStructInfo) GetDbFieldsAsString(filters Filters) []string {
 	var result []string
 	for _, f := range s.GetStructFields(filters) {
