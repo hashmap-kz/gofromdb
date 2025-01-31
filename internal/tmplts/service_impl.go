@@ -61,13 +61,15 @@ import (
 )
 
 type {{.ImplName}} struct {
-	repo repository.{{.RepositoryName}}
+	{{.RepositoryVarName}} repository.{{.RepositoryInterfaceName}}
 }
 
 var _ service.{{.InterfaceName}} = &{{.ImplName}}{}
 
-func New{{.InterfaceName}}(_ context.Context, repo repository.{{.RepositoryName}}) service.{{.InterfaceName}} {
-	return &{{.ImplName}}{repo: repo}
+func New{{.InterfaceName}}(_ context.Context, {{.RepositoryVarName}} repository.{{.RepositoryInterfaceName}}) service.{{.InterfaceName}} {
+	return &{{.ImplName}}{
+		{{.RepositoryVarName}}: {{.RepositoryVarName}},
+	}
 }
 
 func (s *{{.ImplName}}) Save(ctx context.Context, input *dto.{{.DtoCreateName}}) (*dto.{{.DtoName}}, error) {
@@ -75,7 +77,7 @@ func (s *{{.ImplName}}) Save(ctx context.Context, input *dto.{{.DtoCreateName}})
 	if err != nil {
 		return nil, err
 	}	
-	save, err := s.repo.Save(ctx, entityToCreate)
+	save, err := s.{{.RepositoryVarName}}.Save(ctx, entityToCreate)
 	if err != nil {
 		return nil, err
 	}
@@ -91,7 +93,7 @@ func (s *{{.ImplName}}) UpdateByID(ctx context.Context, entityId int, input *dto
 	if err != nil {
 		return nil, err
 	}
-	updatedResult, err := s.repo.UpdateByID(ctx, entityId, entityToUpdate)
+	updatedResult, err := s.{{.RepositoryVarName}}.UpdateByID(ctx, entityId, entityToUpdate)
 	if err != nil {
 		return nil, err
 	}
@@ -103,11 +105,11 @@ func (s *{{.ImplName}}) UpdateByID(ctx context.Context, entityId int, input *dto
 }
 
 func (s *{{.ImplName}}) DeleteByID(ctx context.Context, id int) error {
-	return s.repo.DeleteByID(ctx, id)
+	return s.{{.RepositoryVarName}}.DeleteByID(ctx, id)
 }
 
 func (s *{{.ImplName}}) FindByID(ctx context.Context, id int) (*dto.{{.DtoName}}, error) {
-	entityById, err := s.repo.FindByID(ctx, id)
+	entityById, err := s.{{.RepositoryVarName}}.FindByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -119,7 +121,7 @@ func (s *{{.ImplName}}) FindByID(ctx context.Context, id int) (*dto.{{.DtoName}}
 }
 
 func (s *{{.ImplName}}) FindAll(ctx context.Context) ([]dto.{{.DtoName}}, error) {
-	entities, err := s.repo.FindAll(ctx)
+	entities, err := s.{{.RepositoryVarName}}.FindAll(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -131,7 +133,7 @@ func (s *{{.ImplName}}) FindAll(ctx context.Context) ([]dto.{{.DtoName}}, error)
 }
 
 func (s *{{.ImplName}}) FindAllPageable(ctx context.Context, pq *pageable.PaginationQuery) ([]dto.{{.DtoName}}, pageable.Page, error) {
-	entities, page, err := s.repo.FindAllPageable(ctx, pq)
+	entities, page, err := s.{{.RepositoryVarName}}.FindAllPageable(ctx, pq)
 	if err != nil {
 		return nil, pageable.Page{}, err
 	}

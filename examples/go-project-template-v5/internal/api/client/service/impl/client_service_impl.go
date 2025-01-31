@@ -14,13 +14,15 @@ import (
 )
 
 type clientService struct {
-	repo repository.ClientRepository
+	clientRepository repository.ClientRepository
 }
 
 var _ service.ClientService = &clientService{}
 
-func NewClientService(_ context.Context, repo repository.ClientRepository) service.ClientService {
-	return &clientService{repo: repo}
+func NewClientService(_ context.Context, clientRepository repository.ClientRepository) service.ClientService {
+	return &clientService{
+		clientRepository: clientRepository,
+	}
 }
 
 func (s *clientService) Save(ctx context.Context, input *dto.ClientCreateDto) (*dto.ClientDto, error) {
@@ -28,7 +30,7 @@ func (s *clientService) Save(ctx context.Context, input *dto.ClientCreateDto) (*
 	if err != nil {
 		return nil, err
 	}
-	save, err := s.repo.Save(ctx, entityToCreate)
+	save, err := s.clientRepository.Save(ctx, entityToCreate)
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +46,7 @@ func (s *clientService) UpdateByID(ctx context.Context, entityId int, input *dto
 	if err != nil {
 		return nil, err
 	}
-	updatedResult, err := s.repo.UpdateByID(ctx, entityId, entityToUpdate)
+	updatedResult, err := s.clientRepository.UpdateByID(ctx, entityId, entityToUpdate)
 	if err != nil {
 		return nil, err
 	}
@@ -56,11 +58,11 @@ func (s *clientService) UpdateByID(ctx context.Context, entityId int, input *dto
 }
 
 func (s *clientService) DeleteByID(ctx context.Context, id int) error {
-	return s.repo.DeleteByID(ctx, id)
+	return s.clientRepository.DeleteByID(ctx, id)
 }
 
 func (s *clientService) FindByID(ctx context.Context, id int) (*dto.ClientDto, error) {
-	entityById, err := s.repo.FindByID(ctx, id)
+	entityById, err := s.clientRepository.FindByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +74,7 @@ func (s *clientService) FindByID(ctx context.Context, id int) (*dto.ClientDto, e
 }
 
 func (s *clientService) FindAll(ctx context.Context) ([]dto.ClientDto, error) {
-	entities, err := s.repo.FindAll(ctx)
+	entities, err := s.clientRepository.FindAll(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +86,7 @@ func (s *clientService) FindAll(ctx context.Context) ([]dto.ClientDto, error) {
 }
 
 func (s *clientService) FindAllPageable(ctx context.Context, pq *pageable.PaginationQuery) ([]dto.ClientDto, pageable.Page, error) {
-	entities, page, err := s.repo.FindAllPageable(ctx, pq)
+	entities, page, err := s.clientRepository.FindAllPageable(ctx, pq)
 	if err != nil {
 		return nil, pageable.Page{}, err
 	}

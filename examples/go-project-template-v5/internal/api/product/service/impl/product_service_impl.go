@@ -14,13 +14,15 @@ import (
 )
 
 type productService struct {
-	repo repository.ProductRepository
+	productRepository repository.ProductRepository
 }
 
 var _ service.ProductService = &productService{}
 
-func NewProductService(_ context.Context, repo repository.ProductRepository) service.ProductService {
-	return &productService{repo: repo}
+func NewProductService(_ context.Context, productRepository repository.ProductRepository) service.ProductService {
+	return &productService{
+		productRepository: productRepository,
+	}
 }
 
 func (s *productService) Save(ctx context.Context, input *dto.ProductCreateDto) (*dto.ProductDto, error) {
@@ -28,7 +30,7 @@ func (s *productService) Save(ctx context.Context, input *dto.ProductCreateDto) 
 	if err != nil {
 		return nil, err
 	}
-	save, err := s.repo.Save(ctx, entityToCreate)
+	save, err := s.productRepository.Save(ctx, entityToCreate)
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +46,7 @@ func (s *productService) UpdateByID(ctx context.Context, entityId int, input *dt
 	if err != nil {
 		return nil, err
 	}
-	updatedResult, err := s.repo.UpdateByID(ctx, entityId, entityToUpdate)
+	updatedResult, err := s.productRepository.UpdateByID(ctx, entityId, entityToUpdate)
 	if err != nil {
 		return nil, err
 	}
@@ -56,11 +58,11 @@ func (s *productService) UpdateByID(ctx context.Context, entityId int, input *dt
 }
 
 func (s *productService) DeleteByID(ctx context.Context, id int) error {
-	return s.repo.DeleteByID(ctx, id)
+	return s.productRepository.DeleteByID(ctx, id)
 }
 
 func (s *productService) FindByID(ctx context.Context, id int) (*dto.ProductDto, error) {
-	entityById, err := s.repo.FindByID(ctx, id)
+	entityById, err := s.productRepository.FindByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +74,7 @@ func (s *productService) FindByID(ctx context.Context, id int) (*dto.ProductDto,
 }
 
 func (s *productService) FindAll(ctx context.Context) ([]dto.ProductDto, error) {
-	entities, err := s.repo.FindAll(ctx)
+	entities, err := s.productRepository.FindAll(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +86,7 @@ func (s *productService) FindAll(ctx context.Context) ([]dto.ProductDto, error) 
 }
 
 func (s *productService) FindAllPageable(ctx context.Context, pq *pageable.PaginationQuery) ([]dto.ProductDto, pageable.Page, error) {
-	entities, page, err := s.repo.FindAllPageable(ctx, pq)
+	entities, page, err := s.productRepository.FindAllPageable(ctx, pq)
 	if err != nil {
 		return nil, pageable.Page{}, err
 	}

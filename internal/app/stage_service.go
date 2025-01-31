@@ -14,14 +14,15 @@ type GenSvc struct {
 
 func GenService(s TableToStructInfo) GenSvc {
 	data := map[string]any{
-		"StructName":     s.StructName,
-		"PackageName":    strings.ToLower(s.DbTableName),
-		"InterfaceName":  s.StructName + "Service",
-		"ImplName":       LowerFirstLetter(s.StructName) + "Service",
-		"RepositoryName": s.StructName + "Repository",
-		"DtoName":        s.StructName + "Dto",
-		"DtoUpdateName":  s.StructName + "UpdateDto",
-		"DtoCreateName":  s.StructName + "CreateDto",
+		"StructName":              s.StructName,
+		"PackageName":             strings.ToLower(s.DbTableName),
+		"InterfaceName":           s.StructName + "Service",
+		"ImplName":                LowerFirstLetter(s.StructName) + "Service",
+		"RepositoryInterfaceName": s.StructName + "Repository",
+		"RepositoryVarName":       s.StructNameLowerFirstLetter + "Repository",
+		"DtoName":                 s.StructName + "Dto",
+		"DtoUpdateName":           s.StructName + "UpdateDto",
+		"DtoCreateName":           s.StructName + "CreateDto",
 		"DtoFieldsFull": s.GetStructFields(Filters{
 			WithInsertableOnly: false,
 			WithInternals:      true,

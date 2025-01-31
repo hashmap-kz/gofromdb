@@ -14,13 +14,15 @@ import (
 )
 
 type categoryService struct {
-	repo repository.CategoryRepository
+	categoryRepository repository.CategoryRepository
 }
 
 var _ service.CategoryService = &categoryService{}
 
-func NewCategoryService(_ context.Context, repo repository.CategoryRepository) service.CategoryService {
-	return &categoryService{repo: repo}
+func NewCategoryService(_ context.Context, categoryRepository repository.CategoryRepository) service.CategoryService {
+	return &categoryService{
+		categoryRepository: categoryRepository,
+	}
 }
 
 func (s *categoryService) Save(ctx context.Context, input *dto.CategoryCreateDto) (*dto.CategoryDto, error) {
@@ -28,7 +30,7 @@ func (s *categoryService) Save(ctx context.Context, input *dto.CategoryCreateDto
 	if err != nil {
 		return nil, err
 	}
-	save, err := s.repo.Save(ctx, entityToCreate)
+	save, err := s.categoryRepository.Save(ctx, entityToCreate)
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +46,7 @@ func (s *categoryService) UpdateByID(ctx context.Context, entityId int, input *d
 	if err != nil {
 		return nil, err
 	}
-	updatedResult, err := s.repo.UpdateByID(ctx, entityId, entityToUpdate)
+	updatedResult, err := s.categoryRepository.UpdateByID(ctx, entityId, entityToUpdate)
 	if err != nil {
 		return nil, err
 	}
@@ -56,11 +58,11 @@ func (s *categoryService) UpdateByID(ctx context.Context, entityId int, input *d
 }
 
 func (s *categoryService) DeleteByID(ctx context.Context, id int) error {
-	return s.repo.DeleteByID(ctx, id)
+	return s.categoryRepository.DeleteByID(ctx, id)
 }
 
 func (s *categoryService) FindByID(ctx context.Context, id int) (*dto.CategoryDto, error) {
-	entityById, err := s.repo.FindByID(ctx, id)
+	entityById, err := s.categoryRepository.FindByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +74,7 @@ func (s *categoryService) FindByID(ctx context.Context, id int) (*dto.CategoryDt
 }
 
 func (s *categoryService) FindAll(ctx context.Context) ([]dto.CategoryDto, error) {
-	entities, err := s.repo.FindAll(ctx)
+	entities, err := s.categoryRepository.FindAll(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +86,7 @@ func (s *categoryService) FindAll(ctx context.Context) ([]dto.CategoryDto, error
 }
 
 func (s *categoryService) FindAllPageable(ctx context.Context, pq *pageable.PaginationQuery) ([]dto.CategoryDto, pageable.Page, error) {
-	entities, page, err := s.repo.FindAllPageable(ctx, pq)
+	entities, page, err := s.categoryRepository.FindAllPageable(ctx, pq)
 	if err != nil {
 		return nil, pageable.Page{}, err
 	}

@@ -14,13 +14,15 @@ import (
 )
 
 type buyService struct {
-	repo repository.BuyRepository
+	buyRepository repository.BuyRepository
 }
 
 var _ service.BuyService = &buyService{}
 
-func NewBuyService(_ context.Context, repo repository.BuyRepository) service.BuyService {
-	return &buyService{repo: repo}
+func NewBuyService(_ context.Context, buyRepository repository.BuyRepository) service.BuyService {
+	return &buyService{
+		buyRepository: buyRepository,
+	}
 }
 
 func (s *buyService) Save(ctx context.Context, input *dto.BuyCreateDto) (*dto.BuyDto, error) {
@@ -28,7 +30,7 @@ func (s *buyService) Save(ctx context.Context, input *dto.BuyCreateDto) (*dto.Bu
 	if err != nil {
 		return nil, err
 	}
-	save, err := s.repo.Save(ctx, entityToCreate)
+	save, err := s.buyRepository.Save(ctx, entityToCreate)
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +46,7 @@ func (s *buyService) UpdateByID(ctx context.Context, entityId int, input *dto.Bu
 	if err != nil {
 		return nil, err
 	}
-	updatedResult, err := s.repo.UpdateByID(ctx, entityId, entityToUpdate)
+	updatedResult, err := s.buyRepository.UpdateByID(ctx, entityId, entityToUpdate)
 	if err != nil {
 		return nil, err
 	}
@@ -56,11 +58,11 @@ func (s *buyService) UpdateByID(ctx context.Context, entityId int, input *dto.Bu
 }
 
 func (s *buyService) DeleteByID(ctx context.Context, id int) error {
-	return s.repo.DeleteByID(ctx, id)
+	return s.buyRepository.DeleteByID(ctx, id)
 }
 
 func (s *buyService) FindByID(ctx context.Context, id int) (*dto.BuyDto, error) {
-	entityById, err := s.repo.FindByID(ctx, id)
+	entityById, err := s.buyRepository.FindByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +74,7 @@ func (s *buyService) FindByID(ctx context.Context, id int) (*dto.BuyDto, error) 
 }
 
 func (s *buyService) FindAll(ctx context.Context) ([]dto.BuyDto, error) {
-	entities, err := s.repo.FindAll(ctx)
+	entities, err := s.buyRepository.FindAll(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +86,7 @@ func (s *buyService) FindAll(ctx context.Context) ([]dto.BuyDto, error) {
 }
 
 func (s *buyService) FindAllPageable(ctx context.Context, pq *pageable.PaginationQuery) ([]dto.BuyDto, pageable.Page, error) {
-	entities, page, err := s.repo.FindAllPageable(ctx, pq)
+	entities, page, err := s.buyRepository.FindAllPageable(ctx, pq)
 	if err != nil {
 		return nil, pageable.Page{}, err
 	}
