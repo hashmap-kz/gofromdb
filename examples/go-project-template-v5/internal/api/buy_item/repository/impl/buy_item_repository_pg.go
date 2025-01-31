@@ -69,8 +69,8 @@ func (r *buyItemRepository) Save(ctx context.Context, inputEntity *dbModel.BuyIt
 	return &scannedEntity, nil
 }
 
-func (r *buyItemRepository) Update(ctx context.Context, entityId int, inputEntity *dbModel.BuyItem) (*dbModel.BuyItem, error) {
-	tag := "buyItemRepository.Update"
+func (r *buyItemRepository) UpdateByID(ctx context.Context, entityId int, inputEntity *dbModel.BuyItem) (*dbModel.BuyItem, error) {
+	tag := "buyItemRepository.UpdateByID"
 
 	query := `		
 		update public.buy_item
@@ -114,8 +114,8 @@ func (r *buyItemRepository) Update(ctx context.Context, entityId int, inputEntit
 	return &scannedEntity, nil
 }
 
-func (r *buyItemRepository) Delete(ctx context.Context, entityId int) error {
-	tag := "buyItemRepository.Delete"
+func (r *buyItemRepository) DeleteByID(ctx context.Context, entityId int) error {
+	tag := "buyItemRepository.DeleteByID"
 
 	query := `		
 		delete from only public.buy_item
@@ -129,8 +129,8 @@ func (r *buyItemRepository) Delete(ctx context.Context, entityId int) error {
 	return nil
 }
 
-func (r *buyItemRepository) GetByID(ctx context.Context, entityId int) (*dbModel.BuyItem, error) {
-	tag := "buyItemRepository.GetByID"
+func (r *buyItemRepository) FindByID(ctx context.Context, entityId int) (*dbModel.BuyItem, error) {
+	tag := "buyItemRepository.FindByID"
 
 	query := `		
 		select
@@ -164,8 +164,8 @@ func (r *buyItemRepository) GetByID(ctx context.Context, entityId int) (*dbModel
 	return &scannedEntity, nil
 }
 
-func (r *buyItemRepository) GetAll(ctx context.Context) ([]dbModel.BuyItem, error) {
-	tag := "buyItemRepository.GetAll"
+func (r *buyItemRepository) FindAll(ctx context.Context) ([]dbModel.BuyItem, error) {
+	tag := "buyItemRepository.FindAll"
 
 	query := `		
 		select
@@ -212,8 +212,8 @@ func (r *buyItemRepository) GetAll(ctx context.Context) ([]dbModel.BuyItem, erro
 	return scannedEntities, nil
 }
 
-func (r *buyItemRepository) GetAllPaginated(ctx context.Context, pq *pageable.PaginationQuery) ([]dbModel.BuyItem, pageable.Page, error) {
-	tag := "buyItemRepository.GetAllPaginated"
+func (r *buyItemRepository) FindAllPageable(ctx context.Context, pq *pageable.PaginationQuery) ([]dbModel.BuyItem, pageable.Page, error) {
+	tag := "buyItemRepository.FindAllPageable"
 
 	// retrieve total count
 	queryCnt := `select count(record_id) from public.buy_item`

@@ -13,11 +13,11 @@ import (
 
 type {{.InterfaceName}} interface {
 	Save(ctx context.Context, inputEntity *dbModel.{{.StructName}}) (*dbModel.{{.StructName}}, error)
-	GetAll(ctx context.Context) ([]dbModel.{{.StructName}}, error)
-	GetAllPaginated(ctx context.Context, pq *pageable.PaginationQuery) ([]dbModel.{{.StructName}}, pageable.Page, error)
-	Update(ctx context.Context, entityId int, inputEntity *dbModel.{{.StructName}}) (*dbModel.{{.StructName}}, error)
-	Delete(ctx context.Context, entityId int) error
-	GetByID(ctx context.Context, entityId int) (*dbModel.{{.StructName}}, error)
+	UpdateByID(ctx context.Context, entityId int, inputEntity *dbModel.{{.StructName}}) (*dbModel.{{.StructName}}, error)
+	DeleteByID(ctx context.Context, entityId int) error
+	FindByID(ctx context.Context, entityId int) (*dbModel.{{.StructName}}, error)
+	FindAll(ctx context.Context) ([]dbModel.{{.StructName}}, error)
+	FindAllPageable(ctx context.Context, pq *pageable.PaginationQuery) ([]dbModel.{{.StructName}}, pageable.Page, error)
 }
 `
 
@@ -71,8 +71,8 @@ func (r *{{.ImplName}}) Save(ctx context.Context, inputEntity *dbModel.{{.Struct
 	return &scannedEntity, nil
 }
 
-func (r *{{.ImplName}}) Update(ctx context.Context, entityId int, inputEntity *dbModel.{{.StructName}}) (*dbModel.{{.StructName}}, error) {
-	tag := "{{.ImplName}}.Update"
+func (r *{{.ImplName}}) UpdateByID(ctx context.Context, entityId int, inputEntity *dbModel.{{.StructName}}) (*dbModel.{{.StructName}}, error) {
+	tag := "{{.ImplName}}.UpdateByID"
 
 	query := ` + "`{{.RepoUpdateQuery | AddPadding2}}`" + `
 
@@ -94,8 +94,8 @@ func (r *{{.ImplName}}) Update(ctx context.Context, entityId int, inputEntity *d
 	return &scannedEntity, nil
 }
 
-func (r *{{.ImplName}}) Delete(ctx context.Context, entityId int) error {
-	tag := "{{.ImplName}}.Delete"
+func (r *{{.ImplName}}) DeleteByID(ctx context.Context, entityId int) error {
+	tag := "{{.ImplName}}.DeleteByID"
 
 	query := ` + "`{{.RepoDeleteQuery | AddPadding2}}`" + `
 
@@ -106,8 +106,8 @@ func (r *{{.ImplName}}) Delete(ctx context.Context, entityId int) error {
 	return nil
 }
 
-func (r *{{.ImplName}}) GetByID(ctx context.Context, entityId int) (*dbModel.{{.StructName}}, error) {
-	tag := "{{.ImplName}}.GetByID"
+func (r *{{.ImplName}}) FindByID(ctx context.Context, entityId int) (*dbModel.{{.StructName}}, error) {
+	tag := "{{.ImplName}}.FindByID"
 
 	query := ` + "`{{.RepoGetByIdQuery | AddPadding2}}`" + `
 
@@ -124,8 +124,8 @@ func (r *{{.ImplName}}) GetByID(ctx context.Context, entityId int) (*dbModel.{{.
 	return &scannedEntity, nil
 }
 
-func (r *{{.ImplName}}) GetAll(ctx context.Context) ([]dbModel.{{.StructName}}, error) {
-	tag := "{{.ImplName}}.GetAll"
+func (r *{{.ImplName}}) FindAll(ctx context.Context) ([]dbModel.{{.StructName}}, error) {
+	tag := "{{.ImplName}}.FindAll"
 
 	query := ` + "`{{.RepoGetAllQuery | AddPadding2}}`" + `
 
@@ -155,8 +155,8 @@ func (r *{{.ImplName}}) GetAll(ctx context.Context) ([]dbModel.{{.StructName}}, 
 	return scannedEntities, nil
 }
 
-func (r *{{.ImplName}}) GetAllPaginated(ctx context.Context, pq *pageable.PaginationQuery) ([]dbModel.{{.StructName}}, pageable.Page, error) {
-	tag := "{{.ImplName}}.GetAllPaginated"
+func (r *{{.ImplName}}) FindAllPageable(ctx context.Context, pq *pageable.PaginationQuery) ([]dbModel.{{.StructName}}, pageable.Page, error) {
+	tag := "{{.ImplName}}.FindAllPageable"
 
 	// retrieve total count
 	queryCnt := ` + "`{{.RepoCountQuery}}`" + `

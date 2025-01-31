@@ -65,8 +65,8 @@ func (r *productRepository) Save(ctx context.Context, inputEntity *dbModel.Produ
 	return &scannedEntity, nil
 }
 
-func (r *productRepository) Update(ctx context.Context, entityId int, inputEntity *dbModel.Product) (*dbModel.Product, error) {
-	tag := "productRepository.Update"
+func (r *productRepository) UpdateByID(ctx context.Context, entityId int, inputEntity *dbModel.Product) (*dbModel.Product, error) {
+	tag := "productRepository.UpdateByID"
 
 	query := `		
 		update public.product
@@ -106,8 +106,8 @@ func (r *productRepository) Update(ctx context.Context, entityId int, inputEntit
 	return &scannedEntity, nil
 }
 
-func (r *productRepository) Delete(ctx context.Context, entityId int) error {
-	tag := "productRepository.Delete"
+func (r *productRepository) DeleteByID(ctx context.Context, entityId int) error {
+	tag := "productRepository.DeleteByID"
 
 	query := `		
 		delete from only public.product
@@ -121,8 +121,8 @@ func (r *productRepository) Delete(ctx context.Context, entityId int) error {
 	return nil
 }
 
-func (r *productRepository) GetByID(ctx context.Context, entityId int) (*dbModel.Product, error) {
-	tag := "productRepository.GetByID"
+func (r *productRepository) FindByID(ctx context.Context, entityId int) (*dbModel.Product, error) {
+	tag := "productRepository.FindByID"
 
 	query := `		
 		select
@@ -154,8 +154,8 @@ func (r *productRepository) GetByID(ctx context.Context, entityId int) (*dbModel
 	return &scannedEntity, nil
 }
 
-func (r *productRepository) GetAll(ctx context.Context) ([]dbModel.Product, error) {
-	tag := "productRepository.GetAll"
+func (r *productRepository) FindAll(ctx context.Context) ([]dbModel.Product, error) {
+	tag := "productRepository.FindAll"
 
 	query := `		
 		select
@@ -200,8 +200,8 @@ func (r *productRepository) GetAll(ctx context.Context) ([]dbModel.Product, erro
 	return scannedEntities, nil
 }
 
-func (r *productRepository) GetAllPaginated(ctx context.Context, pq *pageable.PaginationQuery) ([]dbModel.Product, pageable.Page, error) {
-	tag := "productRepository.GetAllPaginated"
+func (r *productRepository) FindAllPageable(ctx context.Context, pq *pageable.PaginationQuery) ([]dbModel.Product, pageable.Page, error) {
+	tag := "productRepository.FindAllPageable"
 
 	// retrieve total count
 	queryCnt := `select count(record_id) from public.product`

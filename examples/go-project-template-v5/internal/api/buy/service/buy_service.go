@@ -10,9 +10,9 @@ import (
 
 type BuyService interface {
 	Save(ctx context.Context, input *dto.BuyCreateDto) (*dto.BuyDto, error)
-	GetAll(ctx context.Context) ([]dto.BuyDto, error)
-	GetAllPaginated(ctx context.Context, pq *pageable.PaginationQuery) ([]dto.BuyDto, pageable.Page, error)
-	Update(ctx context.Context, entityId int, input *dto.BuyUpdateDto) (*dto.BuyDto, error)
-	Delete(ctx context.Context, id int) error
-	GetByID(ctx context.Context, id int) (*dto.BuyDto, error)
+	UpdateByID(ctx context.Context, entityId int, input *dto.BuyUpdateDto) (*dto.BuyDto, error)
+	DeleteByID(ctx context.Context, id int) error
+	FindByID(ctx context.Context, id int) (*dto.BuyDto, error)
+	FindAll(ctx context.Context) ([]dto.BuyDto, error)
+	FindAllPageable(ctx context.Context, pq *pageable.PaginationQuery) ([]dto.BuyDto, pageable.Page, error)
 }

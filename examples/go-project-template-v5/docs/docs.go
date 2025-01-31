@@ -30,7 +30,7 @@ const docTemplate = `{
                 "summary": "Get all",
                 "responses": {
                     "200": {
-                        "description": "List of all BuyItems",
+                        "description": "List of all items",
                         "schema": {
                             "$ref": "#/definitions/v1.buyItemResponseList"
                         }
@@ -43,50 +43,6 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Internal Server Error (Data processing failure)",
-                        "schema": {
-                            "$ref": "#/definitions/httputils.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "description": "Updates an item by its ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "buy-items"
-                ],
-                "summary": "Update existing item",
-                "parameters": [
-                    {
-                        "description": "Update input",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/v1.buyItemUpdateRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/v1.buyItemResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/httputils.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
@@ -131,45 +87,6 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/httputils.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Deletes an item by its ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "buy-items"
-                ],
-                "summary": "Delete existing item",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "BuyItem ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No Content (Successfully deleted)"
-                    },
-                    "400": {
-                        "description": "Bad Request (Invalid ID format)",
-                        "schema": {
-                            "$ref": "#/definitions/httputils.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error (Deletion failed)",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
@@ -232,34 +149,40 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/buys": {
+        "/api/v1/buy-items/{id}": {
             "get": {
-                "description": "Retrieves a list without pagination.",
-                "consumes": [
-                    "application/json"
-                ],
+                "description": "Retrieves the details based on the provided ID in the request path.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "buys"
+                    "buy-items"
                 ],
-                "summary": "Get all",
+                "summary": "Get item by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "List of all BuyItems",
+                        "description": "Single item",
                         "schema": {
-                            "$ref": "#/definitions/v1.buyResponseList"
+                            "$ref": "#/definitions/v1.buyItemResponse"
                         }
                     },
                     "400": {
-                        "description": "Bad Request (Service failure)",
+                        "description": "Bad Request (Invalid ID format)",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error (Data processing failure)",
+                        "description": "Internal Server Error (Deletion failed)",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
@@ -275,17 +198,24 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "buys"
+                    "buy-items"
                 ],
                 "summary": "Update existing item",
                 "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "description": "Update input",
                         "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/v1.buyUpdateRequest"
+                            "$ref": "#/definitions/v1.buyItemUpdateRequest"
                         }
                     }
                 ],
@@ -293,7 +223,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/v1.buyResponse"
+                            "$ref": "#/definitions/v1.buyItemResponse"
                         }
                     },
                     "400": {
@@ -304,6 +234,80 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Deletes an item by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "buy-items"
+                ],
+                "summary": "Delete existing item",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "BuyItem ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content (Successfully deleted)"
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid ID format)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error (Deletion failed)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/buys": {
+            "get": {
+                "description": "Retrieves a list without pagination.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "buys"
+                ],
+                "summary": "Get all",
+                "responses": {
+                    "200": {
+                        "description": "List of all items",
+                        "schema": {
+                            "$ref": "#/definitions/v1.buyResponseList"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (Service failure)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error (Data processing failure)",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
@@ -348,45 +352,6 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/httputils.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Deletes an item by its ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "buys"
-                ],
-                "summary": "Delete existing item",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Buy ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No Content (Successfully deleted)"
-                    },
-                    "400": {
-                        "description": "Bad Request (Invalid ID format)",
-                        "schema": {
-                            "$ref": "#/definitions/httputils.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error (Deletion failed)",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
@@ -449,34 +414,40 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/categories": {
+        "/api/v1/buys/{id}": {
             "get": {
-                "description": "Retrieves a list without pagination.",
-                "consumes": [
-                    "application/json"
-                ],
+                "description": "Retrieves the details based on the provided ID in the request path.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "categories"
+                    "buys"
                 ],
-                "summary": "Get all",
+                "summary": "Get item by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "List of all BuyItems",
+                        "description": "Single item",
                         "schema": {
-                            "$ref": "#/definitions/v1.categoryResponseList"
+                            "$ref": "#/definitions/v1.buyResponse"
                         }
                     },
                     "400": {
-                        "description": "Bad Request (Service failure)",
+                        "description": "Bad Request (Invalid ID format)",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error (Data processing failure)",
+                        "description": "Internal Server Error (Deletion failed)",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
@@ -492,17 +463,24 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "categories"
+                    "buys"
                 ],
                 "summary": "Update existing item",
                 "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "description": "Update input",
                         "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/v1.categoryUpdateRequest"
+                            "$ref": "#/definitions/v1.buyUpdateRequest"
                         }
                     }
                 ],
@@ -510,7 +488,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/v1.categoryResponse"
+                            "$ref": "#/definitions/v1.buyResponse"
                         }
                     },
                     "400": {
@@ -521,6 +499,80 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Deletes an item by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "buys"
+                ],
+                "summary": "Delete existing item",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Buy ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content (Successfully deleted)"
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid ID format)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error (Deletion failed)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/categories": {
+            "get": {
+                "description": "Retrieves a list without pagination.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "categories"
+                ],
+                "summary": "Get all",
+                "responses": {
+                    "200": {
+                        "description": "List of all items",
+                        "schema": {
+                            "$ref": "#/definitions/v1.categoryResponseList"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (Service failure)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error (Data processing failure)",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
@@ -565,45 +617,6 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/httputils.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Deletes an item by its ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "categories"
-                ],
-                "summary": "Delete existing item",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Category ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No Content (Successfully deleted)"
-                    },
-                    "400": {
-                        "description": "Bad Request (Invalid ID format)",
-                        "schema": {
-                            "$ref": "#/definitions/httputils.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error (Deletion failed)",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
@@ -666,34 +679,40 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/clients": {
+        "/api/v1/categories/{id}": {
             "get": {
-                "description": "Retrieves a list without pagination.",
-                "consumes": [
-                    "application/json"
-                ],
+                "description": "Retrieves the details based on the provided ID in the request path.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "clients"
+                    "categories"
                 ],
-                "summary": "Get all",
+                "summary": "Get item by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "List of all BuyItems",
+                        "description": "Single item",
                         "schema": {
-                            "$ref": "#/definitions/v1.clientResponseList"
+                            "$ref": "#/definitions/v1.categoryResponse"
                         }
                     },
                     "400": {
-                        "description": "Bad Request (Service failure)",
+                        "description": "Bad Request (Invalid ID format)",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error (Data processing failure)",
+                        "description": "Internal Server Error (Deletion failed)",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
@@ -709,17 +728,24 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "clients"
+                    "categories"
                 ],
                 "summary": "Update existing item",
                 "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "description": "Update input",
                         "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/v1.clientUpdateRequest"
+                            "$ref": "#/definitions/v1.categoryUpdateRequest"
                         }
                     }
                 ],
@@ -727,7 +753,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/v1.clientResponse"
+                            "$ref": "#/definitions/v1.categoryResponse"
                         }
                     },
                     "400": {
@@ -738,6 +764,80 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Deletes an item by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "categories"
+                ],
+                "summary": "Delete existing item",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Category ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content (Successfully deleted)"
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid ID format)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error (Deletion failed)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/clients": {
+            "get": {
+                "description": "Retrieves a list without pagination.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "clients"
+                ],
+                "summary": "Get all",
+                "responses": {
+                    "200": {
+                        "description": "List of all items",
+                        "schema": {
+                            "$ref": "#/definitions/v1.clientResponseList"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (Service failure)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error (Data processing failure)",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
@@ -782,45 +882,6 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/httputils.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Deletes an item by its ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "clients"
-                ],
-                "summary": "Delete existing item",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Client ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No Content (Successfully deleted)"
-                    },
-                    "400": {
-                        "description": "Bad Request (Invalid ID format)",
-                        "schema": {
-                            "$ref": "#/definitions/httputils.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error (Deletion failed)",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
@@ -883,34 +944,40 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/products": {
+        "/api/v1/clients/{id}": {
             "get": {
-                "description": "Retrieves a list without pagination.",
-                "consumes": [
-                    "application/json"
-                ],
+                "description": "Retrieves the details based on the provided ID in the request path.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "products"
+                    "clients"
                 ],
-                "summary": "Get all",
+                "summary": "Get item by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "List of all BuyItems",
+                        "description": "Single item",
                         "schema": {
-                            "$ref": "#/definitions/v1.productResponseList"
+                            "$ref": "#/definitions/v1.clientResponse"
                         }
                     },
                     "400": {
-                        "description": "Bad Request (Service failure)",
+                        "description": "Bad Request (Invalid ID format)",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error (Data processing failure)",
+                        "description": "Internal Server Error (Deletion failed)",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
@@ -926,17 +993,24 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "products"
+                    "clients"
                 ],
                 "summary": "Update existing item",
                 "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "description": "Update input",
                         "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/v1.productUpdateRequest"
+                            "$ref": "#/definitions/v1.clientUpdateRequest"
                         }
                     }
                 ],
@@ -944,7 +1018,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/v1.productResponse"
+                            "$ref": "#/definitions/v1.clientResponse"
                         }
                     },
                     "400": {
@@ -955,6 +1029,80 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Deletes an item by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "clients"
+                ],
+                "summary": "Delete existing item",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Client ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content (Successfully deleted)"
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid ID format)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error (Deletion failed)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/products": {
+            "get": {
+                "description": "Retrieves a list without pagination.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "products"
+                ],
+                "summary": "Get all",
+                "responses": {
+                    "200": {
+                        "description": "List of all items",
+                        "schema": {
+                            "$ref": "#/definitions/v1.productResponseList"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (Service failure)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error (Data processing failure)",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
@@ -999,45 +1147,6 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/httputils.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Deletes an item by its ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "products"
-                ],
-                "summary": "Delete existing item",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Product ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No Content (Successfully deleted)"
-                    },
-                    "400": {
-                        "description": "Bad Request (Invalid ID format)",
-                        "schema": {
-                            "$ref": "#/definitions/httputils.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error (Deletion failed)",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
@@ -1093,6 +1202,137 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Internal Server Error (Data processing failure)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/products/{id}": {
+            "get": {
+                "description": "Retrieves the details based on the provided ID in the request path.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "products"
+                ],
+                "summary": "Get item by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Single item",
+                        "schema": {
+                            "$ref": "#/definitions/v1.productResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid ID format)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error (Deletion failed)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Updates an item by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "products"
+                ],
+                "summary": "Update existing item",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update input",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/v1.productUpdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/v1.productResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Deletes an item by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "products"
+                ],
+                "summary": "Delete existing item",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Product ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content (Successfully deleted)"
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid ID format)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error (Deletion failed)",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }

@@ -36,11 +36,11 @@ import (
 
 type {{.InterfaceName}} interface {
 	Save(ctx context.Context, input *dto.{{.DtoCreateName}}) (*dto.{{.DtoName}}, error)
-	GetAll(ctx context.Context) ([]dto.{{.DtoName}}, error)
-	GetAllPaginated(ctx context.Context, pq *pageable.PaginationQuery) ([]dto.{{.DtoName}}, pageable.Page, error)
-	Update(ctx context.Context, entityId int, input *dto.{{.DtoUpdateName}}) (*dto.{{.DtoName}}, error)
-	Delete(ctx context.Context, id int) error
-	GetByID(ctx context.Context, id int) (*dto.{{.DtoName}}, error)
+	UpdateByID(ctx context.Context, entityId int, input *dto.{{.DtoUpdateName}}) (*dto.{{.DtoName}}, error)
+	DeleteByID(ctx context.Context, id int) error
+	FindByID(ctx context.Context, id int) (*dto.{{.DtoName}}, error)
+	FindAll(ctx context.Context) ([]dto.{{.DtoName}}, error)
+	FindAllPageable(ctx context.Context, pq *pageable.PaginationQuery) ([]dto.{{.DtoName}}, pageable.Page, error)
 }
 `
 
@@ -86,36 +86,12 @@ func (s *{{.ImplName}}) Save(ctx context.Context, input *dto.{{.DtoCreateName}})
 	return &toDto, err
 }
 
-func (s *{{.ImplName}}) GetAll(ctx context.Context) ([]dto.{{.DtoName}}, error) {
-	entities, err := s.repo.GetAll(ctx)
-	if err != nil {
-		return nil, err
-	}
-	toDtos, err := fromEntitiesToDtos(entities)
-	if err != nil {
-		return nil, err
-	}
-	return toDtos, nil
-}
-
-func (s *{{.ImplName}}) GetAllPaginated(ctx context.Context, pq *pageable.PaginationQuery) ([]dto.{{.DtoName}}, pageable.Page, error) {
-	entities, page, err := s.repo.GetAllPaginated(ctx, pq)
-	if err != nil {
-		return nil, pageable.Page{}, err
-	}
-	toDtos, err := fromEntitiesToDtos(entities)
-	if err != nil {
-		return nil, pageable.Page{}, err
-	}
-	return toDtos, page, nil
-}
-
-func (s *{{.ImplName}}) Update(ctx context.Context, entityId int, input *dto.{{.DtoUpdateName}}) (*dto.{{.DtoName}}, error) {
+func (s *{{.ImplName}}) UpdateByID(ctx context.Context, entityId int, input *dto.{{.DtoUpdateName}}) (*dto.{{.DtoName}}, error) {
 	entityToUpdate, err := fromUpdateDtoToEntity(input)
 	if err != nil {
 		return nil, err
 	}
-	updatedResult, err := s.repo.Update(ctx, entityId, entityToUpdate)
+	updatedResult, err := s.repo.UpdateByID(ctx, entityId, entityToUpdate)
 	if err != nil {
 		return nil, err
 	}
@@ -126,12 +102,12 @@ func (s *{{.ImplName}}) Update(ctx context.Context, entityId int, input *dto.{{.
 	return &toDto, err
 }
 
-func (s *{{.ImplName}}) Delete(ctx context.Context, id int) error {
-	return s.repo.Delete(ctx, id)
+func (s *{{.ImplName}}) DeleteByID(ctx context.Context, id int) error {
+	return s.repo.DeleteByID(ctx, id)
 }
 
-func (s *{{.ImplName}}) GetByID(ctx context.Context, id int) (*dto.{{.DtoName}}, error) {
-	entityById, err := s.repo.GetByID(ctx, id)
+func (s *{{.ImplName}}) FindByID(ctx context.Context, id int) (*dto.{{.DtoName}}, error) {
+	entityById, err := s.repo.FindByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -140,6 +116,30 @@ func (s *{{.ImplName}}) GetByID(ctx context.Context, id int) (*dto.{{.DtoName}},
 		return nil, err
 	}
 	return &toDto, err
+}
+
+func (s *{{.ImplName}}) FindAll(ctx context.Context) ([]dto.{{.DtoName}}, error) {
+	entities, err := s.repo.FindAll(ctx)
+	if err != nil {
+		return nil, err
+	}
+	toDtos, err := fromEntitiesToDtos(entities)
+	if err != nil {
+		return nil, err
+	}
+	return toDtos, nil
+}
+
+func (s *{{.ImplName}}) FindAllPageable(ctx context.Context, pq *pageable.PaginationQuery) ([]dto.{{.DtoName}}, pageable.Page, error) {
+	entities, page, err := s.repo.FindAllPageable(ctx, pq)
+	if err != nil {
+		return nil, pageable.Page{}, err
+	}
+	toDtos, err := fromEntitiesToDtos(entities)
+	if err != nil {
+		return nil, pageable.Page{}, err
+	}
+	return toDtos, page, nil
 }
 
 // mappers

@@ -10,9 +10,9 @@ import (
 
 type ClientRepository interface {
 	Save(ctx context.Context, inputEntity *dbModel.Client) (*dbModel.Client, error)
-	GetAll(ctx context.Context) ([]dbModel.Client, error)
-	GetAllPaginated(ctx context.Context, pq *pageable.PaginationQuery) ([]dbModel.Client, pageable.Page, error)
-	Update(ctx context.Context, entityId int, inputEntity *dbModel.Client) (*dbModel.Client, error)
-	Delete(ctx context.Context, entityId int) error
-	GetByID(ctx context.Context, entityId int) (*dbModel.Client, error)
+	UpdateByID(ctx context.Context, entityId int, inputEntity *dbModel.Client) (*dbModel.Client, error)
+	DeleteByID(ctx context.Context, entityId int) error
+	FindByID(ctx context.Context, entityId int) (*dbModel.Client, error)
+	FindAll(ctx context.Context) ([]dbModel.Client, error)
+	FindAllPageable(ctx context.Context, pq *pageable.PaginationQuery) ([]dbModel.Client, pageable.Page, error)
 }

@@ -74,93 +74,20 @@ func (h *ProductHTTPHandler) Save(w http.ResponseWriter, r *http.Request) {
 	httputils.WriteJSON(w, http.StatusOK, dtoToPayload)
 }
 
-// GetAll
-//
-// @Summary Get all
-// @Description Retrieves a list without pagination.
-// @Tags products
-// @Accept json
-// @Produce  json
-// @Success 200 {object} productResponseList "List of all BuyItems"
-// @Failure 400 {object} httputils.ErrorResponse "Bad Request (Service failure)"
-// @Failure 500 {object} httputils.ErrorResponse "Internal Server Error (Data processing failure)"
-// @Router /api/v1/products [get]
-func (h *ProductHTTPHandler) GetAll(w http.ResponseWriter, r *http.Request) {
-	// call service
-	resp, err := h.productService.GetAll(r.Context())
-	if err != nil {
-		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
-		return
-	}
-
-	// convert service-model to handler-payload
-	dtosToPayloads, err := mapDtosToPayloads(resp)
-	if err != nil {
-		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
-		return
-	}
-
-	// 200 OK
-	httputils.WriteJSON(w, http.StatusOK, productResponseList{
-		Data: dtosToPayloads,
-	})
-}
-
-// GetAllPaginated
-//
-// @Summary Get paginated list
-// @Description Retrieves a paginated list using pagination parameters.
-// @Tags products
-// @Accept json
-// @Produce json
-// @Param page query int false "Page number (default: 1)"
-// @Param size query int false "Number of items per page (default: 10)"
-// @Param sort query string false "Sort order, e.g., 'name,asc'"
-// @Success 200 {object} productResponseList "Paginated list of Product"
-// @Failure 400 {object} httputils.ErrorResponse "Bad Request (Invalid pagination parameters or service failure)"
-// @Failure 500 {object} httputils.ErrorResponse "Internal Server Error (Data processing failure)"
-// @Router /api/v1/products/pageable [get]
-func (h *ProductHTTPHandler) GetAllPaginated(w http.ResponseWriter, r *http.Request) {
-	pq, err := pageable.GetPaginationFromCtx(r)
-	if err != nil {
-		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
-		return
-	}
-
-	// call service
-	resp, page, err := h.productService.GetAllPaginated(r.Context(), pq)
-	if err != nil {
-		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
-		return
-	}
-
-	// convert service-model to handler-payload
-	dtosToPayloads, err := mapDtosToPayloads(resp)
-	if err != nil {
-		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
-		return
-	}
-
-	// 200 OK
-	httputils.WriteJSON(w, http.StatusOK, productResponseList{
-		Data: dtosToPayloads,
-		Page: &page,
-	})
-}
-
-// Update
+// UpdateByID
 //
 // @Summary Update existing item
 // @Description Updates an item by its ID
 // @Tags products
 // @Accept json
 // @Produce json
+// @Param id path int true "Item ID"
 // @Param request body productUpdateRequest true "Update input"
 // @Success 201 {object} productResponse
 // @Failure 400 {object} httputils.ErrorResponse "Bad Request"
 // @Failure 500 {object} httputils.ErrorResponse "Internal Server Error"
-// @Router /api/v1/products [put]
-func (h *ProductHTTPHandler) Update(w http.ResponseWriter, r *http.Request) {
+// @Router /api/v1/products/{id} [put]
+func (h *ProductHTTPHandler) UpdateByID(w http.ResponseWriter, r *http.Request) {
 	id, err := httputils.PathValueI64(r, "id")
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
@@ -182,7 +109,7 @@ func (h *ProductHTTPHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 	// call service
 	// TODO: types - int(id)
-	resp, err := h.productService.Update(r.Context(), int(id), updateInput)
+	resp, err := h.productService.UpdateByID(r.Context(), int(id), updateInput)
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
 		return
@@ -199,7 +126,7 @@ func (h *ProductHTTPHandler) Update(w http.ResponseWriter, r *http.Request) {
 	httputils.WriteJSON(w, http.StatusCreated, dtoToPayload)
 }
 
-// Delete
+// DeleteByID
 //
 // @Summary Delete existing item
 // @Description Deletes an item by its ID
@@ -210,15 +137,15 @@ func (h *ProductHTTPHandler) Update(w http.ResponseWriter, r *http.Request) {
 // @Success 204 "No Content (Successfully deleted)"
 // @Failure 400 {object} httputils.ErrorResponse "Bad Request (Invalid ID format)"
 // @Failure 500 {object} httputils.ErrorResponse "Internal Server Error (Deletion failed)"
-// @Router /api/v1/products [delete]
-func (h *ProductHTTPHandler) Delete(w http.ResponseWriter, r *http.Request) {
+// @Router /api/v1/products/{id} [delete]
+func (h *ProductHTTPHandler) DeleteByID(w http.ResponseWriter, r *http.Request) {
 	id, err := httputils.PathValueI64(r, "id")
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
 		return
 	}
 
-	err = h.productService.Delete(r.Context(), int(id))
+	err = h.productService.DeleteByID(r.Context(), int(id))
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
 		return
@@ -228,14 +155,25 @@ func (h *ProductHTTPHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func (h *ProductHTTPHandler) GetByID(w http.ResponseWriter, r *http.Request) {
+// FindByID retrieves a purchase by its ID.
+//
+// @Summary Get item by ID
+// @Description Retrieves the details based on the provided ID in the request path.
+// @Tags products
+// @Produce json
+// @Param id path int true "Item ID"
+// @Success 200 {object} productResponse "Single item"
+// @Failure 400 {object} httputils.ErrorResponse "Bad Request (Invalid ID format)"
+// @Failure 500 {object} httputils.ErrorResponse "Internal Server Error (Deletion failed)"
+// @Router /api/v1/products/{id} [get]
+func (h *ProductHTTPHandler) FindByID(w http.ResponseWriter, r *http.Request) {
 	id, err := httputils.PathValueI64(r, "id")
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
 		return
 	}
 
-	resp, err := h.productService.GetByID(r.Context(), int(id))
+	resp, err := h.productService.FindByID(r.Context(), int(id))
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
 		return
@@ -248,6 +186,80 @@ func (h *ProductHTTPHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	httputils.WriteJSON(w, http.StatusOK, dtoToPayload)
+}
+
+// FindAll
+//
+// @Summary Get all
+// @Description Retrieves a list without pagination.
+// @Tags products
+// @Accept json
+// @Produce  json
+// @Success 200 {object} productResponseList "List of all items"
+// @Failure 400 {object} httputils.ErrorResponse "Bad Request (Service failure)"
+// @Failure 500 {object} httputils.ErrorResponse "Internal Server Error (Data processing failure)"
+// @Router /api/v1/products [get]
+func (h *ProductHTTPHandler) FindAll(w http.ResponseWriter, r *http.Request) {
+	// call service
+	resp, err := h.productService.FindAll(r.Context())
+	if err != nil {
+		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
+		return
+	}
+
+	// convert service-model to handler-payload
+	dtosToPayloads, err := mapDtosToPayloads(resp)
+	if err != nil {
+		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
+		return
+	}
+
+	// 200 OK
+	httputils.WriteJSON(w, http.StatusOK, productResponseList{
+		Data: dtosToPayloads,
+	})
+}
+
+// FindAllPageable
+//
+// @Summary Get paginated list
+// @Description Retrieves a paginated list using pagination parameters.
+// @Tags products
+// @Accept json
+// @Produce json
+// @Param page query int false "Page number (default: 1)"
+// @Param size query int false "Number of items per page (default: 10)"
+// @Param sort query string false "Sort order, e.g., 'name,asc'"
+// @Success 200 {object} productResponseList "Paginated list of Product"
+// @Failure 400 {object} httputils.ErrorResponse "Bad Request (Invalid pagination parameters or service failure)"
+// @Failure 500 {object} httputils.ErrorResponse "Internal Server Error (Data processing failure)"
+// @Router /api/v1/products/pageable [get]
+func (h *ProductHTTPHandler) FindAllPageable(w http.ResponseWriter, r *http.Request) {
+	pq, err := pageable.GetPaginationFromCtx(r)
+	if err != nil {
+		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
+		return
+	}
+
+	// call service
+	resp, page, err := h.productService.FindAllPageable(r.Context(), pq)
+	if err != nil {
+		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
+		return
+	}
+
+	// convert service-model to handler-payload
+	dtosToPayloads, err := mapDtosToPayloads(resp)
+	if err != nil {
+		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
+		return
+	}
+
+	// 200 OK
+	httputils.WriteJSON(w, http.StatusOK, productResponseList{
+		Data: dtosToPayloads,
+		Page: &page,
+	})
 }
 
 // mappers

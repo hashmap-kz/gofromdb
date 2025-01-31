@@ -57,8 +57,8 @@ func (r *clientRepository) Save(ctx context.Context, inputEntity *dbModel.Client
 	return &scannedEntity, nil
 }
 
-func (r *clientRepository) Update(ctx context.Context, entityId int, inputEntity *dbModel.Client) (*dbModel.Client, error) {
-	tag := "clientRepository.Update"
+func (r *clientRepository) UpdateByID(ctx context.Context, entityId int, inputEntity *dbModel.Client) (*dbModel.Client, error) {
+	tag := "clientRepository.UpdateByID"
 
 	query := `		
 		update public.client
@@ -90,8 +90,8 @@ func (r *clientRepository) Update(ctx context.Context, entityId int, inputEntity
 	return &scannedEntity, nil
 }
 
-func (r *clientRepository) Delete(ctx context.Context, entityId int) error {
-	tag := "clientRepository.Delete"
+func (r *clientRepository) DeleteByID(ctx context.Context, entityId int) error {
+	tag := "clientRepository.DeleteByID"
 
 	query := `		
 		delete from only public.client
@@ -105,8 +105,8 @@ func (r *clientRepository) Delete(ctx context.Context, entityId int) error {
 	return nil
 }
 
-func (r *clientRepository) GetByID(ctx context.Context, entityId int) (*dbModel.Client, error) {
-	tag := "clientRepository.GetByID"
+func (r *clientRepository) FindByID(ctx context.Context, entityId int) (*dbModel.Client, error) {
+	tag := "clientRepository.FindByID"
 
 	query := `		
 		select
@@ -134,8 +134,8 @@ func (r *clientRepository) GetByID(ctx context.Context, entityId int) (*dbModel.
 	return &scannedEntity, nil
 }
 
-func (r *clientRepository) GetAll(ctx context.Context) ([]dbModel.Client, error) {
-	tag := "clientRepository.GetAll"
+func (r *clientRepository) FindAll(ctx context.Context) ([]dbModel.Client, error) {
+	tag := "clientRepository.FindAll"
 
 	query := `		
 		select
@@ -176,8 +176,8 @@ func (r *clientRepository) GetAll(ctx context.Context) ([]dbModel.Client, error)
 	return scannedEntities, nil
 }
 
-func (r *clientRepository) GetAllPaginated(ctx context.Context, pq *pageable.PaginationQuery) ([]dbModel.Client, pageable.Page, error) {
-	tag := "clientRepository.GetAllPaginated"
+func (r *clientRepository) FindAllPageable(ctx context.Context, pq *pageable.PaginationQuery) ([]dbModel.Client, pageable.Page, error) {
+	tag := "clientRepository.FindAllPageable"
 
 	// retrieve total count
 	queryCnt := `select count(record_id) from public.client`

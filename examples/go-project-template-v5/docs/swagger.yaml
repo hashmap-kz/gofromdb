@@ -307,32 +307,6 @@ info:
   contact: {}
 paths:
   /api/v1/buy-items:
-    delete:
-      consumes:
-      - application/json
-      description: Deletes an item by its ID
-      parameters:
-      - description: BuyItem ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: No Content (Successfully deleted)
-        "400":
-          description: Bad Request (Invalid ID format)
-          schema:
-            $ref: '#/definitions/httputils.ErrorResponse'
-        "500":
-          description: Internal Server Error (Deletion failed)
-          schema:
-            $ref: '#/definitions/httputils.ErrorResponse'
-      summary: Delete existing item
-      tags:
-      - buy-items
     get:
       consumes:
       - application/json
@@ -341,7 +315,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: List of all BuyItems
+          description: List of all items
           schema:
             $ref: '#/definitions/v1.buyItemResponseList'
         "400":
@@ -384,11 +358,69 @@ paths:
       summary: Create new item
       tags:
       - buy-items
+  /api/v1/buy-items/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes an item by its ID
+      parameters:
+      - description: BuyItem ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content (Successfully deleted)
+        "400":
+          description: Bad Request (Invalid ID format)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error (Deletion failed)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Delete existing item
+      tags:
+      - buy-items
+    get:
+      description: Retrieves the details based on the provided ID in the request path.
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Single item
+          schema:
+            $ref: '#/definitions/v1.buyItemResponse'
+        "400":
+          description: Bad Request (Invalid ID format)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error (Deletion failed)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Get item by ID
+      tags:
+      - buy-items
     put:
       consumes:
       - application/json
       description: Updates an item by its ID
       parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
       - description: Update input
         in: body
         name: request
@@ -450,32 +482,6 @@ paths:
       tags:
       - buy-items
   /api/v1/buys:
-    delete:
-      consumes:
-      - application/json
-      description: Deletes an item by its ID
-      parameters:
-      - description: Buy ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: No Content (Successfully deleted)
-        "400":
-          description: Bad Request (Invalid ID format)
-          schema:
-            $ref: '#/definitions/httputils.ErrorResponse'
-        "500":
-          description: Internal Server Error (Deletion failed)
-          schema:
-            $ref: '#/definitions/httputils.ErrorResponse'
-      summary: Delete existing item
-      tags:
-      - buys
     get:
       consumes:
       - application/json
@@ -484,7 +490,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: List of all BuyItems
+          description: List of all items
           schema:
             $ref: '#/definitions/v1.buyResponseList'
         "400":
@@ -527,11 +533,69 @@ paths:
       summary: Create new item
       tags:
       - buys
+  /api/v1/buys/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes an item by its ID
+      parameters:
+      - description: Buy ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content (Successfully deleted)
+        "400":
+          description: Bad Request (Invalid ID format)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error (Deletion failed)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Delete existing item
+      tags:
+      - buys
+    get:
+      description: Retrieves the details based on the provided ID in the request path.
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Single item
+          schema:
+            $ref: '#/definitions/v1.buyResponse'
+        "400":
+          description: Bad Request (Invalid ID format)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error (Deletion failed)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Get item by ID
+      tags:
+      - buys
     put:
       consumes:
       - application/json
       description: Updates an item by its ID
       parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
       - description: Update input
         in: body
         name: request
@@ -593,32 +657,6 @@ paths:
       tags:
       - buys
   /api/v1/categories:
-    delete:
-      consumes:
-      - application/json
-      description: Deletes an item by its ID
-      parameters:
-      - description: Category ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: No Content (Successfully deleted)
-        "400":
-          description: Bad Request (Invalid ID format)
-          schema:
-            $ref: '#/definitions/httputils.ErrorResponse'
-        "500":
-          description: Internal Server Error (Deletion failed)
-          schema:
-            $ref: '#/definitions/httputils.ErrorResponse'
-      summary: Delete existing item
-      tags:
-      - categories
     get:
       consumes:
       - application/json
@@ -627,7 +665,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: List of all BuyItems
+          description: List of all items
           schema:
             $ref: '#/definitions/v1.categoryResponseList'
         "400":
@@ -670,11 +708,69 @@ paths:
       summary: Create new item
       tags:
       - categories
+  /api/v1/categories/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes an item by its ID
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content (Successfully deleted)
+        "400":
+          description: Bad Request (Invalid ID format)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error (Deletion failed)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Delete existing item
+      tags:
+      - categories
+    get:
+      description: Retrieves the details based on the provided ID in the request path.
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Single item
+          schema:
+            $ref: '#/definitions/v1.categoryResponse'
+        "400":
+          description: Bad Request (Invalid ID format)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error (Deletion failed)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Get item by ID
+      tags:
+      - categories
     put:
       consumes:
       - application/json
       description: Updates an item by its ID
       parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
       - description: Update input
         in: body
         name: request
@@ -736,32 +832,6 @@ paths:
       tags:
       - categories
   /api/v1/clients:
-    delete:
-      consumes:
-      - application/json
-      description: Deletes an item by its ID
-      parameters:
-      - description: Client ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: No Content (Successfully deleted)
-        "400":
-          description: Bad Request (Invalid ID format)
-          schema:
-            $ref: '#/definitions/httputils.ErrorResponse'
-        "500":
-          description: Internal Server Error (Deletion failed)
-          schema:
-            $ref: '#/definitions/httputils.ErrorResponse'
-      summary: Delete existing item
-      tags:
-      - clients
     get:
       consumes:
       - application/json
@@ -770,7 +840,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: List of all BuyItems
+          description: List of all items
           schema:
             $ref: '#/definitions/v1.clientResponseList'
         "400":
@@ -813,11 +883,69 @@ paths:
       summary: Create new item
       tags:
       - clients
+  /api/v1/clients/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes an item by its ID
+      parameters:
+      - description: Client ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content (Successfully deleted)
+        "400":
+          description: Bad Request (Invalid ID format)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error (Deletion failed)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Delete existing item
+      tags:
+      - clients
+    get:
+      description: Retrieves the details based on the provided ID in the request path.
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Single item
+          schema:
+            $ref: '#/definitions/v1.clientResponse'
+        "400":
+          description: Bad Request (Invalid ID format)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error (Deletion failed)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Get item by ID
+      tags:
+      - clients
     put:
       consumes:
       - application/json
       description: Updates an item by its ID
       parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
       - description: Update input
         in: body
         name: request
@@ -879,32 +1007,6 @@ paths:
       tags:
       - clients
   /api/v1/products:
-    delete:
-      consumes:
-      - application/json
-      description: Deletes an item by its ID
-      parameters:
-      - description: Product ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: No Content (Successfully deleted)
-        "400":
-          description: Bad Request (Invalid ID format)
-          schema:
-            $ref: '#/definitions/httputils.ErrorResponse'
-        "500":
-          description: Internal Server Error (Deletion failed)
-          schema:
-            $ref: '#/definitions/httputils.ErrorResponse'
-      summary: Delete existing item
-      tags:
-      - products
     get:
       consumes:
       - application/json
@@ -913,7 +1015,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: List of all BuyItems
+          description: List of all items
           schema:
             $ref: '#/definitions/v1.productResponseList'
         "400":
@@ -956,11 +1058,69 @@ paths:
       summary: Create new item
       tags:
       - products
+  /api/v1/products/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes an item by its ID
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content (Successfully deleted)
+        "400":
+          description: Bad Request (Invalid ID format)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error (Deletion failed)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Delete existing item
+      tags:
+      - products
+    get:
+      description: Retrieves the details based on the provided ID in the request path.
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Single item
+          schema:
+            $ref: '#/definitions/v1.productResponse'
+        "400":
+          description: Bad Request (Invalid ID format)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error (Deletion failed)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Get item by ID
+      tags:
+      - products
     put:
       consumes:
       - application/json
       description: Updates an item by its ID
       parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
       - description: Update input
         in: body
         name: request

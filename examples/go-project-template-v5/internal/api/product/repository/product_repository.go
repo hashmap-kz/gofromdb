@@ -10,9 +10,9 @@ import (
 
 type ProductRepository interface {
 	Save(ctx context.Context, inputEntity *dbModel.Product) (*dbModel.Product, error)
-	GetAll(ctx context.Context) ([]dbModel.Product, error)
-	GetAllPaginated(ctx context.Context, pq *pageable.PaginationQuery) ([]dbModel.Product, pageable.Page, error)
-	Update(ctx context.Context, entityId int, inputEntity *dbModel.Product) (*dbModel.Product, error)
-	Delete(ctx context.Context, entityId int) error
-	GetByID(ctx context.Context, entityId int) (*dbModel.Product, error)
+	UpdateByID(ctx context.Context, entityId int, inputEntity *dbModel.Product) (*dbModel.Product, error)
+	DeleteByID(ctx context.Context, entityId int) error
+	FindByID(ctx context.Context, entityId int) (*dbModel.Product, error)
+	FindAll(ctx context.Context) ([]dbModel.Product, error)
+	FindAllPageable(ctx context.Context, pq *pageable.PaginationQuery) ([]dbModel.Product, pageable.Page, error)
 }

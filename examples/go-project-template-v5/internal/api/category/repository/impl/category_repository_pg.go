@@ -61,8 +61,8 @@ func (r *categoryRepository) Save(ctx context.Context, inputEntity *dbModel.Cate
 	return &scannedEntity, nil
 }
 
-func (r *categoryRepository) Update(ctx context.Context, entityId int, inputEntity *dbModel.Category) (*dbModel.Category, error) {
-	tag := "categoryRepository.Update"
+func (r *categoryRepository) UpdateByID(ctx context.Context, entityId int, inputEntity *dbModel.Category) (*dbModel.Category, error) {
+	tag := "categoryRepository.UpdateByID"
 
 	query := `		
 		update public.category
@@ -98,8 +98,8 @@ func (r *categoryRepository) Update(ctx context.Context, entityId int, inputEnti
 	return &scannedEntity, nil
 }
 
-func (r *categoryRepository) Delete(ctx context.Context, entityId int) error {
-	tag := "categoryRepository.Delete"
+func (r *categoryRepository) DeleteByID(ctx context.Context, entityId int) error {
+	tag := "categoryRepository.DeleteByID"
 
 	query := `		
 		delete from only public.category
@@ -113,8 +113,8 @@ func (r *categoryRepository) Delete(ctx context.Context, entityId int) error {
 	return nil
 }
 
-func (r *categoryRepository) GetByID(ctx context.Context, entityId int) (*dbModel.Category, error) {
-	tag := "categoryRepository.GetByID"
+func (r *categoryRepository) FindByID(ctx context.Context, entityId int) (*dbModel.Category, error) {
+	tag := "categoryRepository.FindByID"
 
 	query := `		
 		select
@@ -144,8 +144,8 @@ func (r *categoryRepository) GetByID(ctx context.Context, entityId int) (*dbMode
 	return &scannedEntity, nil
 }
 
-func (r *categoryRepository) GetAll(ctx context.Context) ([]dbModel.Category, error) {
-	tag := "categoryRepository.GetAll"
+func (r *categoryRepository) FindAll(ctx context.Context) ([]dbModel.Category, error) {
+	tag := "categoryRepository.FindAll"
 
 	query := `		
 		select
@@ -188,8 +188,8 @@ func (r *categoryRepository) GetAll(ctx context.Context) ([]dbModel.Category, er
 	return scannedEntities, nil
 }
 
-func (r *categoryRepository) GetAllPaginated(ctx context.Context, pq *pageable.PaginationQuery) ([]dbModel.Category, pageable.Page, error) {
-	tag := "categoryRepository.GetAllPaginated"
+func (r *categoryRepository) FindAllPageable(ctx context.Context, pq *pageable.PaginationQuery) ([]dbModel.Category, pageable.Page, error) {
+	tag := "categoryRepository.FindAllPageable"
 
 	// retrieve total count
 	queryCnt := `select count(record_id) from public.category`

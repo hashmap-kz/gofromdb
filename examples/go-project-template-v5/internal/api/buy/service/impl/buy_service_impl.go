@@ -39,36 +39,12 @@ func (s *buyService) Save(ctx context.Context, input *dto.BuyCreateDto) (*dto.Bu
 	return &toDto, err
 }
 
-func (s *buyService) GetAll(ctx context.Context) ([]dto.BuyDto, error) {
-	entities, err := s.repo.GetAll(ctx)
-	if err != nil {
-		return nil, err
-	}
-	toDtos, err := fromEntitiesToDtos(entities)
-	if err != nil {
-		return nil, err
-	}
-	return toDtos, nil
-}
-
-func (s *buyService) GetAllPaginated(ctx context.Context, pq *pageable.PaginationQuery) ([]dto.BuyDto, pageable.Page, error) {
-	entities, page, err := s.repo.GetAllPaginated(ctx, pq)
-	if err != nil {
-		return nil, pageable.Page{}, err
-	}
-	toDtos, err := fromEntitiesToDtos(entities)
-	if err != nil {
-		return nil, pageable.Page{}, err
-	}
-	return toDtos, page, nil
-}
-
-func (s *buyService) Update(ctx context.Context, entityId int, input *dto.BuyUpdateDto) (*dto.BuyDto, error) {
+func (s *buyService) UpdateByID(ctx context.Context, entityId int, input *dto.BuyUpdateDto) (*dto.BuyDto, error) {
 	entityToUpdate, err := fromUpdateDtoToEntity(input)
 	if err != nil {
 		return nil, err
 	}
-	updatedResult, err := s.repo.Update(ctx, entityId, entityToUpdate)
+	updatedResult, err := s.repo.UpdateByID(ctx, entityId, entityToUpdate)
 	if err != nil {
 		return nil, err
 	}
@@ -79,12 +55,12 @@ func (s *buyService) Update(ctx context.Context, entityId int, input *dto.BuyUpd
 	return &toDto, err
 }
 
-func (s *buyService) Delete(ctx context.Context, id int) error {
-	return s.repo.Delete(ctx, id)
+func (s *buyService) DeleteByID(ctx context.Context, id int) error {
+	return s.repo.DeleteByID(ctx, id)
 }
 
-func (s *buyService) GetByID(ctx context.Context, id int) (*dto.BuyDto, error) {
-	entityById, err := s.repo.GetByID(ctx, id)
+func (s *buyService) FindByID(ctx context.Context, id int) (*dto.BuyDto, error) {
+	entityById, err := s.repo.FindByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -93,6 +69,30 @@ func (s *buyService) GetByID(ctx context.Context, id int) (*dto.BuyDto, error) {
 		return nil, err
 	}
 	return &toDto, err
+}
+
+func (s *buyService) FindAll(ctx context.Context) ([]dto.BuyDto, error) {
+	entities, err := s.repo.FindAll(ctx)
+	if err != nil {
+		return nil, err
+	}
+	toDtos, err := fromEntitiesToDtos(entities)
+	if err != nil {
+		return nil, err
+	}
+	return toDtos, nil
+}
+
+func (s *buyService) FindAllPageable(ctx context.Context, pq *pageable.PaginationQuery) ([]dto.BuyDto, pageable.Page, error) {
+	entities, page, err := s.repo.FindAllPageable(ctx, pq)
+	if err != nil {
+		return nil, pageable.Page{}, err
+	}
+	toDtos, err := fromEntitiesToDtos(entities)
+	if err != nil {
+		return nil, pageable.Page{}, err
+	}
+	return toDtos, page, nil
 }
 
 // mappers
