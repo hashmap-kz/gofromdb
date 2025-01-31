@@ -45,13 +45,26 @@ func GenStructs(connString string) []TableToStructInfo {
 	return structs
 }
 
+func isInternalFieldToSkip(name string) bool {
+	for _, f := range []string{
+		"created_at",
+		"updated_at",
+		"guid",
+	} {
+		if f == name {
+			return true
+		}
+	}
+	return false
+}
+
 func (s *TableToStructInfo) GetStructFields(withPkeys, skipIfHasDefault bool) []TableToStructFieldInfo {
 	var result []TableToStructFieldInfo
 	for _, f := range s.Fields {
 		if !withPkeys && f.DbIsPk {
 			continue
 		}
-		if skipIfHasDefault && f.DbHasDefault && !f.DbIsPk {
+		if skipIfHasDefault && isInternalFieldToSkip(f.DbFieldName) && !f.DbIsPk {
 			continue
 		}
 		result = append(result, f)
