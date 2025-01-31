@@ -43,7 +43,8 @@ create table all_types_test
     tstzrange_col   tstzrange   default 'empty'::tstzrange,
     json_col        json        default '{}'::json,
     jsonb_col       jsonb       default '{}'::jsonb,
-    name_col        name        default ''
+    name_col        name        default '',
+    uuid_col        uuid        default gen_random_uuid()
 );
 
 INSERT INTO all_types_test (bool_arr_col, date_arr_col, float4_arr_col, float8_arr_col, int2_arr_col, int4_arr_col,
