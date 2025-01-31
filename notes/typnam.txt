@@ -80,7 +80,13 @@ with zeroes as (select $t$''$t$                    as str,
                        $t$'0'::numeric$t$          as num,
                        $t$'{}'::json$t$            as jsn,
                        $t$'{}'::jsonb$t$           as jsb,
-                       $t$'0001-01-01 00:00:00'$t$ as dtz),
+                       $t$'0001-01-01 00:00:00'$t$ as dtz,
+                       $t$'0'::int2$t$             as i16,
+                       $t$'0'::int4$t$             as i32,
+                       $t$'0'::int8$t$             as i64,
+                       $t$'0'::float4$t$           as f32,
+                       $t$'0'::float4$t$           as f64,
+                       $t$'false'::bool$t$         as bol),
      type_map as
          (values
               -- Arrays
@@ -97,23 +103,20 @@ with zeroes as (select $t$''$t$                    as str,
               ('_varchar', '[]string', $t$'{}'::varchar[]$t$),
               -- Bytea
               ('bytea', '[]byte', (select byt from zeroes)),
-              -- Integer Types
-              ('int2', 'int16', '0'),
-              ('int4', 'int', '0'),
-              ('int8', 'int64', '0'),
               -- Serial Types
-              ('smallserial', 'int16', '0'),
-              ('serial', 'int', '0'),
-              ('bigserial', 'int64', '0'),
-              ('int2', 'int16', '0'),
-              ('int4', 'int', '0'),
-              ('int8', 'int64', '0'),
+              ('smallserial', 'int16', (select i16 from zeroes)),
+              ('serial', 'int', (select i32 from zeroes)),
+              ('bigserial', 'int64', (select i64 from zeroes)),
+              -- Integer Types
+              ('int2', 'int16', (select i16 from zeroes)),
+              ('int4', 'int', (select i32 from zeroes)),
+              ('int8', 'int64', (select i64 from zeroes)),
               -- Arbitrary Precision Numbers
               ('decimal', 'string', (select num from zeroes)),
               ('numeric', 'string', (select num from zeroes)),
               -- Floating-Point Types
-              ('float4', 'float32', '0'),
-              ('float8', 'float64', '0'),
+              ('float4', 'float32', (select f32 from zeroes)),
+              ('float8', 'float64', (select f64 from zeroes)),
               -- Date/Time Types
               ('date', 'time.Time', (select dtz from zeroes) || '::date'),
               ('time', 'time.Time', (select dtz from zeroes) || '::time'),
@@ -127,7 +130,7 @@ with zeroes as (select $t$''$t$                    as str,
               ('text', 'string', (select str from zeroes)),
               ('varchar', 'string', (select str from zeroes)),
               -- Boolean
-              ('bool', 'bool', 'false'),
+              ('bool', 'bool', (select bol from zeroes)),
               -- ETC
               ('json', 'string', (select jsn from zeroes)),
               ('jsonb', 'string', (select jsb from zeroes)),
