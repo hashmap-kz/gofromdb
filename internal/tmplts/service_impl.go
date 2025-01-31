@@ -183,9 +183,9 @@ func fromEntityToDto(inputEntity *dbModel.{{.StructName}}) (dto.{{.DtoName}}, er
 		return dto.{{.DtoName}}{}, fmt.Errorf("unexpected nil input for mapping between {{.StructName}}->{{.DtoName}}")
 	}
 	return dto.{{.DtoName}}{
-{{- range .StructFieldsWithPKeys}}
-		{{.}}: inputEntity.{{.}},
-{{- end }}
+{{- range .DtoFieldsFull}}
+		{{.FieldName}}: inputEntity.{{.FieldName}},
+{{- end}}
 	}, nil
 }
 `
