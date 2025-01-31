@@ -8,6 +8,12 @@ import (
 	"genpg-v5/internal/genpg"
 )
 
+var filters = map[string]struct{}{
+	"created_at": {},
+	"updated_at": {},
+	"guid":       {},
+}
+
 type TableToStructFieldInfo struct {
 	FieldComment string
 	FieldName    string
@@ -46,24 +52,19 @@ func GenStructs(connString string) []TableToStructInfo {
 }
 
 func isInternalFieldToSkip(name string) bool {
-	filters := map[string]struct{}{
-		"created_at": {},
-		"updated_at": {},
-		"guid":       {},
-	}
 	if _, ok := filters[name]; ok {
 		return true
 	}
 	return false
 }
 
-func (s *TableToStructInfo) GetStructFields(withPkeys, skipIfHasDefault bool) []TableToStructFieldInfo {
+func (s *TableToStructInfo) GetStructFields(withPkeys, skipInternal bool) []TableToStructFieldInfo {
 	var result []TableToStructFieldInfo
 	for _, f := range s.Fields {
 		if !withPkeys && f.DbIsPk {
 			continue
 		}
-		if skipIfHasDefault && isInternalFieldToSkip(f.DbFieldName) && !f.DbIsPk {
+		if skipInternal && isInternalFieldToSkip(f.DbFieldName) {
 			continue
 		}
 		result = append(result, f)
@@ -71,17 +72,17 @@ func (s *TableToStructInfo) GetStructFields(withPkeys, skipIfHasDefault bool) []
 	return result
 }
 
-func (s *TableToStructInfo) GetStructFieldsAsString(withPkeys, skipIfHasDefault bool) []string {
+func (s *TableToStructInfo) GetStructFieldsAsString(withPkeys, skipInternal bool) []string {
 	var result []string
-	for _, f := range s.GetStructFields(withPkeys, skipIfHasDefault) {
+	for _, f := range s.GetStructFields(withPkeys, skipInternal) {
 		result = append(result, f.FieldName)
 	}
 	return result
 }
 
-func (s *TableToStructInfo) GetDbFieldsAsString(withPkeys, skipIfHasDefault bool) []string {
+func (s *TableToStructInfo) GetDbFieldsAsString(withPkeys, skipInternal bool) []string {
 	var result []string
-	for _, f := range s.GetStructFields(withPkeys, skipIfHasDefault) {
+	for _, f := range s.GetStructFields(withPkeys, skipInternal) {
 		result = append(result, f.DbFieldName)
 	}
 	return result
