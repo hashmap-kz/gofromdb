@@ -46,14 +46,13 @@ func GenStructs(connString string) []TableToStructInfo {
 }
 
 func isInternalFieldToSkip(name string) bool {
-	for _, f := range []string{
-		"created_at",
-		"updated_at",
-		"guid",
-	} {
-		if f == name {
-			return true
-		}
+	filters := map[string]struct{}{
+		"created_at": {},
+		"updated_at": {},
+		"guid":       {},
+	}
+	if _, ok := filters[name]; ok {
+		return true
 	}
 	return false
 }
