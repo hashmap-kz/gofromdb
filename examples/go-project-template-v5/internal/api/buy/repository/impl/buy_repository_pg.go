@@ -67,8 +67,8 @@ func (r *buyRepository) Update(ctx context.Context, entityId int, inputEntity *d
 	query := `		
 		update public.buy
 		set 
-			coalesce(nullif($2, '0'::int4), client_id),
-			coalesce(nullif($3, ''), description)
+			client_id = coalesce(nullif($2, '0'::int4), client_id),
+			description = coalesce(nullif($3, ''), description)
 		where record_id = $1
 		returning 
 			record_id,

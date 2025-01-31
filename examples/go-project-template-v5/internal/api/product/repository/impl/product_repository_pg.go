@@ -71,9 +71,9 @@ func (r *productRepository) Update(ctx context.Context, entityId int, inputEntit
 	query := `		
 		update public.product
 		set 
-			coalesce(nullif($2, '0'::int4), category_id),
-			coalesce(nullif($3, ''), name),
-			coalesce(nullif($4, ''), description)
+			category_id = coalesce(nullif($2, '0'::int4), category_id),
+			name = coalesce(nullif($3, ''), name),
+			description = coalesce(nullif($4, ''), description)
 		where record_id = $1
 		returning 
 			record_id,
