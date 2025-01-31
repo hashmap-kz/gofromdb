@@ -1,0 +1,32 @@
+package main
+
+import (
+	"fmt"
+	"runtime"
+	"time"
+)
+
+// Function to profile execution time
+func profileFunc(start time.Time) {
+	pc, _, _, _ := runtime.Caller(1)
+	fn := runtime.FuncForPC(pc)
+	fmt.Printf("Function %s took %s\n", fn.Name(), time.Since(start))
+}
+
+func slowFunction() {
+	start := time.Now()         // Capture start time first
+	defer profileFunc(start)    // Defer profiling function with correct start time
+	time.Sleep(2 * time.Second) // Simulate work
+}
+
+func fastFunction() {
+	start := time.Now()
+	defer profileFunc(start)
+	time.Sleep(500 * time.Millisecond)
+}
+
+func main() {
+	slowFunction()
+	fastFunction()
+}
+
