@@ -8,7 +8,7 @@ import "time"
 // {{.StructName}} {{.StructComment | ToLower}}
 {{- end}}
 type {{.StructName}} struct {
-{{- range .Columns}}
+{{- range .DtoFieldsFull}}
 	{{- if .FieldComment}}
 	// {{.FieldComment}}
 	{{- end}}

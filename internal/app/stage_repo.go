@@ -34,53 +34,38 @@ type queriesResults struct {
 }
 
 func GenRepository(s TableToStructInfo) GenRepo {
-	// Entity template
-	entityTemplateResult := ExecTemplate("entity", tmplts.EntityTemplate,
-		map[string]any{
-			"StructName":    s.StructName,
-			"StructComment": s.StructComment,
-			"Columns":       s.Fields,
-		}, FuncMap)
-
-	// Interface template
-	interfaceTemplateResult := ExecTemplate("entity-interface", tmplts.RepoInterfaceTemplate,
-		map[string]any{
-			"StructName":    s.StructName,
-			"PackageName":   strings.ToLower(s.DbTableName),
-			"InterfaceName": s.StructName + "Repository",
-		}, FuncMap)
-
-	// Impl
-
 	queries := genQueries(s)
+	data := map[string]any{
+		"StructName":               s.StructName,
+		"StructComment":            s.StructComment,
+		"PackageName":              strings.ToLower(s.DbTableName),
+		"InterfaceName":            s.StructName + "Repository",
+		"ImplName":                 LowerFirstLetter(s.StructName) + "Repository",
+		"RepoSaveQuery":            queries.repoSaveQueryResult,
+		"RepoUpdateQuery":          queries.repoUpdateQueryResult,
+		"RepoDeleteQuery":          queries.repoDeleteQueryResult,
+		"RepoGetByIdQuery":         queries.repoGetByIdQueryResult,
+		"RepoGetAllQuery":          queries.repoGetAllQueryResult,
+		"RepoCountQuery":           queries.repoCountQueryResult,
+		"RepoGetAllPaginatedQuery": queries.repoGetAllPaginatedQueryResult,
+		"DtoFieldsNoPkeysNoDefaults": s.GetStructFields(Filters{
+			WithInsertableOnly: true,
+			WithInternals:      false,
+		}),
+		"DtoFieldsFull": s.GetStructFields(Filters{
+			WithInsertableOnly: false,
+			WithInternals:      true,
+		}),
+	}
 
-	repoImplTemplateResult := ExecTemplate("funcs", tmplts.RepoImplTemplate,
-		map[string]any{
-			"RepoSaveQuery":            queries.repoSaveQueryResult,
-			"RepoUpdateQuery":          queries.repoUpdateQueryResult,
-			"RepoDeleteQuery":          queries.repoDeleteQueryResult,
-			"RepoGetByIdQuery":         queries.repoGetByIdQueryResult,
-			"RepoGetAllQuery":          queries.repoGetAllQueryResult,
-			"RepoCountQuery":           queries.repoCountQueryResult,
-			"RepoGetAllPaginatedQuery": queries.repoGetAllPaginatedQueryResult,
-			"StructName":               s.StructName,
-			"PackageName":              strings.ToLower(s.DbTableName),
-			"InterfaceName":            s.StructName + "Repository",
-			"ImplName":                 LowerFirstLetter(s.StructName) + "Repository",
-			"DtoFieldsNoPkeysNoDefaults": s.GetStructFields(Filters{
-				WithInsertableOnly: true,
-				WithInternals:      false,
-			}),
-			"DtoFieldsFull": s.GetStructFields(Filters{
-				WithInsertableOnly: false,
-				WithInternals:      true,
-			}),
-		}, FuncMap)
+	interfaceRes := ExecTemplate("entity-interface", tmplts.RepoInterfaceTemplate, data, FuncMap)
+	modelsRes := ExecTemplate("entity", tmplts.EntityTemplate, data, FuncMap)
+	implRes := ExecTemplate("funcs", tmplts.RepoImplTemplate, data, FuncMap)
 
 	return GenRepo{
-		RepoEntity:    PrintFormatted(entityTemplateResult),
-		RepoInterface: PrintFormatted(interfaceTemplateResult),
-		RepoImpl:      PrintFormatted(repoImplTemplateResult),
+		RepoEntity:    PrintFormatted(modelsRes),
+		RepoInterface: PrintFormatted(interfaceRes),
+		RepoImpl:      PrintFormatted(implRes),
 	}
 }
 

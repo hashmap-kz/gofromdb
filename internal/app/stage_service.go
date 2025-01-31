@@ -17,8 +17,8 @@ func GenService(s TableToStructInfo) GenSvc {
 		"StructName":     s.StructName,
 		"PackageName":    strings.ToLower(s.DbTableName),
 		"InterfaceName":  s.StructName + "Service",
-		"RepositoryName": s.StructName + "Repository",
 		"ImplName":       LowerFirstLetter(s.StructName) + "Service",
+		"RepositoryName": s.StructName + "Repository",
 		"DtoName":        s.StructName + "Dto",
 		"DtoUpdateName":  s.StructName + "UpdateDto",
 		"DtoCreateName":  s.StructName + "CreateDto",
@@ -32,13 +32,13 @@ func GenService(s TableToStructInfo) GenSvc {
 		}),
 	}
 
-	interfaceResult := ExecTemplate("service-interface", tmplts.ServiceInterfaceTemplate, data, FuncMap)
-	dtosResult := ExecTemplate("service-dtos", tmplts.ServiceDtosTemplate, data, FuncMap)
-	implResult := ExecTemplate("service-impl", tmplts.ServiceImplTemplate, data, FuncMap)
+	interfaceRes := ExecTemplate("service-interface", tmplts.ServiceInterfaceTemplate, data, FuncMap)
+	modelsRes := ExecTemplate("service-dtos", tmplts.ServiceDtosTemplate, data, FuncMap)
+	implRes := ExecTemplate("service-impl", tmplts.ServiceImplTemplate, data, FuncMap)
 
 	return GenSvc{
-		ServiceDtos:      PrintFormatted(dtosResult),
-		ServiceInterface: PrintFormatted(interfaceResult),
-		ServiceImpl:      PrintFormatted(implResult),
+		ServiceDtos:      PrintFormatted(modelsRes),
+		ServiceInterface: PrintFormatted(interfaceRes),
+		ServiceImpl:      PrintFormatted(implRes),
 	}
 }
