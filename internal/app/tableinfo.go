@@ -14,6 +14,11 @@ var filters = map[string]struct{}{
 	"guid":       {},
 }
 
+type Filters struct {
+	WithPkeys    bool
+	SkipInternal bool
+}
+
 type TableToStructFieldInfo struct {
 	FieldComment string
 	FieldName    string
@@ -58,13 +63,13 @@ func isInternalFieldToSkip(name string) bool {
 	return false
 }
 
-func (s *TableToStructInfo) GetStructFields(withPkeys, skipInternal bool) []TableToStructFieldInfo {
+func (s *TableToStructInfo) GetStructFields(filters Filters) []TableToStructFieldInfo {
 	var result []TableToStructFieldInfo
 	for _, f := range s.Fields {
-		if !withPkeys && f.DbIsPk {
+		if !filters.WithPkeys && f.DbIsPk {
 			continue
 		}
-		if skipInternal && isInternalFieldToSkip(f.DbFieldName) {
+		if filters.SkipInternal && isInternalFieldToSkip(f.DbFieldName) {
 			continue
 		}
 		result = append(result, f)
@@ -72,17 +77,17 @@ func (s *TableToStructInfo) GetStructFields(withPkeys, skipInternal bool) []Tabl
 	return result
 }
 
-func (s *TableToStructInfo) GetStructFieldsAsString(withPkeys, skipInternal bool) []string {
+func (s *TableToStructInfo) GetStructFieldsAsString(filters Filters) []string {
 	var result []string
-	for _, f := range s.GetStructFields(withPkeys, skipInternal) {
+	for _, f := range s.GetStructFields(filters) {
 		result = append(result, f.FieldName)
 	}
 	return result
 }
 
-func (s *TableToStructInfo) GetDbFieldsAsString(withPkeys, skipInternal bool) []string {
+func (s *TableToStructInfo) GetDbFieldsAsString(filters Filters) []string {
 	var result []string
-	for _, f := range s.GetStructFields(withPkeys, skipInternal) {
+	for _, f := range s.GetStructFields(filters) {
 		result = append(result, f.DbFieldName)
 	}
 	return result

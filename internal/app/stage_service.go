@@ -28,7 +28,10 @@ func GenService(s TableToStructInfo) GenSvc {
 
 	// Dto template
 
-	structFieldsWithoutPkeysAndDefaults := s.GetStructFields(false, true)
+	structFieldsWithoutPkeysAndDefaults := s.GetStructFields(Filters{
+		WithPkeys:    false,
+		SkipInternal: true,
+	})
 
 	dtosResult := ExecTemplate("service-dtos", tmplts.ServiceDtosTemplate,
 		map[string]any{
@@ -45,8 +48,14 @@ func GenService(s TableToStructInfo) GenSvc {
 
 	// Functions template
 
-	structFieldsWithoutPkeysAndDefaultsStr := s.GetStructFieldsAsString(false, true)
-	structFieldsWithPkeysAndDefaultsStr := s.GetStructFieldsAsString(true, false)
+	structFieldsWithoutPkeysAndDefaultsStr := s.GetStructFieldsAsString(Filters{
+		WithPkeys:    false,
+		SkipInternal: true,
+	})
+	structFieldsWithPkeysAndDefaultsStr := s.GetStructFieldsAsString(Filters{
+		WithPkeys:    true,
+		SkipInternal: false,
+	})
 
 	implResult := ExecTemplate("service-impl", tmplts.ServiceImplTemplate,
 		map[string]any{

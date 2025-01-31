@@ -12,7 +12,10 @@ type GenHandl struct {
 }
 
 func GenHandler(s TableToStructInfo) GenHandl {
-	structFieldsWithoutPkeysAndDefaults := s.GetStructFields(false, true)
+	structFieldsWithoutPkeysAndDefaults := s.GetStructFields(Filters{
+		WithPkeys:    false,
+		SkipInternal: true,
+	})
 
 	data := map[string]any{
 		"PackageName":                 strings.ToLower(s.DbTableName),
