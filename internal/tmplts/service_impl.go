@@ -149,9 +149,9 @@ func fromCreateDtoToEntity(input *dto.{{.DtoCreateName}}) (*dbModel.{{.StructNam
 		return nil, fmt.Errorf("convert {{.DtoCreateName}}->{{.StructName}}: input dto cannot be nil")
 	}
 	return &dbModel.{{.StructName}}{
-{{- range .StructFieldsNoPKeys}}
-		{{.}}: input.{{.}},
-{{- end }}
+{{- range .DtoFieldsNoPkeysNoDefaults}}
+		{{.FieldName}}: input.{{.FieldName}},
+{{- end}}
 	}, nil
 }
 
@@ -160,9 +160,9 @@ func fromUpdateDtoToEntity(input *dto.{{.DtoUpdateName}}) (*dbModel.{{.StructNam
 		return nil, fmt.Errorf("convert {{.DtoUpdateName}}->{{.StructName}}: input dto cannot be nil")
 	}
 	return &dbModel.{{.StructName}}{
-{{- range .StructFieldsNoPKeys}}
-		{{.}}: input.{{.}},
-{{- end }}
+{{- range .DtoFieldsNoPkeysNoDefaults}}
+		{{.FieldName}}: input.{{.FieldName}},
+{{- end}}
 	}, nil
 }
 
