@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/exec"
 	"path"
 
 	"genpg-v5/internal/app"
@@ -31,6 +32,18 @@ func main() {
 		writeRepoFiles(s, outputPath)
 		writeServiceFiles(s, outputPath)
 		writeHandlerFiles(s, outputPath)
+	}
+
+	// cleanup imports, format output
+	execCleanupCmd("goimports", "-w", ".")
+	execCleanupCmd("gofumpt", "-w", ".")
+}
+
+func execCleanupCmd(name string, arg ...string) {
+	cmd := exec.Command(name, arg...)
+	_, err := cmd.CombinedOutput()
+	if err != nil {
+		log.Fatal(err)
 	}
 }
 
