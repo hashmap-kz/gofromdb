@@ -23,6 +23,7 @@ with ti as (select (select cls.relnamespace::regnamespace::text || '.' || cls.re
                                 end
                        end)                                            as attnotnull,
                    a.attgenerated                                      as attgenerated,
+                   a.attidentity                                       as attidentity,
                    coalesce(obj_description(c.oid, 'pg_class'), '')    as tab_desc,
                    coalesce((select d.description
                              from pg_description d
@@ -87,9 +88,10 @@ with ti as (select (select cls.relnamespace::regnamespace::text || '.' || cls.re
 
      def as (select (select c.relnamespace::regnamespace::text || '.' || c.relname
                      from pg_class c
-                     where c.oid = pa.attrelid) as relpath,
-                    pa.attname                  as attname,
-                    pa.attnum                   as attnum,
+                     where c.oid = pa.attrelid)                as relpath,
+                    pa.attname                                 as attname,
+                    pa.attnum                                  as attnum,
+                    pg_catalog.pg_get_expr(d.adbin, d.adrelid) as attdefexpr,
                     (case
                          when pa.attgenerated = 's' then
                              'generated always as (' ||
@@ -97,8 +99,8 @@ with ti as (select (select cls.relnamespace::regnamespace::text || '.' || cls.re
                              ') stored'
                          else
                              'default ' || pg_catalog.pg_get_expr(d.adbin, d.adrelid)
-                        end)                    as def,
-                    pa.attrelid                 as attrelid
+                        end)                                   as def,
+                    pa.attrelid                                as attrelid
              from pg_catalog.pg_attrdef d,
                   pg_catalog.pg_attribute pa
              where d.adrelid = pa.attrelid
@@ -207,7 +209,7 @@ select ti.relpath,
        ti.attname,
        ti.atttype,
        ti.atttype2,
-       coalesce(fk.con_frelpath, '') refto,
+       coalesce(fk.con_frelpath, '')                                    refto,
        ti.col_desc,
        ti.attnotnull,
        ti.tab_desc,
@@ -229,8 +231,13 @@ select ti.relpath,
                    else
                        tmt.column2
                    end
-           end     as                go_type,
-       tmt.column3 as                nullif_rhs
+           end                                                       as go_type,
+       tmt.column3                                                   as nullif_rhs,
+       -- a column is insertable if:
+       -- is not an 'IDENTITY', is not a 'GENERATED', is not a one of a 'SERIAL'
+       (ti.attidentity = ''
+           and ti.attgenerated = ''
+           and (not coalesce(def.attdefexpr, '') ilike 'nextval(%')) as is_insertable
 from ti
          left join fk on fk.con_relpath = ti.relpath and fk.conkey_first = ti.attnum
          left join limits l on l.relpath = ti.relpath and l.attnum = ti.attnum
