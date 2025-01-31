@@ -63,7 +63,7 @@ func (r *clientRepository) Update(ctx context.Context, entityId int, inputEntity
 	query := `		
 		update public.client
 		set 
-			email = $2
+			coalesce(nullif($2, ''), email)
 		where record_id = $1
 		returning 
 			record_id,

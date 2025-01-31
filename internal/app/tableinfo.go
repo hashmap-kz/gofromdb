@@ -16,6 +16,7 @@ type TableToStructFieldInfo struct {
 	DbIsNotNull  bool
 	DbIsPk       bool
 	DbHasDefault bool
+	DbNullifRhs  string
 }
 
 type TableToStructInfo struct {
@@ -106,6 +107,7 @@ func makeOneStruct(relPath string, cols []genpg.ColumnInfo) TableToStructInfo {
 			DbIsNotNull:  c.AttNotNull,
 			DbIsPk:       c.IsPK,
 			DbHasDefault: c.Def != nil,
+			DbNullifRhs:  c.NullifRhs,
 		})
 	}
 

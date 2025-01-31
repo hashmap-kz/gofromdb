@@ -67,8 +67,8 @@ func (r *categoryRepository) Update(ctx context.Context, entityId int, inputEnti
 	query := `		
 		update public.category
 		set 
-			name = $2,
-			parent_id = $3
+			coalesce(nullif($2, ''), name),
+			coalesce(nullif($3, '0'::int4), parent_id)
 		where record_id = $1
 		returning 
 			record_id,

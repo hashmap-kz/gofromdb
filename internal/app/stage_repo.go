@@ -84,7 +84,9 @@ func GenRepository(s TableToStructInfo) GenRepo {
 func genQueries(s TableToStructInfo) queriesResults {
 	fieldsWithoutPkeysAndDefaults := s.GetDbFieldsAsString(false, true)
 	fieldsWithPkeysAndDefaults := s.GetDbFieldsAsString(true, false)
-	updateSets := GenUpdateSets(fieldsWithoutPkeysAndDefaults)
+
+	structFieldsWithoutPkeysAndDefaults := s.GetStructFields(false, true)
+	updateSets := GenUpdateSets(structFieldsWithoutPkeysAndDefaults)
 
 	queryTemplatesData := map[string]any{
 		"SchemaName":                    "public",
