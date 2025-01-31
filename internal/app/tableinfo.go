@@ -15,19 +15,20 @@ var filters = map[string]struct{}{
 }
 
 type Filters struct {
-	WithPkeys     bool
-	WithInternals bool
+	WithInsertableOnly bool
+	WithInternals      bool
 }
 
 type TableToStructFieldInfo struct {
-	FieldComment string
-	FieldName    string
-	FieldType    string
-	DbFieldName  string
-	DbIsNotNull  bool
-	DbIsPk       bool
-	DbHasDefault bool
-	DbNullifRhs  string
+	FieldComment   string
+	FieldName      string
+	FieldType      string
+	DbFieldName    string
+	DbIsNotNull    bool
+	DbIsPk         bool
+	DbHasDefault   bool
+	DbNullifRhs    string
+	DbIsInsertable bool
 }
 
 type TableToStructInfo struct {
@@ -66,7 +67,7 @@ func isInternalFieldToSkip(name string) bool {
 func (s *TableToStructInfo) GetStructFields(filters Filters) []TableToStructFieldInfo {
 	var result []TableToStructFieldInfo
 	for _, f := range s.Fields {
-		if !filters.WithPkeys && f.DbIsPk {
+		if filters.WithInsertableOnly && !f.DbIsInsertable {
 			continue
 		}
 		if !filters.WithInternals && isInternalFieldToSkip(f.DbFieldName) {
@@ -106,14 +107,15 @@ func makeOneStruct(relPath string, cols []genpg.ColumnInfo) TableToStructInfo {
 		}
 
 		fields = append(fields, TableToStructFieldInfo{
-			FieldComment: c.ColDesc,
-			FieldName:    makeName(c.AttName),
-			FieldType:    c.GoType,
-			DbFieldName:  c.AttName,
-			DbIsNotNull:  c.AttNotNull,
-			DbIsPk:       c.IsPK,
-			DbHasDefault: c.Def != nil,
-			DbNullifRhs:  c.NullifRhs,
+			FieldComment:   c.ColDesc,
+			FieldName:      makeName(c.AttName),
+			FieldType:      c.GoType,
+			DbFieldName:    c.AttName,
+			DbIsNotNull:    c.AttNotNull,
+			DbIsPk:         c.IsPK,
+			DbHasDefault:   c.Def != nil,
+			DbNullifRhs:    c.NullifRhs,
+			DbIsInsertable: c.IsInsertable,
 		})
 	}
 

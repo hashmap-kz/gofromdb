@@ -8,22 +8,23 @@ import (
 )
 
 type ColumnInfo struct {
-	RelPath    string
-	AttName    string
-	AttType    string
-	AttType2   string
-	RefTo      string
-	ColDesc    string
-	AttNotNull bool
-	TabDesc    string
-	AttNum     int32
-	CharMaxLen *int32
-	NPrec      *int32
-	NScal      *int32
-	Def        *string
-	IsPK       bool
-	GoType     string
-	NullifRhs  string
+	RelPath      string
+	AttName      string
+	AttType      string
+	AttType2     string
+	RefTo        string
+	ColDesc      string
+	AttNotNull   bool
+	TabDesc      string
+	AttNum       int32
+	CharMaxLen   *int32
+	NPrec        *int32
+	NScal        *int32
+	Def          *string
+	IsPK         bool
+	GoType       string
+	NullifRhs    string
+	IsInsertable bool
 }
 
 func GetDBInfo(connString string) map[string][]ColumnInfo {
@@ -63,6 +64,7 @@ func GetDBInfo(connString string) map[string][]ColumnInfo {
 			&row.IsPK,
 			&row.GoType,
 			&row.NullifRhs,
+			&row.IsInsertable,
 		); err != nil {
 			log.Fatalf("Failed to scan row: %v\n", err)
 		}
