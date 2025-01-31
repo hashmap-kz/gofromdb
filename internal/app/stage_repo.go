@@ -53,12 +53,12 @@ func GenRepository(s TableToStructInfo) GenRepo {
 	// Impl
 
 	structFieldsWithoutPkeysAndDefaults := s.GetStructFieldsAsString(Filters{
-		WithPkeys:    false,
-		SkipInternal: true,
+		WithPkeys:     false,
+		WithInternals: false,
 	})
 	structFieldsWithPkeysAndDefaults := s.GetStructFieldsAsString(Filters{
-		WithPkeys:    true,
-		SkipInternal: false,
+		WithPkeys:     true,
+		WithInternals: true,
 	})
 
 	queries := genQueries(s)
@@ -89,17 +89,17 @@ func GenRepository(s TableToStructInfo) GenRepo {
 
 func genQueries(s TableToStructInfo) queriesResults {
 	fieldsWithoutPkeysAndDefaults := s.GetDbFieldsAsString(Filters{
-		WithPkeys:    false,
-		SkipInternal: true,
+		WithPkeys:     false,
+		WithInternals: false,
 	})
 	fieldsWithPkeysAndDefaults := s.GetDbFieldsAsString(Filters{
-		WithPkeys:    true,
-		SkipInternal: false,
+		WithPkeys:     true,
+		WithInternals: true,
 	})
 
 	structFieldsWithoutPkeysAndDefaults := s.GetStructFields(Filters{
-		WithPkeys:    false,
-		SkipInternal: true,
+		WithPkeys:     false,
+		WithInternals: false,
 	})
 	updateSets := GenUpdateSets(structFieldsWithoutPkeysAndDefaults)
 

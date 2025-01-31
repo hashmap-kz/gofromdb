@@ -15,8 +15,8 @@ var filters = map[string]struct{}{
 }
 
 type Filters struct {
-	WithPkeys    bool
-	SkipInternal bool
+	WithPkeys     bool
+	WithInternals bool
 }
 
 type TableToStructFieldInfo struct {
@@ -69,7 +69,7 @@ func (s *TableToStructInfo) GetStructFields(filters Filters) []TableToStructFiel
 		if !filters.WithPkeys && f.DbIsPk {
 			continue
 		}
-		if filters.SkipInternal && isInternalFieldToSkip(f.DbFieldName) {
+		if !filters.WithInternals && isInternalFieldToSkip(f.DbFieldName) {
 			continue
 		}
 		result = append(result, f)

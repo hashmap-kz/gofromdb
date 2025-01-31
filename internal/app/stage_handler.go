@@ -13,8 +13,8 @@ type GenHandl struct {
 
 func GenHandler(s TableToStructInfo) GenHandl {
 	structFieldsWithoutPkeysAndDefaults := s.GetStructFields(Filters{
-		WithPkeys:    false,
-		SkipInternal: true,
+		WithPkeys:     false,
+		WithInternals: false,
 	})
 
 	data := map[string]any{
