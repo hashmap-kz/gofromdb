@@ -26,10 +26,7 @@ type ColumnInfo struct {
 	NullifRhs  string
 }
 
-func GetDBInfo() map[string][]ColumnInfo {
-	// Database connection string (update with your credentials)
-	connString := "postgres://postgres:postgres@localhost:5432/bookstore"
-
+func GetDBInfo(connString string) map[string][]ColumnInfo {
 	// Connect to the database
 	conn, err := pgx.Connect(context.Background(), connString)
 	if err != nil {

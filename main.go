@@ -10,7 +10,8 @@ import (
 )
 
 func main() {
-	structs := app.GenStructs()
+	connString := "postgres://postgres:postgres@localhost:5432/bookstore"
+	structs := app.GenStructs(connString)
 	outputPath := path.Join("examples", "go-project-template-v5")
 
 	// Paths example:

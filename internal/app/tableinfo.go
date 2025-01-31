@@ -28,8 +28,8 @@ type TableToStructInfo struct {
 	Fields                      []TableToStructFieldInfo
 }
 
-func GenStructs() []TableToStructInfo {
-	dbInfo := genpg.GetDBInfo()
+func GenStructs(connString string) []TableToStructInfo {
+	dbInfo := genpg.GetDBInfo(connString)
 	var structs []TableToStructInfo
 
 	for t := range dbInfo {
