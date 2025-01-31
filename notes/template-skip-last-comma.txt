@@ -1,0 +1,31 @@
+package main
+
+import (
+	"os"
+	"text/template"
+)
+
+func main() {
+	// Sample slice of strings
+	data := []string{"Apple", "Banana", "Cherry", "Date"}
+
+	// Define the template
+	tmpl := `{{- $length := len . -}}
+{{- range $i, $v := . -}}
+{{ $v }}{{ if ne (add $i 1) $length }},{{ end }}
+{{ end }}`
+
+	// Create a template
+	t, err := template.New("example").Funcs(template.FuncMap{
+		"add": func(a, b int) int { return a + b }, // Helper function to add
+	}).Parse(tmpl)
+	if err != nil {
+		panic(err)
+	}
+
+	// Execute template
+	err = t.Execute(os.Stdout, data)
+	if err != nil {
+		panic(err)
+	}
+}
