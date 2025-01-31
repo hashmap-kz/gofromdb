@@ -1,6 +1,3 @@
-package genpg
-
-var GetInfoQuery = `
 with ti as (select (select cls.relnamespace::regnamespace::text || '.' || cls.relname::text
                     from pg_class cls
                     where cls.oid = c.oid)                             as relpath,
@@ -234,4 +231,3 @@ where ti.relpath ~* 'public'
   and ti.relpath !~* 'migrate_'
 order by ti.relpath, ti.attnum
 ;
-`
