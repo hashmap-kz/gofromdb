@@ -1,0 +1,15 @@
+func splitByReadableCntPerLine(parts []string) string {
+	if len(parts) < 10 {
+		return strings.Join(parts, ", ")
+	}
+	var result strings.Builder
+	for i, v := range parts {
+		if i > 0 && i%5 == 0 {
+			result.WriteString(",\n")
+		} else if i > 0 {
+			result.WriteString(", ")
+		}
+		result.WriteString(v)
+	}
+	return result.String()
+}
