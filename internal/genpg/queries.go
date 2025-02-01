@@ -32,12 +32,10 @@ with ti as (select (select cls.relnamespace::regnamespace::text || '.' || cls.re
                                      and tnested.relname = c.relname
                                      and anested.attnum = a.attnum
                                      and anested.attname = a.attname)) as is_pk
-            from pg_class c,
-                 pg_attribute a,
-                 pg_type t
+            from pg_attribute a
+                     left join pg_class c on a.attrelid = c.oid
+                     left join pg_type t on a.atttypid = t.oid
             where a.attnum > 0
-              and a.attrelid = c.oid
-              and a.atttypid = t.oid
               and c.relnamespace in
                   (select n.oid
                    from pg_namespace n
@@ -94,11 +92,11 @@ with ti as (select (select cls.relnamespace::regnamespace::text || '.' || cls.re
                              'default ' || pg_catalog.pg_get_expr(d.adbin, d.adrelid)
                         end)                                   as def,
                     pa.attrelid                                as attrelid
-             from pg_catalog.pg_attrdef d,
-                  pg_catalog.pg_attribute pa
-             where d.adrelid = pa.attrelid
-               and d.adnum = pa.attnum
-               and pa.atthasdef
+             from pg_catalog.pg_attribute pa
+                      left join pg_catalog.pg_attrdef d
+                                on d.adrelid = pa.attrelid
+                                    and d.adnum = pa.attnum
+             where pa.atthasdef
              order by relpath, pa.attnum),
 
      zeroes as (select $t$''$t$                                           as str,
