@@ -5,8 +5,8 @@ import (
 
 	buyRepo "go-project-template-v5/internal/api/buy/repository"
 	buyImpl "go-project-template-v5/internal/api/buy/repository/impl"
-	buyitemRepo "go-project-template-v5/internal/api/buy_item/repository"
-	buyitemImpl "go-project-template-v5/internal/api/buy_item/repository/impl"
+	buyItemRepo "go-project-template-v5/internal/api/buy_item/repository"
+	buyItemImpl "go-project-template-v5/internal/api/buy_item/repository/impl"
 	categoryRepo "go-project-template-v5/internal/api/category/repository"
 	categoryImpl "go-project-template-v5/internal/api/category/repository/impl"
 	clientRepo "go-project-template-v5/internal/api/client/repository"
@@ -21,7 +21,7 @@ import (
 
 type Repositories struct {
 	BuyRepository      buyRepo.BuyRepository
-	BuyItemRepository  buyitemRepo.BuyItemRepository
+	BuyItemRepository  buyItemRepo.BuyItemRepository
 	CategoryRepository categoryRepo.CategoryRepository
 	ClientRepository   clientRepo.ClientRepository
 	ProductRepository  productRepo.ProductRepository
@@ -30,7 +30,7 @@ type Repositories struct {
 func NewRepositories(ctx context.Context, db *postgres.Postgres) *Repositories {
 	return &Repositories{
 		BuyRepository:      buyImpl.NewBuyRepository(ctx, db),
-		BuyItemRepository:  buyitemImpl.NewBuyItemRepository(ctx, db),
+		BuyItemRepository:  buyItemImpl.NewBuyItemRepository(ctx, db),
 		CategoryRepository: categoryImpl.NewCategoryRepository(ctx, db),
 		ClientRepository:   clientImpl.NewClientRepository(ctx, db),
 		ProductRepository:  productImpl.NewProductRepository(ctx, db),

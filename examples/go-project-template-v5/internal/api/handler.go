@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	buyv1 "go-project-template-v5/internal/api/buy/handler/v1"
-	buyitemv1 "go-project-template-v5/internal/api/buy_item/handler/v1"
+	buyItemv1 "go-project-template-v5/internal/api/buy_item/handler/v1"
 	categoryv1 "go-project-template-v5/internal/api/category/handler/v1"
 	clientv1 "go-project-template-v5/internal/api/client/handler/v1"
 	productv1 "go-project-template-v5/internal/api/product/handler/v1"
@@ -31,7 +31,7 @@ func (h *Handler) Init(router *http.ServeMux) {
 	router.HandleFunc("GET /api/v1/buys/pageable", buyHandler.FindAllPageable)
 
 	// BuyItem routes
-	buyItemHandler := buyitemv1.NewBuyItemHTTPHandler(h.Services.BuyItemService)
+	buyItemHandler := buyItemv1.NewBuyItemHTTPHandler(h.Services.BuyItemService)
 	router.HandleFunc("POST /api/v1/buy-items", buyItemHandler.Save)
 	router.HandleFunc("PUT /api/v1/buy-items/{id}", buyItemHandler.UpdateByID)
 	router.HandleFunc("DELETE /api/v1/buy-items/{id}", buyItemHandler.DeleteByID)

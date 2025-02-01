@@ -7,8 +7,8 @@ import (
 	"context"
 
 {{- range .Structs}}
-	{{.StructName | ToLower}}Repo "go-project-template-v5/internal/api/{{.DbTableName}}/repository"
-	{{.StructName | ToLower}}Impl "go-project-template-v5/internal/api/{{.DbTableName}}/repository/impl"
+	{{.StructNameLowerFirstLetter}}Repo "go-project-template-v5/internal/api/{{.DbTableName}}/repository"
+	{{.StructNameLowerFirstLetter}}Impl "go-project-template-v5/internal/api/{{.DbTableName}}/repository/impl"
 {{- end }}
 
 	"go-project-template-v5/pkg/storage/postgres"
@@ -18,14 +18,14 @@ import (
 
 type Repositories struct {
 {{- range .Structs}}
-	{{.StructName}}Repository {{.StructName | ToLower}}Repo.{{.StructName}}Repository
+	{{.StructName}}Repository {{.StructNameLowerFirstLetter}}Repo.{{.StructName}}Repository
 {{- end }}
 }
 
 func NewRepositories(ctx context.Context, db *postgres.Postgres) *Repositories {
 	return &Repositories{
 {{- range .Structs}}
-		{{.StructName}}Repository: {{.StructName | ToLower}}Impl.New{{.StructName}}Repository(ctx, db),
+		{{.StructName}}Repository: {{.StructNameLowerFirstLetter}}Impl.New{{.StructName}}Repository(ctx, db),
 {{- end }}
 	}
 }
@@ -37,8 +37,8 @@ package api
 import (
 	"context"
 {{- range .Structs}}
-	{{.StructName | ToLower}}Serv "go-project-template-v5/internal/api/{{.DbTableName}}/service"
-	{{.StructName | ToLower}}Impl "go-project-template-v5/internal/api/{{.DbTableName}}/service/impl"
+	{{.StructNameLowerFirstLetter}}Serv "go-project-template-v5/internal/api/{{.DbTableName}}/service"
+	{{.StructNameLowerFirstLetter}}Impl "go-project-template-v5/internal/api/{{.DbTableName}}/service/impl"
 {{- end }}
 )
 
@@ -46,7 +46,7 @@ import (
 
 type Services struct {
 {{- range .Structs}}
-	{{.StructName}}Service {{.StructName | ToLower}}Serv.{{.StructName}}Service
+	{{.StructName}}Service {{.StructNameLowerFirstLetter}}Serv.{{.StructName}}Service
 {{- end }}
 }
 
@@ -58,7 +58,7 @@ type Deps struct {
 func NewServices(ctx context.Context, deps Deps) *Services {
 	return &Services{
 {{- range .Structs}}
-		{{.StructName}}Service: {{.StructName | ToLower}}Impl.New{{.StructName}}Service(ctx, deps.Repos.{{.StructName}}Repository),
+		{{.StructName}}Service: {{.StructNameLowerFirstLetter}}Impl.New{{.StructName}}Service(ctx, deps.Repos.{{.StructName}}Repository),
 {{- end }}
 	}
 }
@@ -70,7 +70,7 @@ package api
 import (
 	"net/http"
 {{- range .Structs}}
-	{{.StructName | ToLower}}v1 "go-project-template-v5/internal/api/{{.DbTableName}}/handler/v1"
+	{{.StructNameLowerFirstLetter}}v1 "go-project-template-v5/internal/api/{{.DbTableName}}/handler/v1"
 {{- end }}
 )
 
@@ -87,7 +87,7 @@ func NewHandler(services *Services) *Handler {
 func (h *Handler) Init(router *http.ServeMux) {
 {{- range .Structs}}
 	// {{.StructName}} routes
-	{{.StructNameLowerFirstLetter}}Handler := {{.StructName | ToLower}}v1.New{{.StructName}}HTTPHandler(h.Services.{{.StructName}}Service)
+	{{.StructNameLowerFirstLetter}}Handler := {{.StructNameLowerFirstLetter}}v1.New{{.StructName}}HTTPHandler(h.Services.{{.StructName}}Service)
 	router.HandleFunc("POST /api/v1/{{.StructNamePluralRequestPath}}"			, {{.StructNameLowerFirstLetter}}Handler.Save)
 	router.HandleFunc("PUT /api/v1/{{.StructNamePluralRequestPath}}/{id}"		, {{.StructNameLowerFirstLetter}}Handler.UpdateByID)
 	router.HandleFunc("DELETE /api/v1/{{.StructNamePluralRequestPath}}/{id}"	, {{.StructNameLowerFirstLetter}}Handler.DeleteByID)
