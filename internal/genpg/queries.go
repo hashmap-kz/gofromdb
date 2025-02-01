@@ -1,7 +1,7 @@
 package genpg
 
 var GetInfoQuery = `
-with ti as (select (select format('%I.%I', cls.relnamespace::regnamespace::text, cls.relname::text)
+with ti as (select (select format('%I.%I', cls.relnamespace::regnamespace, cls.relname)
                     from pg_class cls
                     where cls.oid = c.oid)                          as relpath,
                    c.oid                                            as reloid,
@@ -28,7 +28,7 @@ with ti as (select (select format('%I.%I', cls.relnamespace::regnamespace::text,
             where a.attnum > 0
               and c.relkind = 'r'),
 
-     pk as (select format('%I.%I', c.relnamespace::regnamespace::text, c.relname::text)
+     pk as (select format('%I.%I', c.relnamespace::regnamespace, c.relname)
                                   as relpath,
                    c.relnamespace as relnamespace,
                    c.relname      as relname,
@@ -42,11 +42,11 @@ with ti as (select (select format('%I.%I', cls.relnamespace::regnamespace::text,
             where cn.contype = 'p'),
 
      fk as (select cn.oid                                      as conoid,
-                   (select format('%I.%I', cls.relnamespace::regnamespace::text, cls.relname::text)
+                   (select format('%I.%I', cls.relnamespace::regnamespace, cls.relname)
                     from pg_class cls
                     where cls.oid = cn.conrelid)               as con_relpath,
                    coalesce(
-                           (select format('%I.%I', cls.relnamespace::regnamespace::text, cls.relname::text)
+                           (select format('%I.%I', cls.relnamespace::regnamespace, cls.relname)
                             from pg_class cls
                             where cls.oid = cn.confrelid), '') as con_frelpath,
                    cn.conname                                  as conname,
@@ -71,7 +71,7 @@ with ti as (select (select format('%I.%I', cls.relnamespace::regnamespace::text,
                 from information_schema.columns colinfo
                 order by relpath, ordinal_position),
 
-     def as (select (select format('%I.%I', c.relnamespace::regnamespace::text, c.relname)
+     def as (select (select format('%I.%I', c.relnamespace::regnamespace, c.relname)
                      from pg_class c
                      where c.oid = pa.attrelid)                as relpath,
                     pa.attname                                 as attname,
