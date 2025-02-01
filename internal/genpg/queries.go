@@ -1,7 +1,7 @@
 package genpg
 
 var GetInfoQuery = `
-with ti as (select (select cls.relnamespace::regnamespace::text || '.' || cls.relname::text
+with ti as (select (select format('%I.%I', cls.relnamespace::regnamespace::text, cls.relname::text)
                     from pg_class cls
                     where cls.oid = c.oid)                             as relpath,
                    c.oid                                               as reloid,
@@ -44,11 +44,11 @@ with ti as (select (select cls.relnamespace::regnamespace::text || '.' || cls.re
               and c.relkind = 'r'),
 
      fk as (select cn.oid                                      as conoid,
-                   (select cls.relnamespace::regnamespace::text || '.' || cls.relname::text
+                   (select format('%I.%I', cls.relnamespace::regnamespace::text, cls.relname::text)
                     from pg_class cls
                     where cls.oid = cn.conrelid)               as con_relpath,
                    coalesce(
-                           (select cls.relnamespace::regnamespace::text || '.' || cls.relname::text
+                           (select format('%I.%I', cls.relnamespace::regnamespace::text, cls.relname::text)
                             from pg_class cls
                             where cls.oid = cn.confrelid), '') as con_frelpath,
                    cn.conname                                  as conname,
@@ -68,16 +68,16 @@ with ti as (select (select cls.relnamespace::regnamespace::text || '.' || cls.re
               and cn.contype = 'f'
             order by con_relpath, conname),
 
-     limits as (select colinfo.table_schema || '.' || colinfo.table_name as relpath,
-                       colinfo.column_name                               as attname,
-                       colinfo.ordinal_position                          as attnum,
-                       colinfo.character_maximum_length                  as char_max_len,
-                       colinfo.numeric_precision                         as n_prec,
-                       colinfo.numeric_scale                             as n_scal
+     limits as (select format('%I.%I', colinfo.table_schema, colinfo.table_name) as relpath,
+                       colinfo.column_name                                       as attname,
+                       colinfo.ordinal_position                                  as attnum,
+                       colinfo.character_maximum_length                          as char_max_len,
+                       colinfo.numeric_precision                                 as n_prec,
+                       colinfo.numeric_scale                                     as n_scal
                 from information_schema.columns colinfo
                 order by relpath, ordinal_position),
 
-     def as (select (select c.relnamespace::regnamespace::text || '.' || c.relname
+     def as (select (select format('%I.%I', c.relnamespace::regnamespace::text, c.relname)
                      from pg_class c
                      where c.oid = pa.attrelid)                as relpath,
                     pa.attname                                 as attname,
