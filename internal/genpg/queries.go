@@ -3,40 +3,43 @@ package genpg
 var GetInfoQuery = `
 with ti as (select (select format('%I.%I', cls.relnamespace::regnamespace::text, cls.relname::text)
                     from pg_class cls
-                    where cls.oid = c.oid)                             as relpath,
-                   c.oid                                               as reloid,
-                   a.attname                                           as attname,
-                   pg_catalog.format_type(a.atttypid, a.atttypmod)     as atttype,
-                   t.typname                                           as atttype2,
-                   a.attnum                                            as attnum,
+                    where cls.oid = c.oid)                          as relpath,
+                   c.oid                                            as reloid,
+                   a.attname                                        as attname,
+                   pg_catalog.format_type(a.atttypid, a.atttypmod)  as atttype,
+                   t.typname                                        as atttype2,
+                   a.attnum                                         as attnum,
                    (select max(ma.attnum)
                     from pg_attribute ma
-                    where ma.attrelid = a.attrelid)                    as max_attnum,
+                    where ma.attrelid = a.attrelid)                 as max_attnum,
                    (case
                         when a.attgenerated = 's' then
                             false
                         else
                             a.attnotnull
-                       end)                                            as attnotnull,
-                   a.attgenerated                                      as attgenerated,
-                   a.attidentity                                       as attidentity,
-                   coalesce(obj_description(c.oid, 'pg_class'), '')    as tab_desc,
-                   coalesce(col_description(c.oid, a.attnum), '')      as col_desc,
-                   (select exists (select *
-                                   from pg_constraint cnested
-                                            join pg_class tnested on cnested.conrelid = tnested.oid
-                                            join pg_attribute anested on anested.attnum = any (cnested.conkey) and
-                                                                         anested.attrelid = tnested.oid
-                                   where cnested.contype = 'p'
-                                     and tnested.relnamespace = c.relnamespace
-                                     and tnested.relname = c.relname
-                                     and anested.attnum = a.attnum
-                                     and anested.attname = a.attname)) as is_pk
+                       end)                                         as attnotnull,
+                   a.attgenerated                                   as attgenerated,
+                   a.attidentity                                    as attidentity,
+                   coalesce(obj_description(c.oid, 'pg_class'), '') as tab_desc,
+                   coalesce(col_description(c.oid, a.attnum), '')   as col_desc
             from pg_attribute a
                      left join pg_class c on a.attrelid = c.oid
                      left join pg_type t on a.atttypid = t.oid
             where a.attnum > 0
               and c.relkind = 'r'),
+
+     pk as (select format('%I.%I', c.relnamespace::regnamespace::text, c.relname::text)
+                                  as relpath,
+                   c.relnamespace as relnamespace,
+                   c.relname      as relname,
+                   a.attnum       as attnum,
+                   a.attname      as attname,
+                   cn.contype     as contype
+            from pg_constraint cn
+                     join pg_class c on cn.conrelid = c.oid
+                     join pg_attribute a on a.attnum = any (cn.conkey) and
+                                            a.attrelid = c.oid
+            where cn.contype = 'p'),
 
      fk as (select cn.oid                                      as conoid,
                    (select format('%I.%I', cls.relnamespace::regnamespace::text, cls.relname::text)
@@ -58,12 +61,13 @@ with ti as (select (select format('%I.%I', cls.relnamespace::regnamespace::text,
             where cn.contype = 'f'
             order by con_relpath, conname),
 
-     limits as (select format('%I.%I', colinfo.table_schema, colinfo.table_name) as relpath,
-                       colinfo.column_name                                       as attname,
-                       colinfo.ordinal_position                                  as attnum,
-                       colinfo.character_maximum_length                          as char_max_len,
-                       colinfo.numeric_precision                                 as n_prec,
-                       colinfo.numeric_scale                                     as n_scal
+     limits as (select format('%I.%I', colinfo.table_schema, colinfo.table_name)
+                                                        as relpath,
+                       colinfo.column_name              as attname,
+                       colinfo.ordinal_position         as attnum,
+                       colinfo.character_maximum_length as char_max_len,
+                       colinfo.numeric_precision        as n_prec,
+                       colinfo.numeric_scale            as n_scal
                 from information_schema.columns colinfo
                 order by relpath, ordinal_position),
 
@@ -199,7 +203,7 @@ select ti.relpath,
        l.n_prec,
        l.n_scal,
        def.def,
-       ti.is_pk,
+       coalesce(pk.contype, '') = 'p'                                as is_pk,
        case
            when coalesce(tmt.column2, '') = ''
                then ''
@@ -221,6 +225,7 @@ select ti.relpath,
            and (not coalesce(def.attdefexpr, '') ilike 'nextval(%')) as is_insertable
 from ti
          left join fk on fk.con_relpath = ti.relpath and fk.conkey_first = ti.attnum
+         left join pk on pk.relpath = ti.relpath and pk.attnum = ti.attnum
          left join limits l on l.relpath = ti.relpath and l.attnum = ti.attnum
          left join def on def.relpath = ti.relpath and def.attnum = ti.attnum
          left join typemap_tab tmt on tmt.column1 = ti.atttype2
