@@ -21,10 +21,7 @@ with ti as (select (select cls.relnamespace::regnamespace::text || '.' || cls.re
                    a.attgenerated                                      as attgenerated,
                    a.attidentity                                       as attidentity,
                    coalesce(obj_description(c.oid, 'pg_class'), '')    as tab_desc,
-                   coalesce((select d.description
-                             from pg_description d
-                             where d.objoid = c.oid
-                               and d.objsubid = a.attnum), '')         as col_desc,
+                   coalesce(col_description(c.oid, a.attnum), '')      as col_desc,
                    (select exists (select *
                                    from pg_constraint cnested
                                             join pg_class tnested on cnested.conrelid = tnested.oid
