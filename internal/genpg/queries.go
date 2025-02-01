@@ -16,11 +16,7 @@ with ti as (select (select cls.relnamespace::regnamespace::text || '.' || cls.re
                         when a.attgenerated = 's' then
                             false
                         else
-                            case
-                                when a.attnotnull then
-                                    true
-                                else false
-                                end
+                            a.attnotnull
                        end)                                            as attnotnull,
                    a.attgenerated                                      as attgenerated,
                    a.attidentity                                       as attidentity,
