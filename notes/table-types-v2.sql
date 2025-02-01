@@ -171,3 +171,46 @@ create table all_types_test
     name_col_nn_df        name        not null default '',
     uuid_col_nn_df        uuid        not null default gen_random_uuid()
 );
+
+comment on column public.all_types_test.bool_arr_col_nn_df is 'bool[] <PLACEHOLDER>';
+comment on column public.all_types_test.date_arr_col_nn_df is 'date[] <PLACEHOLDER>';
+comment on column public.all_types_test.float4_arr_col_nn_df is 'float4[] <PLACEHOLDER>';
+comment on column public.all_types_test.float8_arr_col_nn_df is 'float8[] <PLACEHOLDER>';
+comment on column public.all_types_test.int2_arr_col_nn_df is 'int2[] <PLACEHOLDER>';
+comment on column public.all_types_test.int4_arr_col_nn_df is 'int4[] <PLACEHOLDER>';
+comment on column public.all_types_test.int8_arr_col_nn_df is 'int8[] <PLACEHOLDER>';
+comment on column public.all_types_test.numeric_arr_col_nn_df is 'numeric[] <PLACEHOLDER>';
+comment on column public.all_types_test.text_arr_col_nn_df is 'text[] <PLACEHOLDER>';
+comment on column public.all_types_test.uuid_arr_col_nn_df is 'uuid[] <PLACEHOLDER>';
+comment on column public.all_types_test.varchar_arr_col_nn_df is 'varchar[] <PLACEHOLDER>';
+comment on column public.all_types_test.bytea_col_nn_df is 'bytea <PLACEHOLDER>';
+comment on column public.all_types_test.int2_col_nn_df is 'int2 <PLACEHOLDER>';
+comment on column public.all_types_test.int4_col_nn_df is 'int4 <PLACEHOLDER>';
+comment on column public.all_types_test.int8_col_nn_df is 'int8 <PLACEHOLDER>';
+comment on column public.all_types_test.decimal_col_nn_df is 'decimal <PLACEHOLDER>';
+comment on column public.all_types_test.numeric_col_nn_df is 'numeric <PLACEHOLDER>';
+comment on column public.all_types_test.float4_col_nn_df is 'float4 <PLACEHOLDER>';
+comment on column public.all_types_test.float8_col_nn_df is 'float8 <PLACEHOLDER>';
+comment on column public.all_types_test.date_col_nn_df is 'date <PLACEHOLDER>';
+comment on column public.all_types_test.time_col_nn_df is 'time <PLACEHOLDER>';
+comment on column public.all_types_test.timetz_col_nn_df is 'timetz <PLACEHOLDER>';
+comment on column public.all_types_test.timestamp_col_nn_df is 'timestamp <PLACEHOLDER>';
+comment on column public.all_types_test.timestamptz_col_nn_df is 'timestamptz <PLACEHOLDER>';
+comment on column public.all_types_test.interval_col_nn_df is 'interval <PLACEHOLDER>';
+comment on column public.all_types_test.bpchar_col_nn_df is 'bpchar <PLACEHOLDER>';
+comment on column public.all_types_test.char_col_nn_df is 'char <PLACEHOLDER>';
+comment on column public.all_types_test.text_col_nn_df is 'text <PLACEHOLDER>';
+comment on column public.all_types_test.varchar_col_nn_df is 'varchar <PLACEHOLDER>';
+comment on column public.all_types_test.bool_col_nn_df is 'bool <PLACEHOLDER>';
+comment on column public.all_types_test.int4range_col_nn_df is 'int4range <PLACEHOLDER>';
+comment on column public.all_types_test.int8range_col_nn_df is 'int8range <PLACEHOLDER>';
+comment on column public.all_types_test.numrange_col_nn_df is 'numrange <PLACEHOLDER>';
+comment on column public.all_types_test.daterange_col_nn_df is 'daterange <PLACEHOLDER>';
+comment on column public.all_types_test.tsrange_col_nn_df is 'tsrange <PLACEHOLDER>';
+comment on column public.all_types_test.tstzrange_col_nn_df is 'tstzrange <PLACEHOLDER>';
+comment on column public.all_types_test.json_col_nn_df is 'json <PLACEHOLDER>';
+comment on column public.all_types_test.jsonb_col_nn_df is 'jsonb <PLACEHOLDER>';
+comment on column public.all_types_test.name_col_nn_df is 'name <PLACEHOLDER>';
+comment on column public.all_types_test.uuid_col_nn_df is 'uuid <PLACEHOLDER>';
+
+
