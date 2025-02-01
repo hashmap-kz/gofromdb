@@ -26,6 +26,11 @@ with ti as (select (select format('%I.%I', cls.relnamespace::regnamespace, cls.r
                      left join pg_class c on a.attrelid = c.oid
                      left join pg_type t on a.atttypid = t.oid
             where a.attnum > 0
+              and c.relnamespace in
+                  (select n.oid
+                   from pg_namespace n
+                   where n.nspname !~* '^pg_'
+                     and n.nspname <> 'information_schema')
               and c.relkind = 'r'),
 
      pk as (select format('%I.%I', c.relnamespace::regnamespace, c.relname)
@@ -39,7 +44,12 @@ with ti as (select (select format('%I.%I', cls.relnamespace::regnamespace, cls.r
                      join pg_class c on cn.conrelid = c.oid
                      join pg_attribute a on a.attnum = any (cn.conkey) and
                                             a.attrelid = c.oid
-            where cn.contype = 'p'),
+            where cn.connamespace in
+                  (select n.oid
+                   from pg_namespace n
+                   where n.nspname !~* '^pg_'
+                     and n.nspname <> 'information_schema')
+              and cn.contype = 'p'),
 
      fk as (select cn.oid                                      as conoid,
                    (select format('%I.%I', cls.relnamespace::regnamespace, cls.relname)
@@ -58,7 +68,12 @@ with ti as (select (select format('%I.%I', cls.relnamespace::regnamespace, cls.r
                    cn.confkey                                  as confkey,
                    pg_get_constraintdef(cn.oid)                   condef
             from pg_constraint cn
-            where cn.contype = 'f'
+            where cn.connamespace in
+                  (select n.oid
+                   from pg_namespace n
+                   where n.nspname !~* '^pg_'
+                     and n.nspname <> 'information_schema')
+              and cn.contype = 'f'
             order by con_relpath, conname),
 
      limits as (select format('%I.%I', colinfo.table_schema, colinfo.table_name)
