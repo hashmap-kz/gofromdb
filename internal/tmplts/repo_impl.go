@@ -35,6 +35,8 @@ import (
 	"go-project-template-v5/pkg/pageable"
 
 	"go-project-template-v5/pkg/storage/postgres"
+	
+	"github.com/jackc/pgx/v5"
 )
 
 type {{.ImplName}} struct {
@@ -54,21 +56,17 @@ func (r *{{.ImplName}}) Save(ctx context.Context, inputEntity *dbModel.{{.Struct
 
 	query := ` + "`{{.RepoSaveQuery | AddPadding2}}`" + `
 
-	var scannedEntity dbModel.{{.StructName}}
-	err := r.db.Pool.QueryRow(ctx, query,
+	row := r.db.Pool.QueryRow(ctx, query,
 {{- range .DtoFieldsNoPkeysNoDefaults}}
 		inputEntity.{{.FieldName}},
 {{- end}}
-	).Scan(
-{{- range .DtoFieldsFull}}
-		&scannedEntity.{{.FieldName}},
-{{- end}}
-	) 
+	)
 
+	scannedEntity, err := scanFullRow(row)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", tag, err)
 	}
-	return &scannedEntity, nil
+	return scannedEntity, nil
 }
 
 func (r *{{.ImplName}}) UpdateByID(ctx context.Context, entityId int, inputEntity *dbModel.{{.StructName}}) (*dbModel.{{.StructName}}, error) {
@@ -76,22 +74,18 @@ func (r *{{.ImplName}}) UpdateByID(ctx context.Context, entityId int, inputEntit
 
 	query := ` + "`{{.RepoUpdateQuery | AddPadding2}}`" + `
 
-	var scannedEntity dbModel.{{.StructName}}
-	err := r.db.Pool.QueryRow(ctx, query,
+	row := r.db.Pool.QueryRow(ctx, query,
 		entityId,
 {{- range .DtoFieldsNoPkeysNoDefaults}}
 		inputEntity.{{.FieldName}},
 {{- end}}
-	).Scan(
-{{- range .DtoFieldsFull}}
-		&scannedEntity.{{.FieldName}},
-{{- end}}
 	)
 
+	scannedEntity, err := scanFullRow(row)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", tag, err)
 	}
-	return &scannedEntity, nil
+	return scannedEntity, nil
 }
 
 func (r *{{.ImplName}}) DeleteByID(ctx context.Context, entityId int) error {
@@ -110,18 +104,14 @@ func (r *{{.ImplName}}) FindByID(ctx context.Context, entityId int) (*dbModel.{{
 	tag := "{{.ImplName}}.FindByID"
 
 	query := ` + "`{{.RepoGetByIdQuery | AddPadding2}}`" + `
+	
+	row := r.db.Pool.QueryRow(ctx, query, entityId)
 
-	var scannedEntity dbModel.{{.StructName}}
-	err := r.db.Pool.QueryRow(ctx, query, entityId).Scan(
-{{- range .DtoFieldsFull}}
-		&scannedEntity.{{.FieldName}},
-{{- end}}
-	)
-
+	scannedEntity, err := scanFullRow(row)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", tag, err)
 	}
-	return &scannedEntity, nil
+	return scannedEntity, nil
 }
 
 func (r *{{.ImplName}}) FindAll(ctx context.Context) ([]dbModel.{{.StructName}}, error) {
@@ -137,16 +127,11 @@ func (r *{{.ImplName}}) FindAll(ctx context.Context) ([]dbModel.{{.StructName}},
 
 	var scannedEntities []dbModel.{{.StructName}}
 	for rows.Next() {
-		var scannedEntity dbModel.{{.StructName}}
-		err = rows.Scan(
-{{- range .DtoFieldsFull}}
-			&scannedEntity.{{.FieldName}},
-{{- end}}
-		)
+		scannedEntity, err := scanFullRow(rows)
 		if err != nil {
 			return nil, fmt.Errorf("%s: %w", tag, err)
 		}
-		scannedEntities = append(scannedEntities, scannedEntity)
+		scannedEntities = append(scannedEntities, *scannedEntity)
 	}
 	
 	if rows.Err() != nil {
@@ -184,21 +169,34 @@ func (r *{{.ImplName}}) FindAllPageable(ctx context.Context, pq *pageable.Pagina
 
 	var scannedEntities []dbModel.{{.StructName}}
 	for rows.Next() {
-		var scannedEntity dbModel.{{.StructName}}
-		err = rows.Scan(
-{{- range .DtoFieldsFull}}
-			&scannedEntity.{{.FieldName}},
-{{- end}}
-		)
+		scannedEntity, err := scanFullRow(rows)
 		if err != nil {
 			return nil, pageable.Page{}, fmt.Errorf("%s: %w", tag, err)
 		}
-		scannedEntities = append(scannedEntities, scannedEntity)
+		scannedEntities = append(scannedEntities, *scannedEntity)
 	}
 
 	if rows.Err() != nil {
 		return nil, page, rows.Err()
 	}
 	return scannedEntities, page, nil
+}
+
+// scan utils
+
+// scanFullRow is expected to scan all columns from a table.
+// For simplicity, most methods scan the entire row of the table into the result entity.
+// You should adapt methods as needed (e.g., if business logic requires returning only an ID after an UPDATE).
+func scanFullRow(row pgx.Row) (*dbModel.{{.StructName}}, error) {
+	var scannedEntity dbModel.{{.StructName}}
+	err := row.Scan(
+{{- range .DtoFieldsFull}}
+		&scannedEntity.{{.FieldName}},
+{{- end}}
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &scannedEntity, nil
 }
 `

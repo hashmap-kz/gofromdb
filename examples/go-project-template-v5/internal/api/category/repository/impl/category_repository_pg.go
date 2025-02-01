@@ -11,6 +11,8 @@ import (
 	"go-project-template-v5/pkg/pageable"
 
 	"go-project-template-v5/pkg/storage/postgres"
+
+	"github.com/jackc/pgx/v5"
 )
 
 type categoryRepository struct {
@@ -43,22 +45,16 @@ func (r *categoryRepository) Save(ctx context.Context, inputEntity *dbModel.Cate
 			guid
 		`
 
-	var scannedEntity dbModel.Category
-	err := r.db.Pool.QueryRow(ctx, query,
+	row := r.db.Pool.QueryRow(ctx, query,
 		inputEntity.Name,
 		inputEntity.ParentID,
-	).Scan(
-		&scannedEntity.RecordID,
-		&scannedEntity.Name,
-		&scannedEntity.ParentID,
-		&scannedEntity.CreatedAt,
-		&scannedEntity.UpdatedAt,
-		&scannedEntity.Guid,
 	)
+
+	scannedEntity, err := scanFullRow(row)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", tag, err)
 	}
-	return &scannedEntity, nil
+	return scannedEntity, nil
 }
 
 func (r *categoryRepository) UpdateByID(ctx context.Context, entityId int, inputEntity *dbModel.Category) (*dbModel.Category, error) {
@@ -79,23 +75,17 @@ func (r *categoryRepository) UpdateByID(ctx context.Context, entityId int, input
 			guid
 		`
 
-	var scannedEntity dbModel.Category
-	err := r.db.Pool.QueryRow(ctx, query,
+	row := r.db.Pool.QueryRow(ctx, query,
 		entityId,
 		inputEntity.Name,
 		inputEntity.ParentID,
-	).Scan(
-		&scannedEntity.RecordID,
-		&scannedEntity.Name,
-		&scannedEntity.ParentID,
-		&scannedEntity.CreatedAt,
-		&scannedEntity.UpdatedAt,
-		&scannedEntity.Guid,
 	)
+
+	scannedEntity, err := scanFullRow(row)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", tag, err)
 	}
-	return &scannedEntity, nil
+	return scannedEntity, nil
 }
 
 func (r *categoryRepository) DeleteByID(ctx context.Context, entityId int) error {
@@ -129,19 +119,13 @@ func (r *categoryRepository) FindByID(ctx context.Context, entityId int) (*dbMod
 		order by record_id
 		`
 
-	var scannedEntity dbModel.Category
-	err := r.db.Pool.QueryRow(ctx, query, entityId).Scan(
-		&scannedEntity.RecordID,
-		&scannedEntity.Name,
-		&scannedEntity.ParentID,
-		&scannedEntity.CreatedAt,
-		&scannedEntity.UpdatedAt,
-		&scannedEntity.Guid,
-	)
+	row := r.db.Pool.QueryRow(ctx, query, entityId)
+
+	scannedEntity, err := scanFullRow(row)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", tag, err)
 	}
-	return &scannedEntity, nil
+	return scannedEntity, nil
 }
 
 func (r *categoryRepository) FindAll(ctx context.Context) ([]dbModel.Category, error) {
@@ -167,19 +151,11 @@ func (r *categoryRepository) FindAll(ctx context.Context) ([]dbModel.Category, e
 
 	var scannedEntities []dbModel.Category
 	for rows.Next() {
-		var scannedEntity dbModel.Category
-		err = rows.Scan(
-			&scannedEntity.RecordID,
-			&scannedEntity.Name,
-			&scannedEntity.ParentID,
-			&scannedEntity.CreatedAt,
-			&scannedEntity.UpdatedAt,
-			&scannedEntity.Guid,
-		)
+		scannedEntity, err := scanFullRow(rows)
 		if err != nil {
 			return nil, fmt.Errorf("%s: %w", tag, err)
 		}
-		scannedEntities = append(scannedEntities, scannedEntity)
+		scannedEntities = append(scannedEntities, *scannedEntity)
 	}
 
 	if rows.Err() != nil {
@@ -228,23 +204,36 @@ func (r *categoryRepository) FindAllPageable(ctx context.Context, pq *pageable.P
 
 	var scannedEntities []dbModel.Category
 	for rows.Next() {
-		var scannedEntity dbModel.Category
-		err = rows.Scan(
-			&scannedEntity.RecordID,
-			&scannedEntity.Name,
-			&scannedEntity.ParentID,
-			&scannedEntity.CreatedAt,
-			&scannedEntity.UpdatedAt,
-			&scannedEntity.Guid,
-		)
+		scannedEntity, err := scanFullRow(rows)
 		if err != nil {
 			return nil, pageable.Page{}, fmt.Errorf("%s: %w", tag, err)
 		}
-		scannedEntities = append(scannedEntities, scannedEntity)
+		scannedEntities = append(scannedEntities, *scannedEntity)
 	}
 
 	if rows.Err() != nil {
 		return nil, page, rows.Err()
 	}
 	return scannedEntities, page, nil
+}
+
+// scan utils
+
+// scanFullRow is expected to scan all columns from a table.
+// For simplicity, most methods scan the entire set of the table into the result entity.
+// You should adapt methods as needed (e.g., if business logic requires returning only an ID after an UPDATE).
+func scanFullRow(row pgx.Row) (*dbModel.Category, error) {
+	var scannedEntity dbModel.Category
+	err := row.Scan(
+		&scannedEntity.RecordID,
+		&scannedEntity.Name,
+		&scannedEntity.ParentID,
+		&scannedEntity.CreatedAt,
+		&scannedEntity.UpdatedAt,
+		&scannedEntity.Guid,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &scannedEntity, nil
 }

@@ -11,6 +11,8 @@ import (
 	"go-project-template-v5/pkg/pageable"
 
 	"go-project-template-v5/pkg/storage/postgres"
+
+	"github.com/jackc/pgx/v5"
 )
 
 type buyItemRepository struct {
@@ -47,26 +49,18 @@ func (r *buyItemRepository) Save(ctx context.Context, inputEntity *dbModel.BuyIt
 			guid
 		`
 
-	var scannedEntity dbModel.BuyItem
-	err := r.db.Pool.QueryRow(ctx, query,
+	row := r.db.Pool.QueryRow(ctx, query,
 		inputEntity.BuyID,
 		inputEntity.ProductID,
 		inputEntity.Quantity,
 		inputEntity.Price,
-	).Scan(
-		&scannedEntity.RecordID,
-		&scannedEntity.BuyID,
-		&scannedEntity.ProductID,
-		&scannedEntity.Quantity,
-		&scannedEntity.Price,
-		&scannedEntity.CreatedAt,
-		&scannedEntity.UpdatedAt,
-		&scannedEntity.Guid,
 	)
+
+	scannedEntity, err := scanFullRow(row)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", tag, err)
 	}
-	return &scannedEntity, nil
+	return scannedEntity, nil
 }
 
 func (r *buyItemRepository) UpdateByID(ctx context.Context, entityId int, inputEntity *dbModel.BuyItem) (*dbModel.BuyItem, error) {
@@ -91,27 +85,19 @@ func (r *buyItemRepository) UpdateByID(ctx context.Context, entityId int, inputE
 			guid
 		`
 
-	var scannedEntity dbModel.BuyItem
-	err := r.db.Pool.QueryRow(ctx, query,
+	row := r.db.Pool.QueryRow(ctx, query,
 		entityId,
 		inputEntity.BuyID,
 		inputEntity.ProductID,
 		inputEntity.Quantity,
 		inputEntity.Price,
-	).Scan(
-		&scannedEntity.RecordID,
-		&scannedEntity.BuyID,
-		&scannedEntity.ProductID,
-		&scannedEntity.Quantity,
-		&scannedEntity.Price,
-		&scannedEntity.CreatedAt,
-		&scannedEntity.UpdatedAt,
-		&scannedEntity.Guid,
 	)
+
+	scannedEntity, err := scanFullRow(row)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", tag, err)
 	}
-	return &scannedEntity, nil
+	return scannedEntity, nil
 }
 
 func (r *buyItemRepository) DeleteByID(ctx context.Context, entityId int) error {
@@ -147,21 +133,13 @@ func (r *buyItemRepository) FindByID(ctx context.Context, entityId int) (*dbMode
 		order by record_id
 		`
 
-	var scannedEntity dbModel.BuyItem
-	err := r.db.Pool.QueryRow(ctx, query, entityId).Scan(
-		&scannedEntity.RecordID,
-		&scannedEntity.BuyID,
-		&scannedEntity.ProductID,
-		&scannedEntity.Quantity,
-		&scannedEntity.Price,
-		&scannedEntity.CreatedAt,
-		&scannedEntity.UpdatedAt,
-		&scannedEntity.Guid,
-	)
+	row := r.db.Pool.QueryRow(ctx, query, entityId)
+
+	scannedEntity, err := scanFullRow(row)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", tag, err)
 	}
-	return &scannedEntity, nil
+	return scannedEntity, nil
 }
 
 func (r *buyItemRepository) FindAll(ctx context.Context) ([]dbModel.BuyItem, error) {
@@ -189,21 +167,11 @@ func (r *buyItemRepository) FindAll(ctx context.Context) ([]dbModel.BuyItem, err
 
 	var scannedEntities []dbModel.BuyItem
 	for rows.Next() {
-		var scannedEntity dbModel.BuyItem
-		err = rows.Scan(
-			&scannedEntity.RecordID,
-			&scannedEntity.BuyID,
-			&scannedEntity.ProductID,
-			&scannedEntity.Quantity,
-			&scannedEntity.Price,
-			&scannedEntity.CreatedAt,
-			&scannedEntity.UpdatedAt,
-			&scannedEntity.Guid,
-		)
+		scannedEntity, err := scanFullRow(rows)
 		if err != nil {
 			return nil, fmt.Errorf("%s: %w", tag, err)
 		}
-		scannedEntities = append(scannedEntities, scannedEntity)
+		scannedEntities = append(scannedEntities, *scannedEntity)
 	}
 
 	if rows.Err() != nil {
@@ -254,25 +222,38 @@ func (r *buyItemRepository) FindAllPageable(ctx context.Context, pq *pageable.Pa
 
 	var scannedEntities []dbModel.BuyItem
 	for rows.Next() {
-		var scannedEntity dbModel.BuyItem
-		err = rows.Scan(
-			&scannedEntity.RecordID,
-			&scannedEntity.BuyID,
-			&scannedEntity.ProductID,
-			&scannedEntity.Quantity,
-			&scannedEntity.Price,
-			&scannedEntity.CreatedAt,
-			&scannedEntity.UpdatedAt,
-			&scannedEntity.Guid,
-		)
+		scannedEntity, err := scanFullRow(rows)
 		if err != nil {
 			return nil, pageable.Page{}, fmt.Errorf("%s: %w", tag, err)
 		}
-		scannedEntities = append(scannedEntities, scannedEntity)
+		scannedEntities = append(scannedEntities, *scannedEntity)
 	}
 
 	if rows.Err() != nil {
 		return nil, page, rows.Err()
 	}
 	return scannedEntities, page, nil
+}
+
+// scan utils
+
+// scanFullRow is expected to scan all columns from a table.
+// For simplicity, most methods scan the entire set of the table into the result entity.
+// You should adapt methods as needed (e.g., if business logic requires returning only an ID after an UPDATE).
+func scanFullRow(row pgx.Row) (*dbModel.BuyItem, error) {
+	var scannedEntity dbModel.BuyItem
+	err := row.Scan(
+		&scannedEntity.RecordID,
+		&scannedEntity.BuyID,
+		&scannedEntity.ProductID,
+		&scannedEntity.Quantity,
+		&scannedEntity.Price,
+		&scannedEntity.CreatedAt,
+		&scannedEntity.UpdatedAt,
+		&scannedEntity.Guid,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &scannedEntity, nil
 }
