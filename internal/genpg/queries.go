@@ -76,14 +76,19 @@ with ti as (select (select format('%I.%I', cls.relnamespace::regnamespace, cls.r
               and cn.contype = 'f'
             order by con_relpath, conname),
 
-     limits as (select format('%I.%I', colinfo.table_schema, colinfo.table_name)
-                                                        as relpath,
-                       colinfo.column_name              as attname,
-                       colinfo.ordinal_position         as attnum,
-                       colinfo.character_maximum_length as char_max_len,
-                       colinfo.numeric_precision        as n_prec,
-                       colinfo.numeric_scale            as n_scal
-                from information_schema.columns colinfo
+     limits as (select format('%I.%I', isc.table_schema, isc.table_name)
+                                                    as relpath,
+                       isc.column_name              as attname,
+                       isc.ordinal_position         as attnum,
+                       isc.character_maximum_length as char_max_len,
+                       isc.numeric_precision        as n_prec,
+                       isc.numeric_scale            as n_scal
+                from information_schema.columns isc
+                where isc.table_schema in
+                      (select n.nspname::text
+                       from pg_namespace n
+                       where n.nspname !~* '^pg_'
+                         and n.nspname <> 'information_schema')
                 order by relpath, ordinal_position),
 
      def as (select (select format('%I.%I', c.relnamespace::regnamespace, c.relname)
