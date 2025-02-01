@@ -36,11 +36,6 @@ with ti as (select (select format('%I.%I', cls.relnamespace::regnamespace::text,
                      left join pg_class c on a.attrelid = c.oid
                      left join pg_type t on a.atttypid = t.oid
             where a.attnum > 0
-              and c.relnamespace in
-                  (select n.oid
-                   from pg_namespace n
-                   where n.nspname !~* '^pg_'
-                     and n.nspname <> 'information_schema')
               and c.relkind = 'r'),
 
      fk as (select cn.oid                                      as conoid,
@@ -60,12 +55,7 @@ with ti as (select (select format('%I.%I', cls.relnamespace::regnamespace::text,
                    cn.confkey                                  as confkey,
                    pg_get_constraintdef(cn.oid)                   condef
             from pg_constraint cn
-            where cn.connamespace in
-                  (select n.oid
-                   from pg_namespace n
-                   where n.nspname !~* '^pg_'
-                     and n.nspname <> 'information_schema')
-              and cn.contype = 'f'
+            where cn.contype = 'f'
             order by con_relpath, conname),
 
      limits as (select format('%I.%I', colinfo.table_schema, colinfo.table_name) as relpath,
@@ -234,7 +224,7 @@ from ti
          left join limits l on l.relpath = ti.relpath and l.attnum = ti.attnum
          left join def on def.relpath = ti.relpath and def.attnum = ti.attnum
          left join typemap_tab tmt on tmt.column1 = ti.atttype2
-where ti.relpath ~* 'public'
+where ti.relpath ~* '^public'
   and ti.relpath !~* 'migrate_'
 order by ti.relpath, ti.attnum
 ;
