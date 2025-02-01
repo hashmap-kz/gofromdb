@@ -79,11 +79,11 @@ with ti as (select (select format('%I.%I', cls.relnamespace::regnamespace::text,
                     pg_catalog.pg_get_expr(d.adbin, d.adrelid) as attdefexpr,
                     (case
                          when pa.attgenerated = 's' then
-                             'generated always as (' ||
-                             pg_catalog.pg_get_expr(d.adbin, d.adrelid) ||
-                             ') stored'
+                             format('generated always as (%s) stored',
+                                    pg_catalog.pg_get_expr(d.adbin, d.adrelid))
                          else
-                             'default ' || pg_catalog.pg_get_expr(d.adbin, d.adrelid)
+                             format('default %s',
+                                    pg_catalog.pg_get_expr(d.adbin, d.adrelid))
                         end)                                   as def,
                     pa.attrelid                                as attrelid
              from pg_catalog.pg_attribute pa
