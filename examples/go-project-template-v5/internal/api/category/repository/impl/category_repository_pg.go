@@ -220,7 +220,7 @@ func (r *categoryRepository) FindAllPageable(ctx context.Context, pq *pageable.P
 // scan utils
 
 // scanFullRow is expected to scan all columns from a table.
-// For simplicity, most methods scan the entire set of the table into the result entity.
+// For simplicity, most methods scan the entire row of the table into the result entity.
 // You should adapt methods as needed (e.g., if business logic requires returning only an ID after an UPDATE).
 func scanFullRow(row pgx.Row) (*dbModel.Category, error) {
 	var scannedEntity dbModel.Category
