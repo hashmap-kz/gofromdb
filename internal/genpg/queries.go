@@ -218,8 +218,7 @@ select ti.relpath,
                    end
            end                                                       as go_type,
        tmt.column3                                                   as nullif_rhs,
-       -- a column is insertable if:
-       -- is not an 'IDENTITY', is not a 'GENERATED', is not a one of a 'SERIAL'
+       -- A column is insertable if it is neither an 'IDENTITY' nor 'GENERATED', nor one of the 'SERIAL' types.
        (ti.attidentity = ''
            and ti.attgenerated = ''
            and (not coalesce(def.attdefexpr, '') ilike 'nextval(%')) as is_insertable
