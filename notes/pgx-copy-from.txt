@@ -1,0 +1,14 @@
+func InsertOrdersBatch(conn *pgxpool.Pool, orders []Order) error {
+    rows := make([][]interface{}, len(orders))
+    for i, order := range orders {
+        rows[i] = []interface{}{order.UserID, order.OrderID, order.OrderDate, order.TotalAmount}
+    }
+
+    _, err := conn.CopyFrom(
+        context.Background(),
+        pgx.Identifier{"orders"},
+        []string{"user_id", "order_id", "order_date", "total_amount"},
+        pgx.CopyFromRows(rows),
+    )
+    return err
+}
