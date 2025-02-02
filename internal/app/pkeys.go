@@ -5,6 +5,16 @@ import (
 	"strings"
 )
 
+func genUrlPathValuesByPkeys(pkeys []TableToStructFieldInfo) string {
+	// /api/v1/categories/{id}/{code}
+	clauses := []string{}
+	for _, pk := range pkeys {
+		clause := fmt.Sprintf("{%s}", pk.DbFieldName)
+		clauses = append(clauses, clause)
+	}
+	return strings.Join(clauses, "/")
+}
+
 func genParametersByPkeys(s TableToStructInfo) string {
 	// pkCode int, pkID int
 	clauses := []string{}

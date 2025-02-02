@@ -33,6 +33,7 @@ type TableToStructInfo struct {
 	StructName                  string
 	StructNameLowerFirstLetter  string
 	StructNamePluralRequestPath string
+	PkeysURLPath                string
 	StructComment               string
 	DbTableName                 string
 	Fields                      []TableToStructFieldInfo
@@ -123,6 +124,7 @@ func makeOneStruct(relPath string, cols []genpg.ColumnInfo) TableToStructInfo {
 		StructName:                  structName,
 		StructNameLowerFirstLetter:  LowerFirstLetter(structName),
 		StructNamePluralRequestPath: makeDnsPathPluralFromDbTable(table),
+		PkeysURLPath:                genUrlPathValuesByPkeys(primaryKeys),
 		StructComment:               structComment,
 		DbTableName:                 table,
 		Fields:                      fields,
