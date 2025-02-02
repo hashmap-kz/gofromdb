@@ -1,0 +1,46 @@
+package main
+
+import (
+	"fmt"
+	"strings"
+)
+
+func placeParams(query string, fieldsMap map[string]string) string {
+	for k := range fieldsMap {
+		query = strings.ReplaceAll(query, ":"+k, "$"+fieldsMap[k])
+	}
+	return query
+}
+
+func main() {
+	fieldsMap := map[string]string{
+		"record_id":  "1",
+		"buy_id":     "2",
+		"product_id": "3",
+		"quantity":   "4",
+		"price":      "5",
+		"created_at": "6",
+		"updated_at": "7",
+		"guid":       "8",
+	}
+
+	query := `
+		update public.buy_item
+		set
+			buy_id     = coalesce(nullif(:buy_id, 0::int4), buy_id),
+			product_id = coalesce(nullif(:product_id, 0::int4), product_id),
+			quantity   = coalesce(nullif(:quantity, 0::int4), quantity),
+			price      = coalesce(nullif(:price, 0::numeric), price)
+		where record_id = :record_id
+		returning
+			record_id,
+			buy_id,
+			product_id,
+			quantity,
+			price,
+			created_at,
+			updated_at,
+			guid
+		`
+	fmt.Println(placeParams(query, fieldsMap))
+}
