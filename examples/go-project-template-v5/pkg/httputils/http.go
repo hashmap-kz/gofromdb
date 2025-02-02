@@ -36,6 +36,14 @@ func WriteJSON(w http.ResponseWriter, status int, v any) {
 	}
 }
 
+func PathValueString(r *http.Request, name string) (string, error) {
+	pathValue := r.PathValue(name)
+	if pathValue == "" {
+		return "", fmt.Errorf("empty path value for name: %s", name)
+	}
+	return pathValue, nil
+}
+
 func PathValueUUID(r *http.Request, name string) (string, error) {
 	pathValue := r.PathValue(name)
 	if pathValue == "" {
