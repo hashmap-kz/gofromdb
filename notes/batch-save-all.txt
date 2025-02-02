@@ -1,0 +1,54 @@
+func (r *clientRepository) SaveAll(ctx context.Context, inputs []entity.Client) ([]entity.Client, error) {
+	query := `
+		insert into public.client (email)
+		values ($1)
+		returning record_id, email
+	`
+
+	// Begin a transaction
+	tx, err := r.db.Pool.Begin(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer tx.Rollback(ctx) // Ensure rollback in case of an error
+
+	// Prepare batching
+	batch := &pgx.Batch{}
+	for _, entity := range inputs {
+		batch.Queue(query,
+			entity.Email,
+		)
+	}
+
+	// Send the batch within the transaction
+	batchResults := tx.SendBatch(ctx, batch)
+	defer batchResults.Close()
+
+	// Process each result in the batch
+	var savedEntities []entity.Client
+	for i := 0; i < batch.Len(); i++ {
+		var savedEntity entity.Client
+		err := batchResults.QueryRow().Scan(
+			&savedEntity.RecordID,
+			&savedEntity.Email,
+		)
+		if err != nil {
+			batchResults.Close()
+			return nil, fmt.Errorf("failed to get result for batch statement %d: %w", i, err)
+		}
+		savedEntities = append(savedEntities, savedEntity)
+	}
+
+	// Properly close batchResults to release resources
+	if err := batchResults.Close(); err != nil {
+		return nil, fmt.Errorf("failed to close batch results: %w", err)
+	}
+
+	// Commit the transaction
+	if err := tx.Commit(ctx); err != nil {
+		return nil, fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
+	return savedEntities, nil
+}
+
