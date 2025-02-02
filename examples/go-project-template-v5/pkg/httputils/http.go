@@ -4,8 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"regexp"
 	"strconv"
 )
+
+var uuidRegex = regexp.MustCompile(`^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$`)
 
 type ErrorDetail struct {
 	Field string `json:"field"`
@@ -31,6 +34,25 @@ func WriteJSON(w http.ResponseWriter, status int, v any) {
 	if err := json.NewEncoder(w).Encode(v); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
+}
+
+func PathValueUUID(r *http.Request, name string) (string, error) {
+	pathValue := r.PathValue(name)
+	if pathValue == "" {
+		return "", fmt.Errorf("empty path value for name: %s", name)
+	}
+	if uuidRegex.MatchString(pathValue) {
+		return pathValue, nil
+	}
+	return "", fmt.Errorf("path value with name=%s and value=%s is not an UUID", name, pathValue)
+}
+
+func PathValueI32(r *http.Request, name string) (int, error) {
+	pathValue := r.PathValue(name)
+	if pathValue == "" {
+		return 0, fmt.Errorf("empty path value for name: %s", name)
+	}
+	return strconv.Atoi(pathValue)
 }
 
 func PathValueI64(r *http.Request, name string) (int64, error) {
