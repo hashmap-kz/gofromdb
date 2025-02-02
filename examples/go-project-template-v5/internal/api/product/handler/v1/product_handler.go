@@ -86,9 +86,9 @@ func (h *ProductHTTPHandler) Save(w http.ResponseWriter, r *http.Request) {
 // @Success 201 {object} productResponse
 // @Failure 400 {object} httputils.ErrorResponse "Bad Request"
 // @Failure 500 {object} httputils.ErrorResponse "Internal Server Error"
-// @Router /api/v1/products/{id} [put]
+// @Router /api/v1/products/{record_id} [put]
 func (h *ProductHTTPHandler) UpdateByID(w http.ResponseWriter, r *http.Request) {
-	id, err := httputils.PathValueI64(r, "id")
+	pkRecordID, err := httputils.PathValueI32(r, "record_id")
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
 		return
@@ -108,8 +108,7 @@ func (h *ProductHTTPHandler) UpdateByID(w http.ResponseWriter, r *http.Request) 
 	}
 
 	// call service
-	// TODO: types - int(id)
-	resp, err := h.productService.UpdateByID(r.Context(), updateInput, int(id))
+	resp, err := h.productService.UpdateByID(r.Context(), updateInput, pkRecordID)
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
 		return
@@ -137,15 +136,15 @@ func (h *ProductHTTPHandler) UpdateByID(w http.ResponseWriter, r *http.Request) 
 // @Success 204 "No Content (Successfully deleted)"
 // @Failure 400 {object} httputils.ErrorResponse "Bad Request (Invalid ID format)"
 // @Failure 500 {object} httputils.ErrorResponse "Internal Server Error (Deletion failed)"
-// @Router /api/v1/products/{id} [delete]
+// @Router /api/v1/products/{record_id} [delete]
 func (h *ProductHTTPHandler) DeleteByID(w http.ResponseWriter, r *http.Request) {
-	id, err := httputils.PathValueI64(r, "id")
+	pkRecordID, err := httputils.PathValueI32(r, "record_id")
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
 		return
 	}
 
-	err = h.productService.DeleteByID(r.Context(), int(id))
+	err = h.productService.DeleteByID(r.Context(), pkRecordID)
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
 		return
@@ -165,15 +164,15 @@ func (h *ProductHTTPHandler) DeleteByID(w http.ResponseWriter, r *http.Request) 
 // @Success 200 {object} productResponse "Single item"
 // @Failure 400 {object} httputils.ErrorResponse "Bad Request (Invalid ID format)"
 // @Failure 500 {object} httputils.ErrorResponse "Internal Server Error (Deletion failed)"
-// @Router /api/v1/products/{id} [get]
+// @Router /api/v1/products/{record_id} [get]
 func (h *ProductHTTPHandler) FindByID(w http.ResponseWriter, r *http.Request) {
-	id, err := httputils.PathValueI64(r, "id")
+	pkRecordID, err := httputils.PathValueI32(r, "record_id")
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
 		return
 	}
 
-	resp, err := h.productService.FindByID(r.Context(), int(id))
+	resp, err := h.productService.FindByID(r.Context(), pkRecordID)
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
 		return
