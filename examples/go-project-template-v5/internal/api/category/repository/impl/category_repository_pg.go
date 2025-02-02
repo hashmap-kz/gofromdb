@@ -57,7 +57,7 @@ func (r *categoryRepository) Save(ctx context.Context, inputEntity *dbModel.Cate
 	return scannedEntity, nil
 }
 
-func (r *categoryRepository) UpdateByID(ctx context.Context, pkRecordID int, inputEntity *dbModel.Category) (*dbModel.Category, error) {
+func (r *categoryRepository) UpdateByID(ctx context.Context, inputEntity *dbModel.Category, pkRecordID int) (*dbModel.Category, error) {
 	tag := "categoryRepository.UpdateByID"
 
 	query := `		

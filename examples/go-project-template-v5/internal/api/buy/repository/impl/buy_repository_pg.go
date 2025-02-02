@@ -57,7 +57,7 @@ func (r *buyRepository) Save(ctx context.Context, inputEntity *dbModel.Buy) (*db
 	return scannedEntity, nil
 }
 
-func (r *buyRepository) UpdateByID(ctx context.Context, pkRecordID int, inputEntity *dbModel.Buy) (*dbModel.Buy, error) {
+func (r *buyRepository) UpdateByID(ctx context.Context, inputEntity *dbModel.Buy, pkRecordID int) (*dbModel.Buy, error) {
 	tag := "buyRepository.UpdateByID"
 
 	query := `		

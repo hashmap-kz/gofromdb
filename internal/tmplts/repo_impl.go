@@ -13,7 +13,7 @@ import (
 
 type {{.InterfaceName}} interface {
 	Save(ctx context.Context, inputEntity *dbModel.{{.StructName}}) (*dbModel.{{.StructName}}, error)
-	UpdateByID(ctx context.Context, {{.ParametersByPkeys}}, inputEntity *dbModel.{{.StructName}}) (*dbModel.{{.StructName}}, error)
+	UpdateByID(ctx context.Context, inputEntity *dbModel.{{.StructName}}, {{.ParametersByPkeys}}) (*dbModel.{{.StructName}}, error)
 	DeleteByID(ctx context.Context, {{.ParametersByPkeys}}) error
 	FindByID(ctx context.Context, {{.ParametersByPkeys}}) (*dbModel.{{.StructName}}, error)
 	FindAll(ctx context.Context) ([]dbModel.{{.StructName}}, error)
@@ -69,7 +69,7 @@ func (r *{{.ImplName}}) Save(ctx context.Context, inputEntity *dbModel.{{.Struct
 	return scannedEntity, nil
 }
 
-func (r *{{.ImplName}}) UpdateByID(ctx context.Context, {{.ParametersByPkeys}}, inputEntity *dbModel.{{.StructName}}) (*dbModel.{{.StructName}}, error) {
+func (r *{{.ImplName}}) UpdateByID(ctx context.Context, inputEntity *dbModel.{{.StructName}}, {{.ParametersByPkeys}}) (*dbModel.{{.StructName}}, error) {
 	tag := "{{.ImplName}}.UpdateByID"
 
 	query := ` + "`{{.RepoUpdateQuery | AddPadding2}}`" + `

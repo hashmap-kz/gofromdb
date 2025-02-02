@@ -41,12 +41,12 @@ func (s *productService) Save(ctx context.Context, input *dto.ProductCreateDto) 
 	return &toDto, err
 }
 
-func (s *productService) UpdateByID(ctx context.Context, pkRecordID int, input *dto.ProductUpdateDto) (*dto.ProductDto, error) {
+func (s *productService) UpdateByID(ctx context.Context, input *dto.ProductUpdateDto, pkRecordID int) (*dto.ProductDto, error) {
 	entityToUpdate, err := fromUpdateDtoToEntity(input)
 	if err != nil {
 		return nil, err
 	}
-	updatedResult, err := s.productRepository.UpdateByID(ctx, pkRecordID, entityToUpdate)
+	updatedResult, err := s.productRepository.UpdateByID(ctx, entityToUpdate, pkRecordID)
 	if err != nil {
 		return nil, err
 	}

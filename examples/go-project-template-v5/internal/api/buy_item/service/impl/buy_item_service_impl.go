@@ -41,12 +41,12 @@ func (s *buyItemService) Save(ctx context.Context, input *dto.BuyItemCreateDto) 
 	return &toDto, err
 }
 
-func (s *buyItemService) UpdateByID(ctx context.Context, pkRecordID int, input *dto.BuyItemUpdateDto) (*dto.BuyItemDto, error) {
+func (s *buyItemService) UpdateByID(ctx context.Context, input *dto.BuyItemUpdateDto, pkRecordID int) (*dto.BuyItemDto, error) {
 	entityToUpdate, err := fromUpdateDtoToEntity(input)
 	if err != nil {
 		return nil, err
 	}
-	updatedResult, err := s.buyItemRepository.UpdateByID(ctx, pkRecordID, entityToUpdate)
+	updatedResult, err := s.buyItemRepository.UpdateByID(ctx, entityToUpdate, pkRecordID)
 	if err != nil {
 		return nil, err
 	}

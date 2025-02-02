@@ -10,7 +10,7 @@ import (
 
 type ClientService interface {
 	Save(ctx context.Context, input *dto.ClientCreateDto) (*dto.ClientDto, error)
-	UpdateByID(ctx context.Context, pkRecordID int, input *dto.ClientUpdateDto) (*dto.ClientDto, error)
+	UpdateByID(ctx context.Context, input *dto.ClientUpdateDto, pkRecordID int) (*dto.ClientDto, error)
 	DeleteByID(ctx context.Context, pkRecordID int) error
 	FindByID(ctx context.Context, pkRecordID int) (*dto.ClientDto, error)
 	FindAll(ctx context.Context) ([]dto.ClientDto, error)

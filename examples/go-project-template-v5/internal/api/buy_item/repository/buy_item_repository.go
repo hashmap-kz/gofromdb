@@ -10,7 +10,7 @@ import (
 
 type BuyItemRepository interface {
 	Save(ctx context.Context, inputEntity *dbModel.BuyItem) (*dbModel.BuyItem, error)
-	UpdateByID(ctx context.Context, pkRecordID int, inputEntity *dbModel.BuyItem) (*dbModel.BuyItem, error)
+	UpdateByID(ctx context.Context, inputEntity *dbModel.BuyItem, pkRecordID int) (*dbModel.BuyItem, error)
 	DeleteByID(ctx context.Context, pkRecordID int) error
 	FindByID(ctx context.Context, pkRecordID int) (*dbModel.BuyItem, error)
 	FindAll(ctx context.Context) ([]dbModel.BuyItem, error)

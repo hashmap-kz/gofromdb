@@ -109,7 +109,7 @@ func (h *BuyHTTPHandler) UpdateByID(w http.ResponseWriter, r *http.Request) {
 
 	// call service
 	// TODO: types - int(id)
-	resp, err := h.buyService.UpdateByID(r.Context(), int(id), updateInput)
+	resp, err := h.buyService.UpdateByID(r.Context(), updateInput, int(id))
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
 		return

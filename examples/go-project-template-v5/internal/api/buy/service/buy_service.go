@@ -10,7 +10,7 @@ import (
 
 type BuyService interface {
 	Save(ctx context.Context, input *dto.BuyCreateDto) (*dto.BuyDto, error)
-	UpdateByID(ctx context.Context, pkRecordID int, input *dto.BuyUpdateDto) (*dto.BuyDto, error)
+	UpdateByID(ctx context.Context, input *dto.BuyUpdateDto, pkRecordID int) (*dto.BuyDto, error)
 	DeleteByID(ctx context.Context, pkRecordID int) error
 	FindByID(ctx context.Context, pkRecordID int) (*dto.BuyDto, error)
 	FindAll(ctx context.Context) ([]dto.BuyDto, error)

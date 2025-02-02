@@ -10,7 +10,7 @@ import (
 
 type ProductRepository interface {
 	Save(ctx context.Context, inputEntity *dbModel.Product) (*dbModel.Product, error)
-	UpdateByID(ctx context.Context, pkRecordID int, inputEntity *dbModel.Product) (*dbModel.Product, error)
+	UpdateByID(ctx context.Context, inputEntity *dbModel.Product, pkRecordID int) (*dbModel.Product, error)
 	DeleteByID(ctx context.Context, pkRecordID int) error
 	FindByID(ctx context.Context, pkRecordID int) (*dbModel.Product, error)
 	FindAll(ctx context.Context) ([]dbModel.Product, error)

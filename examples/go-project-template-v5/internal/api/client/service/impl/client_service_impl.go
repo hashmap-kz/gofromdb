@@ -41,12 +41,12 @@ func (s *clientService) Save(ctx context.Context, input *dto.ClientCreateDto) (*
 	return &toDto, err
 }
 
-func (s *clientService) UpdateByID(ctx context.Context, pkRecordID int, input *dto.ClientUpdateDto) (*dto.ClientDto, error) {
+func (s *clientService) UpdateByID(ctx context.Context, input *dto.ClientUpdateDto, pkRecordID int) (*dto.ClientDto, error) {
 	entityToUpdate, err := fromUpdateDtoToEntity(input)
 	if err != nil {
 		return nil, err
 	}
-	updatedResult, err := s.clientRepository.UpdateByID(ctx, pkRecordID, entityToUpdate)
+	updatedResult, err := s.clientRepository.UpdateByID(ctx, entityToUpdate, pkRecordID)
 	if err != nil {
 		return nil, err
 	}

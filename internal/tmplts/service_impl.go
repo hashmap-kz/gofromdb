@@ -36,7 +36,7 @@ import (
 
 type {{.InterfaceName}} interface {
 	Save(ctx context.Context, input *dto.{{.DtoCreateName}}) (*dto.{{.DtoName}}, error)
-	UpdateByID(ctx context.Context, {{.ParametersByPkeys}}, input *dto.{{.DtoUpdateName}}) (*dto.{{.DtoName}}, error)
+	UpdateByID(ctx context.Context, input *dto.{{.DtoUpdateName}}, {{.ParametersByPkeys}}) (*dto.{{.DtoName}}, error)
 	DeleteByID(ctx context.Context, {{.ParametersByPkeys}}) error
 	FindByID(ctx context.Context, {{.ParametersByPkeys}}) (*dto.{{.DtoName}}, error)
 	FindAll(ctx context.Context) ([]dto.{{.DtoName}}, error)
@@ -88,12 +88,12 @@ func (s *{{.ImplName}}) Save(ctx context.Context, input *dto.{{.DtoCreateName}})
 	return &toDto, err
 }
 
-func (s *{{.ImplName}}) UpdateByID(ctx context.Context, {{.ParametersByPkeys}}, input *dto.{{.DtoUpdateName}}) (*dto.{{.DtoName}}, error) {
+func (s *{{.ImplName}}) UpdateByID(ctx context.Context, input *dto.{{.DtoUpdateName}}, {{.ParametersByPkeys}}) (*dto.{{.DtoName}}, error) {
 	entityToUpdate, err := fromUpdateDtoToEntity(input)
 	if err != nil {
 		return nil, err
 	}
-	updatedResult, err := s.{{.RepositoryVarName}}.UpdateByID(ctx, {{.ArgumentsByPkeys}}, entityToUpdate)
+	updatedResult, err := s.{{.RepositoryVarName}}.UpdateByID(ctx, entityToUpdate, {{.ArgumentsByPkeys}})
 	if err != nil {
 		return nil, err
 	}

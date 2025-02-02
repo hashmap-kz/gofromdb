@@ -54,7 +54,7 @@ func (r *clientRepository) Save(ctx context.Context, inputEntity *dbModel.Client
 	return scannedEntity, nil
 }
 
-func (r *clientRepository) UpdateByID(ctx context.Context, pkRecordID int, inputEntity *dbModel.Client) (*dbModel.Client, error) {
+func (r *clientRepository) UpdateByID(ctx context.Context, inputEntity *dbModel.Client, pkRecordID int) (*dbModel.Client, error) {
 	tag := "clientRepository.UpdateByID"
 
 	query := `		

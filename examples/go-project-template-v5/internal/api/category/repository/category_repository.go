@@ -10,7 +10,7 @@ import (
 
 type CategoryRepository interface {
 	Save(ctx context.Context, inputEntity *dbModel.Category) (*dbModel.Category, error)
-	UpdateByID(ctx context.Context, pkRecordID int, inputEntity *dbModel.Category) (*dbModel.Category, error)
+	UpdateByID(ctx context.Context, inputEntity *dbModel.Category, pkRecordID int) (*dbModel.Category, error)
 	DeleteByID(ctx context.Context, pkRecordID int) error
 	FindByID(ctx context.Context, pkRecordID int) (*dbModel.Category, error)
 	FindAll(ctx context.Context) ([]dbModel.Category, error)

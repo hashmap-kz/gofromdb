@@ -41,12 +41,12 @@ func (s *categoryService) Save(ctx context.Context, input *dto.CategoryCreateDto
 	return &toDto, err
 }
 
-func (s *categoryService) UpdateByID(ctx context.Context, pkRecordID int, input *dto.CategoryUpdateDto) (*dto.CategoryDto, error) {
+func (s *categoryService) UpdateByID(ctx context.Context, input *dto.CategoryUpdateDto, pkRecordID int) (*dto.CategoryDto, error) {
 	entityToUpdate, err := fromUpdateDtoToEntity(input)
 	if err != nil {
 		return nil, err
 	}
-	updatedResult, err := s.categoryRepository.UpdateByID(ctx, pkRecordID, entityToUpdate)
+	updatedResult, err := s.categoryRepository.UpdateByID(ctx, entityToUpdate, pkRecordID)
 	if err != nil {
 		return nil, err
 	}
