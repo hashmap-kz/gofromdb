@@ -25,8 +25,6 @@ type TableToStructFieldInfo struct {
 	FieldType      string
 	DbFieldName    string
 	DbIsNotNull    bool
-	DbIsPk         bool
-	DbHasDefault   bool
 	DbNullifRhs    string
 	DbIsInsertable bool
 }
@@ -38,6 +36,7 @@ type TableToStructInfo struct {
 	StructComment               string
 	DbTableName                 string
 	Fields                      []TableToStructFieldInfo
+	PrimaryKeys                 []string
 }
 
 func GenStructs(connString string) []TableToStructInfo {
@@ -93,7 +92,7 @@ func makeOneStruct(relPath string, cols []genpg.ColumnInfo) TableToStructInfo {
 	for _, c := range cols {
 		if c.GoType == "" {
 			log.Fatalf("cannot find type mapping for pg-type: `%s`, column: `%s`",
-				c.AttType,
+				c.AttType2,
 				fmt.Sprintf("%s.%s", c.RelPath, c.AttName),
 			)
 		}
@@ -104,16 +103,18 @@ func makeOneStruct(relPath string, cols []genpg.ColumnInfo) TableToStructInfo {
 			FieldType:      c.GoType,
 			DbFieldName:    c.AttName,
 			DbIsNotNull:    c.AttNotNull,
-			DbIsPk:         c.IsPK,
-			DbHasDefault:   c.Def != nil,
 			DbNullifRhs:    c.NullifRhs,
 			DbIsInsertable: c.IsInsertable,
 		})
 	}
 
+	// TODO: simplify by doing 2 queries? first one to get all tables, and the second one to get all columns?
+	// perhaps, but later
 	structComment := ""
+	primaryKeys := []string{}
 	if len(cols) > 0 {
 		structComment = cols[0].TabDesc
+		primaryKeys = cols[0].PrimaryKeys
 	}
 
 	structName := makeName(table)
@@ -125,5 +126,6 @@ func makeOneStruct(relPath string, cols []genpg.ColumnInfo) TableToStructInfo {
 		StructComment:               structComment,
 		DbTableName:                 table,
 		Fields:                      fields,
+		PrimaryKeys:                 primaryKeys,
 	}
 }

@@ -34,23 +34,21 @@ with ti as (select (select format('%I.%I', cls.relnamespace::regnamespace, cls.r
                      and n.nspname <> 'information_schema')
               and c.relkind = 'r'),
 
-     pk as (select format('%I.%I', c.relnamespace::regnamespace, c.relname)
-                                  as relpath,
-                   c.relnamespace as relnamespace,
-                   c.relname      as relname,
-                   a.attnum       as attnum,
-                   a.attname      as attname,
-                   cn.contype     as contype
-            from pg_constraint cn
-                     join pg_class c on cn.conrelid = c.oid
-                     join pg_attribute a on a.attnum = any (cn.conkey) and
+     pk as (select (select format('%I.%I', pkcn.connamespace::regnamespace, cls.relname)
+                    from pg_class cls
+                    where cls.oid = c.oid) as relpath,
+                   array_agg(a.attname)    as primary_keys
+            from pg_constraint pkcn
+                     join pg_class c on pkcn.conrelid = c.oid
+                     join pg_attribute a on a.attnum = any (pkcn.conkey) and
                                             a.attrelid = c.oid
-            where cn.connamespace in
+            where pkcn.connamespace in
                   (select n.oid
                    from pg_namespace n
                    where n.nspname !~* '^pg_'
                      and n.nspname <> 'information_schema')
-              and cn.contype = 'p'),
+              and pkcn.contype = 'p'
+            group by relpath),
 
      fk as (select cn.oid                                      as conoid,
                    (select format('%I.%I', cls.relnamespace::regnamespace, cls.relname)
@@ -213,18 +211,12 @@ with ti as (select (select format('%I.%I', cls.relnamespace::regnamespace, cls.r
 
 select ti.relpath,
        ti.attname,
-       ti.atttype,
        ti.atttype2,
-       coalesce(fk.con_frelpath, '')                                    refto,
        ti.col_desc,
        ti.attnotnull,
        ti.tab_desc,
        ti.attnum,
-       l.char_max_len,
-       l.n_prec,
-       l.n_scal,
-       def.def,
-       coalesce(pk.contype, '') = 'p'                                as is_pk,
+       pk.primary_keys,
        case
            when coalesce(tmt.column2, '') = ''
                then ''
@@ -245,7 +237,7 @@ select ti.relpath,
            and (not coalesce(def.attdefexpr, '') ilike 'nextval(%')) as is_insertable
 from ti
          left join fk on fk.con_relpath = ti.relpath and fk.conkey_first = ti.attnum
-         left join pk on pk.relpath = ti.relpath and pk.attnum = ti.attnum
+         left join pk on pk.relpath = ti.relpath
          left join limits l on l.relpath = ti.relpath and l.attnum = ti.attnum
          left join def on def.relpath = ti.relpath and def.attnum = ti.attnum
          left join typemap_tab tmt on tmt.column1 = ti.atttype2

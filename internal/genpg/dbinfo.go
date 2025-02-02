@@ -10,18 +10,12 @@ import (
 type ColumnInfo struct {
 	RelPath      string
 	AttName      string
-	AttType      string
 	AttType2     string
-	RefTo        string
 	ColDesc      string
 	AttNotNull   bool
 	TabDesc      string
 	AttNum       int32
-	CharMaxLen   *int32
-	NPrec        *int32
-	NScal        *int32
-	Def          *string
-	IsPK         bool
+	PrimaryKeys  []string
 	GoType       string
 	NullifRhs    string
 	IsInsertable bool
@@ -50,18 +44,12 @@ func GetDBInfo(connString string) map[string][]ColumnInfo {
 		if err := rows.Scan(
 			&row.RelPath,
 			&row.AttName,
-			&row.AttType,
 			&row.AttType2,
-			&row.RefTo,
 			&row.ColDesc,
 			&row.AttNotNull,
 			&row.TabDesc,
 			&row.AttNum,
-			&row.CharMaxLen,
-			&row.NPrec,
-			&row.NScal,
-			&row.Def,
-			&row.IsPK,
+			&row.PrimaryKeys,
 			&row.GoType,
 			&row.NullifRhs,
 			&row.IsInsertable,
