@@ -41,12 +41,12 @@ func (s *categoryService) Save(ctx context.Context, input *dto.CategoryCreateDto
 	return &toDto, err
 }
 
-func (s *categoryService) UpdateByID(ctx context.Context, entityId int, input *dto.CategoryUpdateDto) (*dto.CategoryDto, error) {
+func (s *categoryService) UpdateByID(ctx context.Context, pkRecordID int, input *dto.CategoryUpdateDto) (*dto.CategoryDto, error) {
 	entityToUpdate, err := fromUpdateDtoToEntity(input)
 	if err != nil {
 		return nil, err
 	}
-	updatedResult, err := s.categoryRepository.UpdateByID(ctx, entityId, entityToUpdate)
+	updatedResult, err := s.categoryRepository.UpdateByID(ctx, pkRecordID, entityToUpdate)
 	if err != nil {
 		return nil, err
 	}
@@ -57,12 +57,12 @@ func (s *categoryService) UpdateByID(ctx context.Context, entityId int, input *d
 	return &toDto, err
 }
 
-func (s *categoryService) DeleteByID(ctx context.Context, id int) error {
-	return s.categoryRepository.DeleteByID(ctx, id)
+func (s *categoryService) DeleteByID(ctx context.Context, pkRecordID int) error {
+	return s.categoryRepository.DeleteByID(ctx, pkRecordID)
 }
 
-func (s *categoryService) FindByID(ctx context.Context, id int) (*dto.CategoryDto, error) {
-	entityById, err := s.categoryRepository.FindByID(ctx, id)
+func (s *categoryService) FindByID(ctx context.Context, pkRecordID int) (*dto.CategoryDto, error) {
+	entityById, err := s.categoryRepository.FindByID(ctx, pkRecordID)
 	if err != nil {
 		return nil, err
 	}

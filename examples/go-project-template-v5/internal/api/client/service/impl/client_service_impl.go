@@ -41,12 +41,12 @@ func (s *clientService) Save(ctx context.Context, input *dto.ClientCreateDto) (*
 	return &toDto, err
 }
 
-func (s *clientService) UpdateByID(ctx context.Context, entityId int, input *dto.ClientUpdateDto) (*dto.ClientDto, error) {
+func (s *clientService) UpdateByID(ctx context.Context, pkRecordID int, input *dto.ClientUpdateDto) (*dto.ClientDto, error) {
 	entityToUpdate, err := fromUpdateDtoToEntity(input)
 	if err != nil {
 		return nil, err
 	}
-	updatedResult, err := s.clientRepository.UpdateByID(ctx, entityId, entityToUpdate)
+	updatedResult, err := s.clientRepository.UpdateByID(ctx, pkRecordID, entityToUpdate)
 	if err != nil {
 		return nil, err
 	}
@@ -57,12 +57,12 @@ func (s *clientService) UpdateByID(ctx context.Context, entityId int, input *dto
 	return &toDto, err
 }
 
-func (s *clientService) DeleteByID(ctx context.Context, id int) error {
-	return s.clientRepository.DeleteByID(ctx, id)
+func (s *clientService) DeleteByID(ctx context.Context, pkRecordID int) error {
+	return s.clientRepository.DeleteByID(ctx, pkRecordID)
 }
 
-func (s *clientService) FindByID(ctx context.Context, id int) (*dto.ClientDto, error) {
-	entityById, err := s.clientRepository.FindByID(ctx, id)
+func (s *clientService) FindByID(ctx context.Context, pkRecordID int) (*dto.ClientDto, error) {
+	entityById, err := s.clientRepository.FindByID(ctx, pkRecordID)
 	if err != nil {
 		return nil, err
 	}

@@ -41,12 +41,12 @@ func (s *productService) Save(ctx context.Context, input *dto.ProductCreateDto) 
 	return &toDto, err
 }
 
-func (s *productService) UpdateByID(ctx context.Context, entityId int, input *dto.ProductUpdateDto) (*dto.ProductDto, error) {
+func (s *productService) UpdateByID(ctx context.Context, pkRecordID int, input *dto.ProductUpdateDto) (*dto.ProductDto, error) {
 	entityToUpdate, err := fromUpdateDtoToEntity(input)
 	if err != nil {
 		return nil, err
 	}
-	updatedResult, err := s.productRepository.UpdateByID(ctx, entityId, entityToUpdate)
+	updatedResult, err := s.productRepository.UpdateByID(ctx, pkRecordID, entityToUpdate)
 	if err != nil {
 		return nil, err
 	}
@@ -57,12 +57,12 @@ func (s *productService) UpdateByID(ctx context.Context, entityId int, input *dt
 	return &toDto, err
 }
 
-func (s *productService) DeleteByID(ctx context.Context, id int) error {
-	return s.productRepository.DeleteByID(ctx, id)
+func (s *productService) DeleteByID(ctx context.Context, pkRecordID int) error {
+	return s.productRepository.DeleteByID(ctx, pkRecordID)
 }
 
-func (s *productService) FindByID(ctx context.Context, id int) (*dto.ProductDto, error) {
-	entityById, err := s.productRepository.FindByID(ctx, id)
+func (s *productService) FindByID(ctx context.Context, pkRecordID int) (*dto.ProductDto, error) {
+	entityById, err := s.productRepository.FindByID(ctx, pkRecordID)
 	if err != nil {
 		return nil, err
 	}

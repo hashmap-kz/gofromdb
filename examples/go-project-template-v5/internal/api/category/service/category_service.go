@@ -10,9 +10,9 @@ import (
 
 type CategoryService interface {
 	Save(ctx context.Context, input *dto.CategoryCreateDto) (*dto.CategoryDto, error)
-	UpdateByID(ctx context.Context, entityId int, input *dto.CategoryUpdateDto) (*dto.CategoryDto, error)
-	DeleteByID(ctx context.Context, id int) error
-	FindByID(ctx context.Context, id int) (*dto.CategoryDto, error)
+	UpdateByID(ctx context.Context, pkRecordID int, input *dto.CategoryUpdateDto) (*dto.CategoryDto, error)
+	DeleteByID(ctx context.Context, pkRecordID int) error
+	FindByID(ctx context.Context, pkRecordID int) (*dto.CategoryDto, error)
 	FindAll(ctx context.Context) ([]dto.CategoryDto, error)
 	FindAllPageable(ctx context.Context, pq *pageable.PaginationQuery) ([]dto.CategoryDto, pageable.Page, error)
 }
