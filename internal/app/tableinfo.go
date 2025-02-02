@@ -36,7 +36,7 @@ type TableToStructInfo struct {
 	StructComment               string
 	DbTableName                 string
 	Fields                      []TableToStructFieldInfo
-	PrimaryKeys                 []string
+	PrimaryKeys                 []TableToStructFieldInfo
 }
 
 func GenStructs(connString string) []TableToStructInfo {
@@ -111,10 +111,10 @@ func makeOneStruct(relPath string, cols []genpg.ColumnInfo) TableToStructInfo {
 	// TODO: simplify by doing 2 queries? first one to get all tables, and the second one to get all columns?
 	// perhaps, but later
 	structComment := ""
-	primaryKeys := []string{}
+	primaryKeys := []TableToStructFieldInfo{}
 	if len(cols) > 0 {
 		structComment = cols[0].TabDesc
-		primaryKeys = cols[0].PrimaryKeys
+		primaryKeys = handlePkeys(fields, cols[0].PrimaryKeys)
 	}
 
 	structName := makeName(table)
@@ -128,4 +128,16 @@ func makeOneStruct(relPath string, cols []genpg.ColumnInfo) TableToStructInfo {
 		Fields:                      fields,
 		PrimaryKeys:                 primaryKeys,
 	}
+}
+
+func handlePkeys(fields []TableToStructFieldInfo, keys []string) []TableToStructFieldInfo {
+	r := []TableToStructFieldInfo{}
+	for _, pkName := range keys {
+		for _, field := range fields {
+			if pkName == field.DbFieldName {
+				r = append(r, field)
+			}
+		}
+	}
+	return r
 }

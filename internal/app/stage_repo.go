@@ -1,21 +1,11 @@
 package app
 
 import (
+	"fmt"
 	"strings"
 
 	"genpg-v5/internal/tmplts"
 )
-
-const (
-	// used for update/delete handling
-	pkeyDatabaseFieldName = "record_id"
-	pkeyDatabaseFieldType = "int"
-)
-
-// Paths example:
-// internal/api/client/entity/postgres/client_entity_pg.go
-// internal/api/client/repository/client_repository.go
-// internal/api/client/repository/impl/client_repository_pg.go
 
 type GenRepo struct {
 	RepoEntity    string
@@ -34,6 +24,9 @@ type queriesResults struct {
 }
 
 func GenRepository(s TableToStructInfo) GenRepo {
+	parametersByPkeys := genParametersByPkeys(s)
+	argumentsByPkeys := genArgumentsByPkeys(s)
+
 	queries := genQueries(s)
 	data := map[string]any{
 		"StructName":               s.StructName,
@@ -41,6 +34,8 @@ func GenRepository(s TableToStructInfo) GenRepo {
 		"PackageName":              strings.ToLower(s.DbTableName),
 		"InterfaceName":            s.StructName + "Repository",
 		"ImplName":                 LowerFirstLetter(s.StructName) + "Repository",
+		"ParametersByPkeys":        parametersByPkeys,
+		"ArgumentsByPkeys":         argumentsByPkeys,
 		"RepoSaveQuery":            queries.repoSaveQueryResult,
 		"RepoUpdateQuery":          queries.repoUpdateQueryResult,
 		"RepoDeleteQuery":          queries.repoDeleteQueryResult,
@@ -90,7 +85,8 @@ func genQueries(s TableToStructInfo) queriesResults {
 		"QTableName":          s.DbTableName,
 		"QFieldsNoPKeys":      strings.Join(fieldsWithoutPkeysAndDefaults, ",\n"),
 		"QFieldsWithPKeys":    strings.Join(fieldsWithPkeysAndDefaults, ",\n"),
-		"QPkeyFieldName":      pkeyDatabaseFieldName,
+		"QWhereClause":        genWhereClauseByPkeys(s),
+		"QOrderClause":        genOrderByClauseByPkeys(s),
 		"QInsertPlaceholders": strings.Join(CreatePlaceholders(len(fieldsWithoutPkeysAndDefaults)), ", "),
 		"QUpdateSets":         strings.Join(updateSets, ",\n"),
 	}
@@ -112,4 +108,43 @@ func genQueries(s TableToStructInfo) queriesResults {
 		repoCountQueryResult:           repoCountQueryResult,
 		repoGetAllPaginatedQueryResult: repoGetAllPaginatedQueryResult,
 	}
+}
+
+func genParametersByPkeys(s TableToStructInfo) string {
+	// pkCode int, pkID int
+	clauses := []string{}
+	for _, pk := range s.PrimaryKeys {
+		clause := fmt.Sprintf("pk%s %s", pk.FieldName, pk.FieldType)
+		clauses = append(clauses, clause)
+	}
+	return strings.Join(clauses, ", ")
+}
+
+func genArgumentsByPkeys(s TableToStructInfo) string {
+	// pkCode, pkID
+	clauses := []string{}
+	for _, pk := range s.PrimaryKeys {
+		clause := fmt.Sprintf("pk%s", pk.FieldName)
+		clauses = append(clauses, clause)
+	}
+	return strings.Join(clauses, ", ")
+}
+
+func genWhereClauseByPkeys(s TableToStructInfo) string {
+	// where pk1 = $1 and pk2 = $2 ...
+	clauses := []string{}
+	for i, pk := range s.PrimaryKeys {
+		clause := fmt.Sprintf("%s = $%d", pk.DbFieldName, i+1)
+		clauses = append(clauses, clause)
+	}
+	return strings.Join(clauses, " and ")
+}
+
+func genOrderByClauseByPkeys(s TableToStructInfo) string {
+	// order by pk1, pk2, ...
+	clauses := []string{}
+	for _, pk := range s.PrimaryKeys {
+		clauses = append(clauses, pk.DbFieldName)
+	}
+	return strings.Join(clauses, ", ")
 }

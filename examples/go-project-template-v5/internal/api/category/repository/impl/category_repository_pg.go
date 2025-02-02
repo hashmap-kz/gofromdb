@@ -57,7 +57,7 @@ func (r *categoryRepository) Save(ctx context.Context, inputEntity *dbModel.Cate
 	return scannedEntity, nil
 }
 
-func (r *categoryRepository) UpdateByID(ctx context.Context, entityId int, inputEntity *dbModel.Category) (*dbModel.Category, error) {
+func (r *categoryRepository) UpdateByID(ctx context.Context, pkRecordID int, inputEntity *dbModel.Category) (*dbModel.Category, error) {
 	tag := "categoryRepository.UpdateByID"
 
 	query := `		
@@ -76,7 +76,7 @@ func (r *categoryRepository) UpdateByID(ctx context.Context, entityId int, input
 		`
 
 	row := r.db.Pool.QueryRow(ctx, query,
-		entityId,
+		pkRecordID,
 		inputEntity.Name,
 		inputEntity.ParentID,
 	)
@@ -88,7 +88,7 @@ func (r *categoryRepository) UpdateByID(ctx context.Context, entityId int, input
 	return scannedEntity, nil
 }
 
-func (r *categoryRepository) DeleteByID(ctx context.Context, entityId int) error {
+func (r *categoryRepository) DeleteByID(ctx context.Context, pkRecordID int) error {
 	tag := "categoryRepository.DeleteByID"
 
 	query := `		
@@ -96,14 +96,14 @@ func (r *categoryRepository) DeleteByID(ctx context.Context, entityId int) error
 		where record_id = $1
 		`
 
-	cmdTag, err := r.db.Pool.Exec(ctx, query, entityId)
+	cmdTag, err := r.db.Pool.Exec(ctx, query, pkRecordID)
 	if err != nil || cmdTag.RowsAffected() == 0 {
-		return fmt.Errorf("%s. no rows deleted for id: %v, %w", tag, entityId, err)
+		return fmt.Errorf("%s. no rows were deleted: %w", tag, err)
 	}
 	return nil
 }
 
-func (r *categoryRepository) FindByID(ctx context.Context, entityId int) (*dbModel.Category, error) {
+func (r *categoryRepository) FindByID(ctx context.Context, pkRecordID int) (*dbModel.Category, error) {
 	tag := "categoryRepository.FindByID"
 
 	query := `		
@@ -119,7 +119,7 @@ func (r *categoryRepository) FindByID(ctx context.Context, entityId int) (*dbMod
 		order by record_id
 		`
 
-	row := r.db.Pool.QueryRow(ctx, query, entityId)
+	row := r.db.Pool.QueryRow(ctx, query, pkRecordID)
 
 	scannedEntity, err := scanFullRow(row)
 	if err != nil {
@@ -168,7 +168,7 @@ func (r *categoryRepository) FindAllPageable(ctx context.Context, pq *pageable.P
 	tag := "categoryRepository.FindAllPageable"
 
 	// retrieve total count
-	queryCnt := `select count(record_id) from public.category`
+	queryCnt := `select count(*) from public.category`
 	var totalCount int
 	if err := r.db.Pool.QueryRow(ctx, queryCnt).Scan(&totalCount); err != nil {
 		return nil, pageable.Page{}, err

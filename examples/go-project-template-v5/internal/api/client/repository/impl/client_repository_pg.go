@@ -54,7 +54,7 @@ func (r *clientRepository) Save(ctx context.Context, inputEntity *dbModel.Client
 	return scannedEntity, nil
 }
 
-func (r *clientRepository) UpdateByID(ctx context.Context, entityId int, inputEntity *dbModel.Client) (*dbModel.Client, error) {
+func (r *clientRepository) UpdateByID(ctx context.Context, pkRecordID int, inputEntity *dbModel.Client) (*dbModel.Client, error) {
 	tag := "clientRepository.UpdateByID"
 
 	query := `		
@@ -71,7 +71,7 @@ func (r *clientRepository) UpdateByID(ctx context.Context, entityId int, inputEn
 		`
 
 	row := r.db.Pool.QueryRow(ctx, query,
-		entityId,
+		pkRecordID,
 		inputEntity.Email,
 	)
 
@@ -82,7 +82,7 @@ func (r *clientRepository) UpdateByID(ctx context.Context, entityId int, inputEn
 	return scannedEntity, nil
 }
 
-func (r *clientRepository) DeleteByID(ctx context.Context, entityId int) error {
+func (r *clientRepository) DeleteByID(ctx context.Context, pkRecordID int) error {
 	tag := "clientRepository.DeleteByID"
 
 	query := `		
@@ -90,14 +90,14 @@ func (r *clientRepository) DeleteByID(ctx context.Context, entityId int) error {
 		where record_id = $1
 		`
 
-	cmdTag, err := r.db.Pool.Exec(ctx, query, entityId)
+	cmdTag, err := r.db.Pool.Exec(ctx, query, pkRecordID)
 	if err != nil || cmdTag.RowsAffected() == 0 {
-		return fmt.Errorf("%s. no rows deleted for id: %v, %w", tag, entityId, err)
+		return fmt.Errorf("%s. no rows were deleted: %w", tag, err)
 	}
 	return nil
 }
 
-func (r *clientRepository) FindByID(ctx context.Context, entityId int) (*dbModel.Client, error) {
+func (r *clientRepository) FindByID(ctx context.Context, pkRecordID int) (*dbModel.Client, error) {
 	tag := "clientRepository.FindByID"
 
 	query := `		
@@ -112,7 +112,7 @@ func (r *clientRepository) FindByID(ctx context.Context, entityId int) (*dbModel
 		order by record_id
 		`
 
-	row := r.db.Pool.QueryRow(ctx, query, entityId)
+	row := r.db.Pool.QueryRow(ctx, query, pkRecordID)
 
 	scannedEntity, err := scanFullRow(row)
 	if err != nil {
@@ -160,7 +160,7 @@ func (r *clientRepository) FindAllPageable(ctx context.Context, pq *pageable.Pag
 	tag := "clientRepository.FindAllPageable"
 
 	// retrieve total count
-	queryCnt := `select count(record_id) from public.client`
+	queryCnt := `select count(*) from public.client`
 	var totalCount int
 	if err := r.db.Pool.QueryRow(ctx, queryCnt).Scan(&totalCount); err != nil {
 		return nil, pageable.Page{}, err
