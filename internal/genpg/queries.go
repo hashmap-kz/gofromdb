@@ -26,6 +26,7 @@ with ti as (select (select format('%I.%I', cls.relnamespace::regnamespace, cls.r
                      left join pg_class c on a.attrelid = c.oid
                      left join pg_type t on a.atttypid = t.oid
             where a.attnum > 0
+              and (not a.attisdropped)
               and c.relnamespace in
                   (select n.oid
                    from pg_namespace n

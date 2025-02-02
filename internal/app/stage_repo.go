@@ -9,7 +9,7 @@ import (
 const (
 	// used for update/delete handling
 	pkeyDatabaseFieldName = "record_id"
-	pkeyStructFieldName   = "RecordID"
+	pkeyDatabaseFieldType = "int"
 )
 
 // Paths example:
