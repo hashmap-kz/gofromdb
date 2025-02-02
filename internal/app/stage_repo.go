@@ -78,7 +78,7 @@ func genQueries(s TableToStructInfo) queriesResults {
 	updateSets := GenUpdateSets(s.GetStructFields(Filters{
 		WithInsertableOnly: true,
 		WithInternals:      false,
-	}))
+	}), len(s.PrimaryKeys))
 
 	queryTemplatesData := map[string]any{
 		"QSchemaName":         "public",

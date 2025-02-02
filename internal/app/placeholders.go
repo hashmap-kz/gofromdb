@@ -10,13 +10,13 @@ func CreatePlaceholders(cnt int) []string {
 	return pl
 }
 
-func GenUpdateSets(from []TableToStructFieldInfo) []string {
+func GenUpdateSets(from []TableToStructFieldInfo, pkeysCnt int) []string {
 	result := []string{}
 	for i := 0; i < len(from); i++ {
 		structFieldInfo := from[i]
 
 		// because $1 is a first parameter (starts with 1, not 0), and also $1 is reserved for ID
-		indexOf := i + 2
+		indexOf := i + pkeysCnt + 1
 
 		// pattern: `<FIELD_NAME> = coalesce(nullif($1, <RHS_EMPTY_VALUE>::typename), <FIELD_NAME>)`
 		updatePattern := fmt.Sprintf("%s = coalesce(nullif($%d, %s), %s)",
