@@ -63,7 +63,7 @@ func (r *categoryRepository) UpdateByID(ctx context.Context, inputEntity *dbMode
 	query := `		
 		update public.category
 		set 
-			name = coalesce(nullif($2, ''), name),
+			name      = coalesce(nullif($2, ''), name),
 			parent_id = coalesce(nullif($3, 0::int4), parent_id)
 		where record_id = $1
 		returning 
