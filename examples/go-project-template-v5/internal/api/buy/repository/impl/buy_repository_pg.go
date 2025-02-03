@@ -57,13 +57,13 @@ func (r *buyRepository) Save(ctx context.Context, inputEntity *dbModel.Buy) (*db
 	return scannedEntity, nil
 }
 
-func (r *buyRepository) UpdateByID(ctx context.Context, entityId int, inputEntity *dbModel.Buy) (*dbModel.Buy, error) {
+func (r *buyRepository) UpdateByID(ctx context.Context, inputEntity *dbModel.Buy, pkRecordID int) (*dbModel.Buy, error) {
 	tag := "buyRepository.UpdateByID"
 
 	query := `		
 		update public.buy
 		set 
-			client_id = coalesce(nullif($2, 0::int4), client_id),
+			client_id   = coalesce(nullif($2, 0::int4), client_id),
 			description = coalesce(nullif($3, ''), description)
 		where record_id = $1
 		returning 
@@ -76,7 +76,7 @@ func (r *buyRepository) UpdateByID(ctx context.Context, entityId int, inputEntit
 		`
 
 	row := r.db.Pool.QueryRow(ctx, query,
-		entityId,
+		pkRecordID,
 		inputEntity.ClientID,
 		inputEntity.Description,
 	)
@@ -88,7 +88,7 @@ func (r *buyRepository) UpdateByID(ctx context.Context, entityId int, inputEntit
 	return scannedEntity, nil
 }
 
-func (r *buyRepository) DeleteByID(ctx context.Context, entityId int) error {
+func (r *buyRepository) DeleteByID(ctx context.Context, pkRecordID int) error {
 	tag := "buyRepository.DeleteByID"
 
 	query := `		
@@ -96,14 +96,14 @@ func (r *buyRepository) DeleteByID(ctx context.Context, entityId int) error {
 		where record_id = $1
 		`
 
-	cmdTag, err := r.db.Pool.Exec(ctx, query, entityId)
+	cmdTag, err := r.db.Pool.Exec(ctx, query, pkRecordID)
 	if err != nil || cmdTag.RowsAffected() == 0 {
-		return fmt.Errorf("%s. no rows deleted for id: %v, %w", tag, entityId, err)
+		return fmt.Errorf("%s. no rows were deleted: %w", tag, err)
 	}
 	return nil
 }
 
-func (r *buyRepository) FindByID(ctx context.Context, entityId int) (*dbModel.Buy, error) {
+func (r *buyRepository) FindByID(ctx context.Context, pkRecordID int) (*dbModel.Buy, error) {
 	tag := "buyRepository.FindByID"
 
 	query := `		
@@ -119,7 +119,7 @@ func (r *buyRepository) FindByID(ctx context.Context, entityId int) (*dbModel.Bu
 		order by record_id
 		`
 
-	row := r.db.Pool.QueryRow(ctx, query, entityId)
+	row := r.db.Pool.QueryRow(ctx, query, pkRecordID)
 
 	scannedEntity, err := scanFullRow(row)
 	if err != nil {
@@ -168,7 +168,7 @@ func (r *buyRepository) FindAllPageable(ctx context.Context, pq *pageable.Pagina
 	tag := "buyRepository.FindAllPageable"
 
 	// retrieve total count
-	queryCnt := `select count(record_id) from public.buy`
+	queryCnt := `select count(*) from public.buy`
 	var totalCount int
 	if err := r.db.Pool.QueryRow(ctx, queryCnt).Scan(&totalCount); err != nil {
 		return nil, pageable.Page{}, err

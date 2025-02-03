@@ -2,6 +2,7 @@ package httputils
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"regexp"
@@ -36,31 +37,30 @@ func WriteJSON(w http.ResponseWriter, status int, v any) {
 	}
 }
 
-func PathValueString(r *http.Request, name string) (string, error) {
-	pathValue := r.PathValue(name)
-	if pathValue == "" {
-		return "", fmt.Errorf("empty path value for name: %s", name)
+// ParsePathValue dynamically parses a value as int, UUID, or string
+func ParsePathValue(r *http.Request, name string) (interface{}, error) {
+	value := r.PathValue(name)
+	if value == "" {
+		return nil, errors.New("path value not found")
 	}
-	return pathValue, nil
-}
 
-func PathValueUUID(r *http.Request, name string) (string, error) {
-	pathValue := r.PathValue(name)
-	if pathValue == "" {
-		return "", fmt.Errorf("empty path value for name: %s", name)
+	// Check if it's a valid UUID
+	if uuidRegex.MatchString(value) {
+		return value, nil // Return as UUID string
 	}
-	if uuidRegex.MatchString(pathValue) {
-		return pathValue, nil
-	}
-	return "", fmt.Errorf("path value with name=%s and value=%s is not an UUID", name, pathValue)
-}
 
-func PathValueI32(r *http.Request, name string) (int, error) {
-	pathValue := r.PathValue(name)
-	if pathValue == "" {
-		return 0, fmt.Errorf("empty path value for name: %s", name)
+	// Try parsing as an i32
+	if intVal, err := strconv.Atoi(value); err == nil {
+		return intVal, nil
 	}
-	return strconv.Atoi(pathValue)
+
+	// Try parsing as an i64
+	if int64Val, err := strconv.ParseInt(value, 10, 64); err == nil {
+		return int64Val, nil
+	}
+
+	// Default: Return as string
+	return value, nil
 }
 
 func PathValueI64(r *http.Request, name string) (int64, error) {

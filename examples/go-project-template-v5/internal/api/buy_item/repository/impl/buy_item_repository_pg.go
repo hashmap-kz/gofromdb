@@ -63,16 +63,16 @@ func (r *buyItemRepository) Save(ctx context.Context, inputEntity *dbModel.BuyIt
 	return scannedEntity, nil
 }
 
-func (r *buyItemRepository) UpdateByID(ctx context.Context, entityId int, inputEntity *dbModel.BuyItem) (*dbModel.BuyItem, error) {
+func (r *buyItemRepository) UpdateByID(ctx context.Context, inputEntity *dbModel.BuyItem, pkRecordID int) (*dbModel.BuyItem, error) {
 	tag := "buyItemRepository.UpdateByID"
 
 	query := `		
 		update public.buy_item
 		set 
-			buy_id = coalesce(nullif($2, 0::int4), buy_id),
+			buy_id     = coalesce(nullif($2, 0::int4), buy_id),
 			product_id = coalesce(nullif($3, 0::int4), product_id),
-			quantity = coalesce(nullif($4, 0::int4), quantity),
-			price = coalesce(nullif($5, 0::numeric), price)
+			quantity   = coalesce(nullif($4, 0::int4), quantity),
+			price      = coalesce(nullif($5, 0::numeric), price)
 		where record_id = $1
 		returning 
 			record_id,
@@ -86,7 +86,7 @@ func (r *buyItemRepository) UpdateByID(ctx context.Context, entityId int, inputE
 		`
 
 	row := r.db.Pool.QueryRow(ctx, query,
-		entityId,
+		pkRecordID,
 		inputEntity.BuyID,
 		inputEntity.ProductID,
 		inputEntity.Quantity,
@@ -100,7 +100,7 @@ func (r *buyItemRepository) UpdateByID(ctx context.Context, entityId int, inputE
 	return scannedEntity, nil
 }
 
-func (r *buyItemRepository) DeleteByID(ctx context.Context, entityId int) error {
+func (r *buyItemRepository) DeleteByID(ctx context.Context, pkRecordID int) error {
 	tag := "buyItemRepository.DeleteByID"
 
 	query := `		
@@ -108,14 +108,14 @@ func (r *buyItemRepository) DeleteByID(ctx context.Context, entityId int) error 
 		where record_id = $1
 		`
 
-	cmdTag, err := r.db.Pool.Exec(ctx, query, entityId)
+	cmdTag, err := r.db.Pool.Exec(ctx, query, pkRecordID)
 	if err != nil || cmdTag.RowsAffected() == 0 {
-		return fmt.Errorf("%s. no rows deleted for id: %v, %w", tag, entityId, err)
+		return fmt.Errorf("%s. no rows were deleted: %w", tag, err)
 	}
 	return nil
 }
 
-func (r *buyItemRepository) FindByID(ctx context.Context, entityId int) (*dbModel.BuyItem, error) {
+func (r *buyItemRepository) FindByID(ctx context.Context, pkRecordID int) (*dbModel.BuyItem, error) {
 	tag := "buyItemRepository.FindByID"
 
 	query := `		
@@ -133,7 +133,7 @@ func (r *buyItemRepository) FindByID(ctx context.Context, entityId int) (*dbMode
 		order by record_id
 		`
 
-	row := r.db.Pool.QueryRow(ctx, query, entityId)
+	row := r.db.Pool.QueryRow(ctx, query, pkRecordID)
 
 	scannedEntity, err := scanFullRow(row)
 	if err != nil {
@@ -184,7 +184,7 @@ func (r *buyItemRepository) FindAllPageable(ctx context.Context, pq *pageable.Pa
 	tag := "buyItemRepository.FindAllPageable"
 
 	// retrieve total count
-	queryCnt := `select count(record_id) from public.buy_item`
+	queryCnt := `select count(*) from public.buy_item`
 	var totalCount int
 	if err := r.db.Pool.QueryRow(ctx, queryCnt).Scan(&totalCount); err != nil {
 		return nil, pageable.Page{}, err

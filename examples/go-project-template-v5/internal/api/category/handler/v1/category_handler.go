@@ -86,9 +86,9 @@ func (h *CategoryHTTPHandler) Save(w http.ResponseWriter, r *http.Request) {
 // @Success 201 {object} categoryResponse
 // @Failure 400 {object} httputils.ErrorResponse "Bad Request"
 // @Failure 500 {object} httputils.ErrorResponse "Internal Server Error"
-// @Router /api/v1/categories/{id} [put]
+// @Router /api/v1/categories/{record_id} [put]
 func (h *CategoryHTTPHandler) UpdateByID(w http.ResponseWriter, r *http.Request) {
-	id, err := httputils.PathValueI64(r, "id")
+	pkRecordID, err := httputils.PathValueI32(r, "record_id")
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
 		return
@@ -108,8 +108,7 @@ func (h *CategoryHTTPHandler) UpdateByID(w http.ResponseWriter, r *http.Request)
 	}
 
 	// call service
-	// TODO: types - int(id)
-	resp, err := h.categoryService.UpdateByID(r.Context(), int(id), updateInput)
+	resp, err := h.categoryService.UpdateByID(r.Context(), updateInput, pkRecordID)
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
 		return
@@ -137,15 +136,15 @@ func (h *CategoryHTTPHandler) UpdateByID(w http.ResponseWriter, r *http.Request)
 // @Success 204 "No Content (Successfully deleted)"
 // @Failure 400 {object} httputils.ErrorResponse "Bad Request (Invalid ID format)"
 // @Failure 500 {object} httputils.ErrorResponse "Internal Server Error (Deletion failed)"
-// @Router /api/v1/categories/{id} [delete]
+// @Router /api/v1/categories/{record_id} [delete]
 func (h *CategoryHTTPHandler) DeleteByID(w http.ResponseWriter, r *http.Request) {
-	id, err := httputils.PathValueI64(r, "id")
+	pkRecordID, err := httputils.PathValueI32(r, "record_id")
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
 		return
 	}
 
-	err = h.categoryService.DeleteByID(r.Context(), int(id))
+	err = h.categoryService.DeleteByID(r.Context(), pkRecordID)
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
 		return
@@ -165,15 +164,15 @@ func (h *CategoryHTTPHandler) DeleteByID(w http.ResponseWriter, r *http.Request)
 // @Success 200 {object} categoryResponse "Single item"
 // @Failure 400 {object} httputils.ErrorResponse "Bad Request (Invalid ID format)"
 // @Failure 500 {object} httputils.ErrorResponse "Internal Server Error (Deletion failed)"
-// @Router /api/v1/categories/{id} [get]
+// @Router /api/v1/categories/{record_id} [get]
 func (h *CategoryHTTPHandler) FindByID(w http.ResponseWriter, r *http.Request) {
-	id, err := httputils.PathValueI64(r, "id")
+	pkRecordID, err := httputils.PathValueI32(r, "record_id")
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
 		return
 	}
 
-	resp, err := h.categoryService.FindByID(r.Context(), int(id))
+	resp, err := h.categoryService.FindByID(r.Context(), pkRecordID)
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
 		return
@@ -269,8 +268,9 @@ func mapCreateRequestToCreateInputDto(inputRequest *categoryCreateRequest) (*dto
 		return nil, fmt.Errorf("unexpected nil input for mapping between categoryCreateRequest->CategoryCreateDto")
 	}
 	return &dto.CategoryCreateDto{
-		Name:     inputRequest.Name,
-		ParentID: inputRequest.ParentID,
+		Name:        inputRequest.Name,
+		ParentID:    inputRequest.ParentID,
+		ValidPeriod: inputRequest.ValidPeriod,
 	}, nil
 }
 
@@ -279,8 +279,9 @@ func mapUpdateRequestToUpdateInputDto(inputRequest *categoryUpdateRequest) (*dto
 		return nil, fmt.Errorf("unexpected nil input for mapping between categoryUpdateRequest->CategoryUpdateDto")
 	}
 	return &dto.CategoryUpdateDto{
-		Name:     inputRequest.Name,
-		ParentID: inputRequest.ParentID,
+		Name:        inputRequest.Name,
+		ParentID:    inputRequest.ParentID,
+		ValidPeriod: inputRequest.ValidPeriod,
 	}, nil
 }
 
@@ -301,11 +302,13 @@ func mapDtoToPayload(inputDto *dto.CategoryDto) (categoryResponse, error) {
 		return categoryResponse{}, fmt.Errorf("unexpected nil input for mapping between CategoryDto->categoryResponse")
 	}
 	return categoryResponse{
-		RecordID:  inputDto.RecordID,
-		Name:      inputDto.Name,
-		ParentID:  inputDto.ParentID,
-		CreatedAt: inputDto.CreatedAt,
-		UpdatedAt: inputDto.UpdatedAt,
-		Guid:      inputDto.Guid,
+		RecordID:    inputDto.RecordID,
+		Name:        inputDto.Name,
+		ParentID:    inputDto.ParentID,
+		ValidPeriod: inputDto.ValidPeriod,
+		IsCurrent:   inputDto.IsCurrent,
+		CreatedAt:   inputDto.CreatedAt,
+		UpdatedAt:   inputDto.UpdatedAt,
+		Guid:        inputDto.Guid,
 	}, nil
 }

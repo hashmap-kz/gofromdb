@@ -36,9 +36,9 @@ import (
 
 type {{.InterfaceName}} interface {
 	Save(ctx context.Context, input *dto.{{.DtoCreateName}}) (*dto.{{.DtoName}}, error)
-	UpdateByID(ctx context.Context, entityId int, input *dto.{{.DtoUpdateName}}) (*dto.{{.DtoName}}, error)
-	DeleteByID(ctx context.Context, id int) error
-	FindByID(ctx context.Context, id int) (*dto.{{.DtoName}}, error)
+	UpdateByID(ctx context.Context, input *dto.{{.DtoUpdateName}}, {{.ParametersByPkeys}}) (*dto.{{.DtoName}}, error)
+	DeleteByID(ctx context.Context, {{.ParametersByPkeys}}) error
+	FindByID(ctx context.Context, {{.ParametersByPkeys}}) (*dto.{{.DtoName}}, error)
 	FindAll(ctx context.Context) ([]dto.{{.DtoName}}, error)
 	FindAllPageable(ctx context.Context, pq *pageable.PaginationQuery) ([]dto.{{.DtoName}}, pageable.Page, error)
 }
@@ -88,12 +88,12 @@ func (s *{{.ImplName}}) Save(ctx context.Context, input *dto.{{.DtoCreateName}})
 	return &toDto, err
 }
 
-func (s *{{.ImplName}}) UpdateByID(ctx context.Context, entityId int, input *dto.{{.DtoUpdateName}}) (*dto.{{.DtoName}}, error) {
+func (s *{{.ImplName}}) UpdateByID(ctx context.Context, input *dto.{{.DtoUpdateName}}, {{.ParametersByPkeys}}) (*dto.{{.DtoName}}, error) {
 	entityToUpdate, err := fromUpdateDtoToEntity(input)
 	if err != nil {
 		return nil, err
 	}
-	updatedResult, err := s.{{.RepositoryVarName}}.UpdateByID(ctx, entityId, entityToUpdate)
+	updatedResult, err := s.{{.RepositoryVarName}}.UpdateByID(ctx, entityToUpdate, {{.ArgumentsByPkeys}})
 	if err != nil {
 		return nil, err
 	}
@@ -104,12 +104,12 @@ func (s *{{.ImplName}}) UpdateByID(ctx context.Context, entityId int, input *dto
 	return &toDto, err
 }
 
-func (s *{{.ImplName}}) DeleteByID(ctx context.Context, id int) error {
-	return s.{{.RepositoryVarName}}.DeleteByID(ctx, id)
+func (s *{{.ImplName}}) DeleteByID(ctx context.Context, {{.ParametersByPkeys}}) error {
+	return s.{{.RepositoryVarName}}.DeleteByID(ctx, {{.ArgumentsByPkeys}})
 }
 
-func (s *{{.ImplName}}) FindByID(ctx context.Context, id int) (*dto.{{.DtoName}}, error) {
-	entityById, err := s.{{.RepositoryVarName}}.FindByID(ctx, id)
+func (s *{{.ImplName}}) FindByID(ctx context.Context, {{.ParametersByPkeys}}) (*dto.{{.DtoName}}, error) {
+	entityById, err := s.{{.RepositoryVarName}}.FindByID(ctx, {{.ArgumentsByPkeys}})
 	if err != nil {
 		return nil, err
 	}

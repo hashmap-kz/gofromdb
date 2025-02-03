@@ -13,9 +13,9 @@ import (
 
 type {{.InterfaceName}} interface {
 	Save(ctx context.Context, inputEntity *dbModel.{{.StructName}}) (*dbModel.{{.StructName}}, error)
-	UpdateByID(ctx context.Context, entityId int, inputEntity *dbModel.{{.StructName}}) (*dbModel.{{.StructName}}, error)
-	DeleteByID(ctx context.Context, entityId int) error
-	FindByID(ctx context.Context, entityId int) (*dbModel.{{.StructName}}, error)
+	UpdateByID(ctx context.Context, inputEntity *dbModel.{{.StructName}}, {{.ParametersByPkeys}}) (*dbModel.{{.StructName}}, error)
+	DeleteByID(ctx context.Context, {{.ParametersByPkeys}}) error
+	FindByID(ctx context.Context, {{.ParametersByPkeys}}) (*dbModel.{{.StructName}}, error)
 	FindAll(ctx context.Context) ([]dbModel.{{.StructName}}, error)
 	FindAllPageable(ctx context.Context, pq *pageable.PaginationQuery) ([]dbModel.{{.StructName}}, pageable.Page, error)
 }
@@ -69,13 +69,13 @@ func (r *{{.ImplName}}) Save(ctx context.Context, inputEntity *dbModel.{{.Struct
 	return scannedEntity, nil
 }
 
-func (r *{{.ImplName}}) UpdateByID(ctx context.Context, entityId int, inputEntity *dbModel.{{.StructName}}) (*dbModel.{{.StructName}}, error) {
+func (r *{{.ImplName}}) UpdateByID(ctx context.Context, inputEntity *dbModel.{{.StructName}}, {{.ParametersByPkeys}}) (*dbModel.{{.StructName}}, error) {
 	tag := "{{.ImplName}}.UpdateByID"
 
 	query := ` + "`{{.RepoUpdateQuery | AddPadding2}}`" + `
 
 	row := r.db.Pool.QueryRow(ctx, query,
-		entityId,
+		{{.ArgumentsByPkeys}},
 {{- range .DtoFieldsNoPkeysNoDefaults}}
 		inputEntity.{{.FieldName}},
 {{- end}}
@@ -88,24 +88,24 @@ func (r *{{.ImplName}}) UpdateByID(ctx context.Context, entityId int, inputEntit
 	return scannedEntity, nil
 }
 
-func (r *{{.ImplName}}) DeleteByID(ctx context.Context, entityId int) error {
+func (r *{{.ImplName}}) DeleteByID(ctx context.Context, {{.ParametersByPkeys}}) error {
 	tag := "{{.ImplName}}.DeleteByID"
 
 	query := ` + "`{{.RepoDeleteQuery | AddPadding2}}`" + `
 
-	cmdTag, err := r.db.Pool.Exec(ctx, query, entityId)
+	cmdTag, err := r.db.Pool.Exec(ctx, query, {{.ArgumentsByPkeys}})
 	if err != nil || cmdTag.RowsAffected() == 0 {
-		return fmt.Errorf("%s. no rows deleted for id: %v, %w", tag, entityId, err)
+		return fmt.Errorf("%s. no rows were deleted: %w", tag, err)
 	}
 	return nil
 }
 
-func (r *{{.ImplName}}) FindByID(ctx context.Context, entityId int) (*dbModel.{{.StructName}}, error) {
+func (r *{{.ImplName}}) FindByID(ctx context.Context, {{.ParametersByPkeys}}) (*dbModel.{{.StructName}}, error) {
 	tag := "{{.ImplName}}.FindByID"
 
 	query := ` + "`{{.RepoGetByIdQuery | AddPadding2}}`" + `
 	
-	row := r.db.Pool.QueryRow(ctx, query, entityId)
+	row := r.db.Pool.QueryRow(ctx, query, {{.ArgumentsByPkeys}})
 
 	scannedEntity, err := scanFullRow(row)
 	if err != nil {

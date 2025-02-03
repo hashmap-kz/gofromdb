@@ -41,12 +41,12 @@ func (s *categoryService) Save(ctx context.Context, input *dto.CategoryCreateDto
 	return &toDto, err
 }
 
-func (s *categoryService) UpdateByID(ctx context.Context, entityId int, input *dto.CategoryUpdateDto) (*dto.CategoryDto, error) {
+func (s *categoryService) UpdateByID(ctx context.Context, input *dto.CategoryUpdateDto, pkRecordID int) (*dto.CategoryDto, error) {
 	entityToUpdate, err := fromUpdateDtoToEntity(input)
 	if err != nil {
 		return nil, err
 	}
-	updatedResult, err := s.categoryRepository.UpdateByID(ctx, entityId, entityToUpdate)
+	updatedResult, err := s.categoryRepository.UpdateByID(ctx, entityToUpdate, pkRecordID)
 	if err != nil {
 		return nil, err
 	}
@@ -57,12 +57,12 @@ func (s *categoryService) UpdateByID(ctx context.Context, entityId int, input *d
 	return &toDto, err
 }
 
-func (s *categoryService) DeleteByID(ctx context.Context, id int) error {
-	return s.categoryRepository.DeleteByID(ctx, id)
+func (s *categoryService) DeleteByID(ctx context.Context, pkRecordID int) error {
+	return s.categoryRepository.DeleteByID(ctx, pkRecordID)
 }
 
-func (s *categoryService) FindByID(ctx context.Context, id int) (*dto.CategoryDto, error) {
-	entityById, err := s.categoryRepository.FindByID(ctx, id)
+func (s *categoryService) FindByID(ctx context.Context, pkRecordID int) (*dto.CategoryDto, error) {
+	entityById, err := s.categoryRepository.FindByID(ctx, pkRecordID)
 	if err != nil {
 		return nil, err
 	}
@@ -104,8 +104,9 @@ func fromCreateDtoToEntity(input *dto.CategoryCreateDto) (*dbModel.Category, err
 		return nil, fmt.Errorf("convert CategoryCreateDto->Category: input dto cannot be nil")
 	}
 	return &dbModel.Category{
-		Name:     input.Name,
-		ParentID: input.ParentID,
+		Name:        input.Name,
+		ParentID:    input.ParentID,
+		ValidPeriod: input.ValidPeriod,
 	}, nil
 }
 
@@ -114,8 +115,9 @@ func fromUpdateDtoToEntity(input *dto.CategoryUpdateDto) (*dbModel.Category, err
 		return nil, fmt.Errorf("convert CategoryUpdateDto->Category: input dto cannot be nil")
 	}
 	return &dbModel.Category{
-		Name:     input.Name,
-		ParentID: input.ParentID,
+		Name:        input.Name,
+		ParentID:    input.ParentID,
+		ValidPeriod: input.ValidPeriod,
 	}, nil
 }
 
@@ -136,11 +138,13 @@ func fromEntityToDto(inputEntity *dbModel.Category) (dto.CategoryDto, error) {
 		return dto.CategoryDto{}, fmt.Errorf("unexpected nil input for mapping between Category->CategoryDto")
 	}
 	return dto.CategoryDto{
-		RecordID:  inputEntity.RecordID,
-		Name:      inputEntity.Name,
-		ParentID:  inputEntity.ParentID,
-		CreatedAt: inputEntity.CreatedAt,
-		UpdatedAt: inputEntity.UpdatedAt,
-		Guid:      inputEntity.Guid,
+		RecordID:    inputEntity.RecordID,
+		Name:        inputEntity.Name,
+		ParentID:    inputEntity.ParentID,
+		ValidPeriod: inputEntity.ValidPeriod,
+		IsCurrent:   inputEntity.IsCurrent,
+		CreatedAt:   inputEntity.CreatedAt,
+		UpdatedAt:   inputEntity.UpdatedAt,
+		Guid:        inputEntity.Guid,
 	}, nil
 }

@@ -13,37 +13,37 @@ var RepoUpdateQueryTemplate = `
 update {{.QSchemaName}}.{{.QTableName}}
 set 
 {{.QUpdateSets | AddPadding}}
-where {{.QPkeyFieldName}} = $1
+where {{.QWhereClause}}
 returning 
 {{.QFieldsWithPKeys | AddPadding}}
 `
 
 var RepoDeleteQueryTemplate = `
 delete from only {{.QSchemaName}}.{{.QTableName}}
-where {{.QPkeyFieldName}} = $1
+where {{.QWhereClause}}
 `
 
 var RepoGetByIdQueryTemplate = `
 select
 {{.QFieldsWithPKeys | AddPadding}}
 from {{.QSchemaName}}.{{.QTableName}}
-where {{.QPkeyFieldName}} = $1
-order by {{.QPkeyFieldName}}
+where {{.QWhereClause}}
+order by {{.QOrderClause}}
 `
 
 var RepoGetAllQueryTemplate = `
 select
 {{.QFieldsWithPKeys | AddPadding}}
 from {{.QSchemaName}}.{{.QTableName}}
-order by {{.QPkeyFieldName}}
+order by {{.QOrderClause}}
 `
 
-var RepoCountQueryTemplate = `select count({{.QPkeyFieldName}}) from {{.QSchemaName}}.{{.QTableName}}`
+var RepoCountQueryTemplate = `select count(*) from {{.QSchemaName}}.{{.QTableName}}`
 
 var RepoGetAllPaginatedQueryTemplate = `
 select
 {{.QFieldsWithPKeys | AddPadding}}
 from {{.QSchemaName}}.{{.QTableName}}
-order by {{.QPkeyFieldName}}
+order by {{.QOrderClause}}
 offset $1 limit $2
 `

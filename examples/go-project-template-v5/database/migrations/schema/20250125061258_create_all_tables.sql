@@ -12,15 +12,20 @@ comment on column client.email is 'Unique email address of the client.';
 
 create table category
 (
-    record_id serial primary key,
-    name      varchar(250) not null,
-    parent_id int          references category (record_id) on delete set null
+    record_id    serial primary key,
+    name         varchar(250) not null,
+    parent_id    int          references category (record_id) on delete set null,
+    valid_period daterange    not null default '[1970-01-01,)'::daterange,
+    is_current   bool         not null generated always as (valid_period @> '9999-12-30'::date) stored,
+    exclude using gist(name with =, valid_period with &&)
 );
 
 comment on table category is 'Represents product categories, supporting hierarchical relationships.';
 comment on column category.record_id is 'Primary key for the category table.';
 comment on column category.name is 'Name of the category.';
 comment on column category.parent_id is 'Reference to the parent category. NULL if it is a root category.';
+comment on column category.valid_period is 'Validity period of this category naming.';
+comment on column category.is_current is 'Whether this category is the last actual.';
 
 create table product
 (

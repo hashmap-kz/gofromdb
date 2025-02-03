@@ -60,14 +60,14 @@ func (r *productRepository) Save(ctx context.Context, inputEntity *dbModel.Produ
 	return scannedEntity, nil
 }
 
-func (r *productRepository) UpdateByID(ctx context.Context, entityId int, inputEntity *dbModel.Product) (*dbModel.Product, error) {
+func (r *productRepository) UpdateByID(ctx context.Context, inputEntity *dbModel.Product, pkRecordID int) (*dbModel.Product, error) {
 	tag := "productRepository.UpdateByID"
 
 	query := `		
 		update public.product
 		set 
 			category_id = coalesce(nullif($2, 0::int4), category_id),
-			name = coalesce(nullif($3, ''), name),
+			name        = coalesce(nullif($3, ''), name),
 			description = coalesce(nullif($4, ''), description)
 		where record_id = $1
 		returning 
@@ -81,7 +81,7 @@ func (r *productRepository) UpdateByID(ctx context.Context, entityId int, inputE
 		`
 
 	row := r.db.Pool.QueryRow(ctx, query,
-		entityId,
+		pkRecordID,
 		inputEntity.CategoryID,
 		inputEntity.Name,
 		inputEntity.Description,
@@ -94,7 +94,7 @@ func (r *productRepository) UpdateByID(ctx context.Context, entityId int, inputE
 	return scannedEntity, nil
 }
 
-func (r *productRepository) DeleteByID(ctx context.Context, entityId int) error {
+func (r *productRepository) DeleteByID(ctx context.Context, pkRecordID int) error {
 	tag := "productRepository.DeleteByID"
 
 	query := `		
@@ -102,14 +102,14 @@ func (r *productRepository) DeleteByID(ctx context.Context, entityId int) error 
 		where record_id = $1
 		`
 
-	cmdTag, err := r.db.Pool.Exec(ctx, query, entityId)
+	cmdTag, err := r.db.Pool.Exec(ctx, query, pkRecordID)
 	if err != nil || cmdTag.RowsAffected() == 0 {
-		return fmt.Errorf("%s. no rows deleted for id: %v, %w", tag, entityId, err)
+		return fmt.Errorf("%s. no rows were deleted: %w", tag, err)
 	}
 	return nil
 }
 
-func (r *productRepository) FindByID(ctx context.Context, entityId int) (*dbModel.Product, error) {
+func (r *productRepository) FindByID(ctx context.Context, pkRecordID int) (*dbModel.Product, error) {
 	tag := "productRepository.FindByID"
 
 	query := `		
@@ -126,7 +126,7 @@ func (r *productRepository) FindByID(ctx context.Context, entityId int) (*dbMode
 		order by record_id
 		`
 
-	row := r.db.Pool.QueryRow(ctx, query, entityId)
+	row := r.db.Pool.QueryRow(ctx, query, pkRecordID)
 
 	scannedEntity, err := scanFullRow(row)
 	if err != nil {
@@ -176,7 +176,7 @@ func (r *productRepository) FindAllPageable(ctx context.Context, pq *pageable.Pa
 	tag := "productRepository.FindAllPageable"
 
 	// retrieve total count
-	queryCnt := `select count(record_id) from public.product`
+	queryCnt := `select count(*) from public.product`
 	var totalCount int
 	if err := r.db.Pool.QueryRow(ctx, queryCnt).Scan(&totalCount); err != nil {
 		return nil, pageable.Page{}, err

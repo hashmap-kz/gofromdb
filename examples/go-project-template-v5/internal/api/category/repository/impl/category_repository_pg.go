@@ -33,13 +33,16 @@ func (r *categoryRepository) Save(ctx context.Context, inputEntity *dbModel.Cate
 	query := `		
 		insert into public.category (
 			name,
-			parent_id
+			parent_id,
+			valid_period
 		)
-		values ($1, $2)
+		values ($1, $2, $3)
 		returning
 			record_id,
 			name,
 			parent_id,
+			valid_period,
+			is_current,
 			created_at,
 			updated_at,
 			guid
@@ -48,6 +51,7 @@ func (r *categoryRepository) Save(ctx context.Context, inputEntity *dbModel.Cate
 	row := r.db.Pool.QueryRow(ctx, query,
 		inputEntity.Name,
 		inputEntity.ParentID,
+		inputEntity.ValidPeriod,
 	)
 
 	scannedEntity, err := scanFullRow(row)
@@ -57,28 +61,32 @@ func (r *categoryRepository) Save(ctx context.Context, inputEntity *dbModel.Cate
 	return scannedEntity, nil
 }
 
-func (r *categoryRepository) UpdateByID(ctx context.Context, entityId int, inputEntity *dbModel.Category) (*dbModel.Category, error) {
+func (r *categoryRepository) UpdateByID(ctx context.Context, inputEntity *dbModel.Category, pkRecordID int) (*dbModel.Category, error) {
 	tag := "categoryRepository.UpdateByID"
 
 	query := `		
 		update public.category
 		set 
-			name = coalesce(nullif($2, ''), name),
-			parent_id = coalesce(nullif($3, 0::int4), parent_id)
+			name         = coalesce(nullif($2, ''), name),
+			parent_id    = coalesce(nullif($3, 0::int4), parent_id),
+			valid_period = coalesce(nullif($4, 'empty'::daterange), valid_period)
 		where record_id = $1
 		returning 
 			record_id,
 			name,
 			parent_id,
+			valid_period,
+			is_current,
 			created_at,
 			updated_at,
 			guid
 		`
 
 	row := r.db.Pool.QueryRow(ctx, query,
-		entityId,
+		pkRecordID,
 		inputEntity.Name,
 		inputEntity.ParentID,
+		inputEntity.ValidPeriod,
 	)
 
 	scannedEntity, err := scanFullRow(row)
@@ -88,7 +96,7 @@ func (r *categoryRepository) UpdateByID(ctx context.Context, entityId int, input
 	return scannedEntity, nil
 }
 
-func (r *categoryRepository) DeleteByID(ctx context.Context, entityId int) error {
+func (r *categoryRepository) DeleteByID(ctx context.Context, pkRecordID int) error {
 	tag := "categoryRepository.DeleteByID"
 
 	query := `		
@@ -96,14 +104,14 @@ func (r *categoryRepository) DeleteByID(ctx context.Context, entityId int) error
 		where record_id = $1
 		`
 
-	cmdTag, err := r.db.Pool.Exec(ctx, query, entityId)
+	cmdTag, err := r.db.Pool.Exec(ctx, query, pkRecordID)
 	if err != nil || cmdTag.RowsAffected() == 0 {
-		return fmt.Errorf("%s. no rows deleted for id: %v, %w", tag, entityId, err)
+		return fmt.Errorf("%s. no rows were deleted: %w", tag, err)
 	}
 	return nil
 }
 
-func (r *categoryRepository) FindByID(ctx context.Context, entityId int) (*dbModel.Category, error) {
+func (r *categoryRepository) FindByID(ctx context.Context, pkRecordID int) (*dbModel.Category, error) {
 	tag := "categoryRepository.FindByID"
 
 	query := `		
@@ -111,6 +119,8 @@ func (r *categoryRepository) FindByID(ctx context.Context, entityId int) (*dbMod
 			record_id,
 			name,
 			parent_id,
+			valid_period,
+			is_current,
 			created_at,
 			updated_at,
 			guid
@@ -119,7 +129,7 @@ func (r *categoryRepository) FindByID(ctx context.Context, entityId int) (*dbMod
 		order by record_id
 		`
 
-	row := r.db.Pool.QueryRow(ctx, query, entityId)
+	row := r.db.Pool.QueryRow(ctx, query, pkRecordID)
 
 	scannedEntity, err := scanFullRow(row)
 	if err != nil {
@@ -136,6 +146,8 @@ func (r *categoryRepository) FindAll(ctx context.Context) ([]dbModel.Category, e
 			record_id,
 			name,
 			parent_id,
+			valid_period,
+			is_current,
 			created_at,
 			updated_at,
 			guid
@@ -168,7 +180,7 @@ func (r *categoryRepository) FindAllPageable(ctx context.Context, pq *pageable.P
 	tag := "categoryRepository.FindAllPageable"
 
 	// retrieve total count
-	queryCnt := `select count(record_id) from public.category`
+	queryCnt := `select count(*) from public.category`
 	var totalCount int
 	if err := r.db.Pool.QueryRow(ctx, queryCnt).Scan(&totalCount); err != nil {
 		return nil, pageable.Page{}, err
@@ -188,6 +200,8 @@ func (r *categoryRepository) FindAllPageable(ctx context.Context, pq *pageable.P
 			record_id,
 			name,
 			parent_id,
+			valid_period,
+			is_current,
 			created_at,
 			updated_at,
 			guid
@@ -228,6 +242,8 @@ func scanFullRow(row pgx.Row) (*dbModel.Category, error) {
 		&scannedEntity.RecordID,
 		&scannedEntity.Name,
 		&scannedEntity.ParentID,
+		&scannedEntity.ValidPeriod,
+		&scannedEntity.IsCurrent,
 		&scannedEntity.CreatedAt,
 		&scannedEntity.UpdatedAt,
 		&scannedEntity.Guid,

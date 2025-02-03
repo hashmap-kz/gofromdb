@@ -41,12 +41,12 @@ func (s *buyItemService) Save(ctx context.Context, input *dto.BuyItemCreateDto) 
 	return &toDto, err
 }
 
-func (s *buyItemService) UpdateByID(ctx context.Context, entityId int, input *dto.BuyItemUpdateDto) (*dto.BuyItemDto, error) {
+func (s *buyItemService) UpdateByID(ctx context.Context, input *dto.BuyItemUpdateDto, pkRecordID int) (*dto.BuyItemDto, error) {
 	entityToUpdate, err := fromUpdateDtoToEntity(input)
 	if err != nil {
 		return nil, err
 	}
-	updatedResult, err := s.buyItemRepository.UpdateByID(ctx, entityId, entityToUpdate)
+	updatedResult, err := s.buyItemRepository.UpdateByID(ctx, entityToUpdate, pkRecordID)
 	if err != nil {
 		return nil, err
 	}
@@ -57,12 +57,12 @@ func (s *buyItemService) UpdateByID(ctx context.Context, entityId int, input *dt
 	return &toDto, err
 }
 
-func (s *buyItemService) DeleteByID(ctx context.Context, id int) error {
-	return s.buyItemRepository.DeleteByID(ctx, id)
+func (s *buyItemService) DeleteByID(ctx context.Context, pkRecordID int) error {
+	return s.buyItemRepository.DeleteByID(ctx, pkRecordID)
 }
 
-func (s *buyItemService) FindByID(ctx context.Context, id int) (*dto.BuyItemDto, error) {
-	entityById, err := s.buyItemRepository.FindByID(ctx, id)
+func (s *buyItemService) FindByID(ctx context.Context, pkRecordID int) (*dto.BuyItemDto, error) {
+	entityById, err := s.buyItemRepository.FindByID(ctx, pkRecordID)
 	if err != nil {
 		return nil, err
 	}

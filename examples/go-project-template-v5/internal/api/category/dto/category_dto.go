@@ -1,22 +1,30 @@
 package dto
 
-import "time"
+import (
+	"time"
+
+	"github.com/jackc/pgx/v5/pgtype"
+)
 
 type CategoryDto struct {
-	RecordID  int
-	Name      string
-	ParentID  *int
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	Guid      string
+	RecordID    int
+	Name        string
+	ParentID    *int
+	ValidPeriod pgtype.Range[time.Time]
+	IsCurrent   *bool
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+	Guid        string
 }
 
 type CategoryCreateDto struct {
-	Name     string
-	ParentID *int
+	Name        string
+	ParentID    *int
+	ValidPeriod pgtype.Range[time.Time]
 }
 
 type CategoryUpdateDto struct {
-	Name     string
-	ParentID *int
+	Name        string
+	ParentID    *int
+	ValidPeriod pgtype.Range[time.Time]
 }

@@ -10,9 +10,9 @@ import (
 
 type ProductService interface {
 	Save(ctx context.Context, input *dto.ProductCreateDto) (*dto.ProductDto, error)
-	UpdateByID(ctx context.Context, entityId int, input *dto.ProductUpdateDto) (*dto.ProductDto, error)
-	DeleteByID(ctx context.Context, id int) error
-	FindByID(ctx context.Context, id int) (*dto.ProductDto, error)
+	UpdateByID(ctx context.Context, input *dto.ProductUpdateDto, pkRecordID int) (*dto.ProductDto, error)
+	DeleteByID(ctx context.Context, pkRecordID int) error
+	FindByID(ctx context.Context, pkRecordID int) (*dto.ProductDto, error)
 	FindAll(ctx context.Context) ([]dto.ProductDto, error)
 	FindAllPageable(ctx context.Context, pq *pageable.PaginationQuery) ([]dto.ProductDto, pageable.Page, error)
 }
