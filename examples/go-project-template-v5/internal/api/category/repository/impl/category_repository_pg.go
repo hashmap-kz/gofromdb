@@ -42,6 +42,7 @@ func (r *categoryRepository) Save(ctx context.Context, inputEntity *dbModel.Cate
 			name,
 			parent_id,
 			valid_period,
+			is_current,
 			created_at,
 			updated_at,
 			guid
@@ -75,6 +76,7 @@ func (r *categoryRepository) UpdateByID(ctx context.Context, inputEntity *dbMode
 			name,
 			parent_id,
 			valid_period,
+			is_current,
 			created_at,
 			updated_at,
 			guid
@@ -118,6 +120,7 @@ func (r *categoryRepository) FindByID(ctx context.Context, pkRecordID int) (*dbM
 			name,
 			parent_id,
 			valid_period,
+			is_current,
 			created_at,
 			updated_at,
 			guid
@@ -144,6 +147,7 @@ func (r *categoryRepository) FindAll(ctx context.Context) ([]dbModel.Category, e
 			name,
 			parent_id,
 			valid_period,
+			is_current,
 			created_at,
 			updated_at,
 			guid
@@ -197,6 +201,7 @@ func (r *categoryRepository) FindAllPageable(ctx context.Context, pq *pageable.P
 			name,
 			parent_id,
 			valid_period,
+			is_current,
 			created_at,
 			updated_at,
 			guid
@@ -238,6 +243,7 @@ func scanFullRow(row pgx.Row) (*dbModel.Category, error) {
 		&scannedEntity.Name,
 		&scannedEntity.ParentID,
 		&scannedEntity.ValidPeriod,
+		&scannedEntity.IsCurrent,
 		&scannedEntity.CreatedAt,
 		&scannedEntity.UpdatedAt,
 		&scannedEntity.Guid,

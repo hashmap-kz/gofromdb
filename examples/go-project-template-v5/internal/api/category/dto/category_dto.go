@@ -11,6 +11,7 @@ type CategoryDto struct {
 	Name        string
 	ParentID    *int
 	ValidPeriod pgtype.Range[time.Time]
+	IsCurrent   *bool
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 	Guid        string

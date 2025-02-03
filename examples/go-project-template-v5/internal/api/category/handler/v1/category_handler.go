@@ -306,6 +306,7 @@ func mapDtoToPayload(inputDto *dto.CategoryDto) (categoryResponse, error) {
 		Name:        inputDto.Name,
 		ParentID:    inputDto.ParentID,
 		ValidPeriod: inputDto.ValidPeriod,
+		IsCurrent:   inputDto.IsCurrent,
 		CreatedAt:   inputDto.CreatedAt,
 		UpdatedAt:   inputDto.UpdatedAt,
 		Guid:        inputDto.Guid,

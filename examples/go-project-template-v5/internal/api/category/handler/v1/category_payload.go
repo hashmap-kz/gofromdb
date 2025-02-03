@@ -46,6 +46,9 @@ type categoryResponse struct {
 	// Validity period of this category naming.
 	ValidPeriod pgtype.Range[time.Time] `json:"valid_period"`
 
+	// Whether this category is the last actual.
+	IsCurrent *bool `json:"is_current"`
+
 	// Internal field, creation TS
 	CreatedAt time.Time `json:"created_at"`
 

@@ -142,6 +142,7 @@ func fromEntityToDto(inputEntity *dbModel.Category) (dto.CategoryDto, error) {
 		Name:        inputEntity.Name,
 		ParentID:    inputEntity.ParentID,
 		ValidPeriod: inputEntity.ValidPeriod,
+		IsCurrent:   inputEntity.IsCurrent,
 		CreatedAt:   inputEntity.CreatedAt,
 		UpdatedAt:   inputEntity.UpdatedAt,
 		Guid:        inputEntity.Guid,
