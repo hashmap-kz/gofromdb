@@ -34,6 +34,7 @@ create table product
     name        varchar(250) not null,
     description text
 );
+create unique index ix_product_unq on product(category_id, name);
 
 comment on table product is 'Stores products with a reference to their category.';
 comment on column product.record_id is 'Primary key for the product table.';
