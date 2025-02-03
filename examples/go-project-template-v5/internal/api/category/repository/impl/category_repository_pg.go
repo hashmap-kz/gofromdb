@@ -33,13 +33,15 @@ func (r *categoryRepository) Save(ctx context.Context, inputEntity *dbModel.Cate
 	query := `		
 		insert into public.category (
 			name,
-			parent_id
+			parent_id,
+			valid_period
 		)
-		values ($1, $2)
+		values ($1, $2, $3)
 		returning
 			record_id,
 			name,
 			parent_id,
+			valid_period,
 			created_at,
 			updated_at,
 			guid
@@ -48,6 +50,7 @@ func (r *categoryRepository) Save(ctx context.Context, inputEntity *dbModel.Cate
 	row := r.db.Pool.QueryRow(ctx, query,
 		inputEntity.Name,
 		inputEntity.ParentID,
+		inputEntity.ValidPeriod,
 	)
 
 	scannedEntity, err := scanFullRow(row)
@@ -63,13 +66,15 @@ func (r *categoryRepository) UpdateByID(ctx context.Context, inputEntity *dbMode
 	query := `		
 		update public.category
 		set 
-			name      = coalesce(nullif($2, ''), name),
-			parent_id = coalesce(nullif($3, 0::int4), parent_id)
+			name         = coalesce(nullif($2, ''), name),
+			parent_id    = coalesce(nullif($3, 0::int4), parent_id),
+			valid_period = coalesce(nullif($4, 'empty'::daterange), valid_period)
 		where record_id = $1
 		returning 
 			record_id,
 			name,
 			parent_id,
+			valid_period,
 			created_at,
 			updated_at,
 			guid
@@ -79,6 +84,7 @@ func (r *categoryRepository) UpdateByID(ctx context.Context, inputEntity *dbMode
 		pkRecordID,
 		inputEntity.Name,
 		inputEntity.ParentID,
+		inputEntity.ValidPeriod,
 	)
 
 	scannedEntity, err := scanFullRow(row)
@@ -111,6 +117,7 @@ func (r *categoryRepository) FindByID(ctx context.Context, pkRecordID int) (*dbM
 			record_id,
 			name,
 			parent_id,
+			valid_period,
 			created_at,
 			updated_at,
 			guid
@@ -136,6 +143,7 @@ func (r *categoryRepository) FindAll(ctx context.Context) ([]dbModel.Category, e
 			record_id,
 			name,
 			parent_id,
+			valid_period,
 			created_at,
 			updated_at,
 			guid
@@ -188,6 +196,7 @@ func (r *categoryRepository) FindAllPageable(ctx context.Context, pq *pageable.P
 			record_id,
 			name,
 			parent_id,
+			valid_period,
 			created_at,
 			updated_at,
 			guid
@@ -228,6 +237,7 @@ func scanFullRow(row pgx.Row) (*dbModel.Category, error) {
 		&scannedEntity.RecordID,
 		&scannedEntity.Name,
 		&scannedEntity.ParentID,
+		&scannedEntity.ValidPeriod,
 		&scannedEntity.CreatedAt,
 		&scannedEntity.UpdatedAt,
 		&scannedEntity.Guid,

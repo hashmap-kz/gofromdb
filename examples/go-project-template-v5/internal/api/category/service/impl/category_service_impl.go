@@ -104,8 +104,9 @@ func fromCreateDtoToEntity(input *dto.CategoryCreateDto) (*dbModel.Category, err
 		return nil, fmt.Errorf("convert CategoryCreateDto->Category: input dto cannot be nil")
 	}
 	return &dbModel.Category{
-		Name:     input.Name,
-		ParentID: input.ParentID,
+		Name:        input.Name,
+		ParentID:    input.ParentID,
+		ValidPeriod: input.ValidPeriod,
 	}, nil
 }
 
@@ -114,8 +115,9 @@ func fromUpdateDtoToEntity(input *dto.CategoryUpdateDto) (*dbModel.Category, err
 		return nil, fmt.Errorf("convert CategoryUpdateDto->Category: input dto cannot be nil")
 	}
 	return &dbModel.Category{
-		Name:     input.Name,
-		ParentID: input.ParentID,
+		Name:        input.Name,
+		ParentID:    input.ParentID,
+		ValidPeriod: input.ValidPeriod,
 	}, nil
 }
 
@@ -136,11 +138,12 @@ func fromEntityToDto(inputEntity *dbModel.Category) (dto.CategoryDto, error) {
 		return dto.CategoryDto{}, fmt.Errorf("unexpected nil input for mapping between Category->CategoryDto")
 	}
 	return dto.CategoryDto{
-		RecordID:  inputEntity.RecordID,
-		Name:      inputEntity.Name,
-		ParentID:  inputEntity.ParentID,
-		CreatedAt: inputEntity.CreatedAt,
-		UpdatedAt: inputEntity.UpdatedAt,
-		Guid:      inputEntity.Guid,
+		RecordID:    inputEntity.RecordID,
+		Name:        inputEntity.Name,
+		ParentID:    inputEntity.ParentID,
+		ValidPeriod: inputEntity.ValidPeriod,
+		CreatedAt:   inputEntity.CreatedAt,
+		UpdatedAt:   inputEntity.UpdatedAt,
+		Guid:        inputEntity.Guid,
 	}, nil
 }

@@ -4,6 +4,8 @@ import (
 	"time"
 
 	"go-project-template-v5/pkg/pageable"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 // categoryCreateRequest represents product categories, supporting hierarchical relationships.
@@ -13,6 +15,9 @@ type categoryCreateRequest struct {
 
 	// Reference to the parent category. NULL if it is a root category.
 	ParentID *int `json:"parent_id"`
+
+	// Validity period of this category naming.
+	ValidPeriod pgtype.Range[time.Time] `json:"valid_period"`
 }
 
 // categoryUpdateRequest represents product categories, supporting hierarchical relationships.
@@ -22,6 +27,9 @@ type categoryUpdateRequest struct {
 
 	// Reference to the parent category. NULL if it is a root category.
 	ParentID *int `json:"parent_id"`
+
+	// Validity period of this category naming.
+	ValidPeriod pgtype.Range[time.Time] `json:"valid_period"`
 }
 
 // categoryResponse represents product categories, supporting hierarchical relationships.
@@ -34,6 +42,9 @@ type categoryResponse struct {
 
 	// Reference to the parent category. NULL if it is a root category.
 	ParentID *int `json:"parent_id"`
+
+	// Validity period of this category naming.
+	ValidPeriod pgtype.Range[time.Time] `json:"valid_period"`
 
 	// Internal field, creation TS
 	CreatedAt time.Time `json:"created_at"`

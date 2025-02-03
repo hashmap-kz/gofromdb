@@ -268,8 +268,9 @@ func mapCreateRequestToCreateInputDto(inputRequest *categoryCreateRequest) (*dto
 		return nil, fmt.Errorf("unexpected nil input for mapping between categoryCreateRequest->CategoryCreateDto")
 	}
 	return &dto.CategoryCreateDto{
-		Name:     inputRequest.Name,
-		ParentID: inputRequest.ParentID,
+		Name:        inputRequest.Name,
+		ParentID:    inputRequest.ParentID,
+		ValidPeriod: inputRequest.ValidPeriod,
 	}, nil
 }
 
@@ -278,8 +279,9 @@ func mapUpdateRequestToUpdateInputDto(inputRequest *categoryUpdateRequest) (*dto
 		return nil, fmt.Errorf("unexpected nil input for mapping between categoryUpdateRequest->CategoryUpdateDto")
 	}
 	return &dto.CategoryUpdateDto{
-		Name:     inputRequest.Name,
-		ParentID: inputRequest.ParentID,
+		Name:        inputRequest.Name,
+		ParentID:    inputRequest.ParentID,
+		ValidPeriod: inputRequest.ValidPeriod,
 	}, nil
 }
 
@@ -300,11 +302,12 @@ func mapDtoToPayload(inputDto *dto.CategoryDto) (categoryResponse, error) {
 		return categoryResponse{}, fmt.Errorf("unexpected nil input for mapping between CategoryDto->categoryResponse")
 	}
 	return categoryResponse{
-		RecordID:  inputDto.RecordID,
-		Name:      inputDto.Name,
-		ParentID:  inputDto.ParentID,
-		CreatedAt: inputDto.CreatedAt,
-		UpdatedAt: inputDto.UpdatedAt,
-		Guid:      inputDto.Guid,
+		RecordID:    inputDto.RecordID,
+		Name:        inputDto.Name,
+		ParentID:    inputDto.ParentID,
+		ValidPeriod: inputDto.ValidPeriod,
+		CreatedAt:   inputDto.CreatedAt,
+		UpdatedAt:   inputDto.UpdatedAt,
+		Guid:        inputDto.Guid,
 	}, nil
 }
