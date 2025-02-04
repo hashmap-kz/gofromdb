@@ -1,0 +1,22 @@
+do
+$$
+    declare
+        fk_record record;
+    begin
+        for fk_record in
+            select conrelid::regclass as table_name,
+                   conname            as constraint_name,
+                   a.attname          as column_name
+            from pg_constraint c
+                     join pg_attribute a on a.attrelid = c.conrelid and a.attnum = any (c.conkey)
+            where c.contype = 'f' -- foreign key constraints
+              and c.connamespace = 'public'::regnamespace -- change 'public' to your schema
+        loop
+            raise notice '%', format(
+                    'CREATE INDEX IF NOT EXISTS idx_%I_%I_fk ON %I (%I);',
+                    fk_record.table_name, fk_record.column_name,
+                    fk_record.table_name, fk_record.column_name
+                    );
+        end loop;
+    end
+$$;
