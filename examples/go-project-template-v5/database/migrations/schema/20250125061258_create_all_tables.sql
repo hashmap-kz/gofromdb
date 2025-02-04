@@ -95,8 +95,18 @@ comment on column buy_step.buy_id is 'Buy-order ID';
 comment on column buy_step.step_it is 'Step ID';
 comment on column buy_step.buy_step_period is 'Period, open means that the step is in progress';
 
+create table pricing
+(
+    record_id    serial primary key,
+    price_period daterange not null default '[1970-01-01,)'::daterange,
+    product_id   int       not null references product (record_id),
+    exclude using gist (product_id with =, price_period with &&)
+);
 
-
+comment on table pricing is 'Prices of goods and services';
+comment on column pricing.record_id is 'PK';
+comment on column pricing.product_id is 'References to products';
+comment on column pricing.price_period is 'Period, open means that this the last active price';
 
 
 
