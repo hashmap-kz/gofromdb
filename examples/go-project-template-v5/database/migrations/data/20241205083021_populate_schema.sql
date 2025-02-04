@@ -79,3 +79,10 @@ INSERT INTO buy_item (buy_id, product_id, quantity, price) VALUES (7, 4, 2, 25.9
 INSERT INTO buy_item (buy_id, product_id, quantity, price) VALUES (8, 6, 3, 15.99);
 INSERT INTO buy_item (buy_id, product_id, quantity, price) VALUES (9, 8, 2, 59.99);
 INSERT INTO buy_item (buy_id, product_id, quantity, price) VALUES (10, 10, 1, 89.99);
+
+-- Product prices
+insert into product_price (product_id, product_price, product_price_period)
+values
+    (1, 1200.00,  '[2024-01-01, 2024-06-30)'),
+    (1, 1100.00,  '[2024-07-01,)');
+

@@ -109,6 +109,3 @@ comment on column product_price.record_id is 'PK';
 comment on column product_price.product_price_period is 'Effective date range for the price';
 comment on column product_price.product_id is 'References to products';
 comment on column product_price.product_price is 'Actual price';
-
-
-
