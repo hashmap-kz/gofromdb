@@ -109,3 +109,11 @@ comment on column product_price.record_id is 'PK';
 comment on column product_price.product_price_period is 'Effective date range for the price';
 comment on column product_price.product_id is 'References to products';
 comment on column product_price.product_price is 'Actual price';
+
+create table currency
+(
+    record_id      serial primary key,
+    currency_code  varchar(16)  not null,
+    currency_value varchar(250) not null
+);
+
