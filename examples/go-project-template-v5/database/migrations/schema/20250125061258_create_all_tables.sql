@@ -34,7 +34,7 @@ create table product
     name        varchar(250) not null,
     description text
 );
-create unique index ix_product_unq on product(category_id, name);
+create unique index ix_product_unq on product (category_id, name);
 
 comment on table product is 'Stores products with a reference to their category.';
 comment on column product.record_id is 'Primary key for the product table.';
@@ -69,3 +69,34 @@ comment on column buy_item.buy_id is 'Foreign key referencing the associated pur
 comment on column buy_item.product_id is 'Foreign key referencing the purchased product.';
 comment on column buy_item.quantity is 'Number of units of the product in the purchase.';
 comment on column buy_item.price is 'Price per unit of the product at the time of purchase.';
+
+create table purchase_step
+(
+    record_id serial primary key,
+    step_name varchar(32) not null
+);
+create unique index ix_purchase_step_step_name_unq on purchase_step (step_name);
+
+comment on table purchase_step is 'Purchase steps enum: ordered, delivered, etc...';
+comment on column purchase_step.step_name is 'Step name, unique';
+
+create table buy_step
+(
+    record_id       serial primary key,
+    buy_id          int       not null references buy,
+    step_it         int       not null references purchase_step,
+    buy_step_period daterange not null,
+    exclude using gist(buy_id with =, step_it with =, buy_step_period with &&)
+);
+
+comment on table buy_step is 'Buy steps tracking';
+comment on column buy_step.record_id is 'PK';
+comment on column buy_step.buy_id is 'Buy-order ID';
+comment on column buy_step.step_it is 'Step ID';
+comment on column buy_step.buy_step_period is 'Period, open means that the step is in progress';
+
+
+
+
+
+
