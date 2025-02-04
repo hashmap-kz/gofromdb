@@ -82,31 +82,33 @@ comment on column purchase_step.step_name is 'Step name, unique';
 
 create table buy_step
 (
-    record_id       serial primary key,
-    buy_id          int       not null references buy,
-    step_it         int       not null references purchase_step,
-    buy_step_period daterange not null,
-    exclude using gist(buy_id with =, step_it with =, buy_step_period with &&)
+    record_id        serial primary key,
+    buy_step_period  daterange not null,
+    buy_id           int       not null references buy,
+    purchase_step_id int       not null references purchase_step,
+    exclude using gist(buy_id with =, purchase_step_id with =, buy_step_period with &&)
 );
 
 comment on table buy_step is 'Buy steps tracking';
 comment on column buy_step.record_id is 'PK';
-comment on column buy_step.buy_id is 'Buy-order ID';
-comment on column buy_step.step_it is 'Step ID';
 comment on column buy_step.buy_step_period is 'Period, open means that the step is in progress';
+comment on column buy_step.buy_id is 'Buy-order ID';
+comment on column buy_step.purchase_step_id is 'Step ID';
 
-create table pricing
+create table product_price
 (
-    record_id    serial primary key,
-    price_period daterange not null default '[1970-01-01,)'::daterange,
-    product_id   int       not null references product (record_id),
-    exclude using gist (product_id with =, price_period with &&)
+    record_id            serial primary key,
+    product_price_period daterange      not null default '[1970-01-01,)'::daterange,
+    product_id           int            not null references product (record_id),
+    product_price        numeric(15, 2) not null,
+    exclude using gist (product_id with =, product_price_period with &&)
 );
 
-comment on table pricing is 'Prices of goods and services';
-comment on column pricing.record_id is 'PK';
-comment on column pricing.product_id is 'References to products';
-comment on column pricing.price_period is 'Period, open means that this the last active price';
+comment on table product_price is 'Prices of goods and services';
+comment on column product_price.record_id is 'PK';
+comment on column product_price.product_price_period is 'Effective date range for the price';
+comment on column product_price.product_id is 'References to products';
+comment on column product_price.product_price is 'Actual price';
 
 
 
