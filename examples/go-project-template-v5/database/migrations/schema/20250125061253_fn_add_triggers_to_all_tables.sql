@@ -29,20 +29,20 @@ drop function if exists public.attach_before_update_triggers;
 create function public.attach_before_update_triggers(p_schema text) returns void as
 $fn$
 declare
-    tbl record;
+    v_tbl_record record;
 begin
-    for tbl in
+    for v_tbl_record in
         select t.tablename
         from pg_tables t
         where t.schemaname = p_schema
           and not t.tablename ilike '%migrate%'
     loop
-        EXECUTE format('DROP TRIGGER IF EXISTS before_update_row ON %I.%I', p_schema, tbl.tablename);
+        EXECUTE format('DROP TRIGGER IF EXISTS before_update_row ON %I.%I', p_schema, v_tbl_record.tablename);
 
         EXECUTE format('
             CREATE TRIGGER before_update_row
             BEFORE UPDATE ON %I.%I
-            FOR EACH ROW EXECUTE FUNCTION public.before_update_row();', p_schema, tbl.tablename);
+            FOR EACH ROW EXECUTE FUNCTION public.before_update_row();', p_schema, v_tbl_record.tablename);
     end loop;
 end
 $fn$ language plpgsql;
