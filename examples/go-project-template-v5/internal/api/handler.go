@@ -3,15 +3,15 @@ package api
 import (
 	"net/http"
 
+	categoriesv1 "go-project-template-v5/internal/api/categories/handler/v1"
 	currenciesv1 "go-project-template-v5/internal/api/currencies/handler/v1"
 	customersv1 "go-project-template-v5/internal/api/customers/handler/v1"
-	productCategoriesv1 "go-project-template-v5/internal/api/product_categories/handler/v1"
 	productPricesv1 "go-project-template-v5/internal/api/product_prices/handler/v1"
 	productsv1 "go-project-template-v5/internal/api/products/handler/v1"
 	purchaseItemsv1 "go-project-template-v5/internal/api/purchase_items/handler/v1"
 	purchaseStepsv1 "go-project-template-v5/internal/api/purchase_steps/handler/v1"
-	purchaseWorkflowv1 "go-project-template-v5/internal/api/purchase_workflow/handler/v1"
 	purchasesv1 "go-project-template-v5/internal/api/purchases/handler/v1"
+	stepsv1 "go-project-template-v5/internal/api/steps/handler/v1"
 	usersv1 "go-project-template-v5/internal/api/users/handler/v1"
 )
 
@@ -26,6 +26,15 @@ func NewHandler(services *Services) *Handler {
 }
 
 func (h *Handler) Init(router *http.ServeMux) {
+	// Categories routes
+	categoriesHandler := categoriesv1.NewCategoriesHTTPHandler(h.Services.CategoriesService)
+	router.HandleFunc("POST /api/v1/categories", categoriesHandler.Save)
+	router.HandleFunc("PUT /api/v1/categories/{record_id}", categoriesHandler.UpdateByID)
+	router.HandleFunc("DELETE /api/v1/categories/{record_id}", categoriesHandler.DeleteByID)
+	router.HandleFunc("GET /api/v1/categories/{record_id}", categoriesHandler.FindByID)
+	router.HandleFunc("GET /api/v1/categories", categoriesHandler.FindAll)
+	router.HandleFunc("GET /api/v1/categories/pageable", categoriesHandler.FindAllPageable)
+
 	// Currencies routes
 	currenciesHandler := currenciesv1.NewCurrenciesHTTPHandler(h.Services.CurrenciesService)
 	router.HandleFunc("POST /api/v1/currencies", currenciesHandler.Save)
@@ -43,15 +52,6 @@ func (h *Handler) Init(router *http.ServeMux) {
 	router.HandleFunc("GET /api/v1/customers/{record_id}", customersHandler.FindByID)
 	router.HandleFunc("GET /api/v1/customers", customersHandler.FindAll)
 	router.HandleFunc("GET /api/v1/customers/pageable", customersHandler.FindAllPageable)
-
-	// ProductCategories routes
-	productCategoriesHandler := productCategoriesv1.NewProductCategoriesHTTPHandler(h.Services.ProductCategoriesService)
-	router.HandleFunc("POST /api/v1/product-categories", productCategoriesHandler.Save)
-	router.HandleFunc("PUT /api/v1/product-categories/{record_id}", productCategoriesHandler.UpdateByID)
-	router.HandleFunc("DELETE /api/v1/product-categories/{record_id}", productCategoriesHandler.DeleteByID)
-	router.HandleFunc("GET /api/v1/product-categories/{record_id}", productCategoriesHandler.FindByID)
-	router.HandleFunc("GET /api/v1/product-categories", productCategoriesHandler.FindAll)
-	router.HandleFunc("GET /api/v1/product-categories/pageable", productCategoriesHandler.FindAllPageable)
 
 	// ProductPrices routes
 	productPricesHandler := productPricesv1.NewProductPricesHTTPHandler(h.Services.ProductPricesService)
@@ -89,15 +89,6 @@ func (h *Handler) Init(router *http.ServeMux) {
 	router.HandleFunc("GET /api/v1/purchase-steps", purchaseStepsHandler.FindAll)
 	router.HandleFunc("GET /api/v1/purchase-steps/pageable", purchaseStepsHandler.FindAllPageable)
 
-	// PurchaseWorkflow routes
-	purchaseWorkflowHandler := purchaseWorkflowv1.NewPurchaseWorkflowHTTPHandler(h.Services.PurchaseWorkflowService)
-	router.HandleFunc("POST /api/v1/purchase-workflow", purchaseWorkflowHandler.Save)
-	router.HandleFunc("PUT /api/v1/purchase-workflow/{record_id}", purchaseWorkflowHandler.UpdateByID)
-	router.HandleFunc("DELETE /api/v1/purchase-workflow/{record_id}", purchaseWorkflowHandler.DeleteByID)
-	router.HandleFunc("GET /api/v1/purchase-workflow/{record_id}", purchaseWorkflowHandler.FindByID)
-	router.HandleFunc("GET /api/v1/purchase-workflow", purchaseWorkflowHandler.FindAll)
-	router.HandleFunc("GET /api/v1/purchase-workflow/pageable", purchaseWorkflowHandler.FindAllPageable)
-
 	// Purchases routes
 	purchasesHandler := purchasesv1.NewPurchasesHTTPHandler(h.Services.PurchasesService)
 	router.HandleFunc("POST /api/v1/purchases", purchasesHandler.Save)
@@ -106,6 +97,15 @@ func (h *Handler) Init(router *http.ServeMux) {
 	router.HandleFunc("GET /api/v1/purchases/{record_id}", purchasesHandler.FindByID)
 	router.HandleFunc("GET /api/v1/purchases", purchasesHandler.FindAll)
 	router.HandleFunc("GET /api/v1/purchases/pageable", purchasesHandler.FindAllPageable)
+
+	// Steps routes
+	stepsHandler := stepsv1.NewStepsHTTPHandler(h.Services.StepsService)
+	router.HandleFunc("POST /api/v1/steps", stepsHandler.Save)
+	router.HandleFunc("PUT /api/v1/steps/{record_id}", stepsHandler.UpdateByID)
+	router.HandleFunc("DELETE /api/v1/steps/{record_id}", stepsHandler.DeleteByID)
+	router.HandleFunc("GET /api/v1/steps/{record_id}", stepsHandler.FindByID)
+	router.HandleFunc("GET /api/v1/steps", stepsHandler.FindAll)
+	router.HandleFunc("GET /api/v1/steps/pageable", stepsHandler.FindAllPageable)
 
 	// Users routes
 	usersHandler := usersv1.NewUsersHTTPHandler(h.Services.UsersService)

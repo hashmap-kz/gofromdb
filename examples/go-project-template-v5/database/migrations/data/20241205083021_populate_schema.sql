@@ -25,21 +25,21 @@ INSERT INTO customers (email) VALUES ('scottkeith@yahoo.com');
 INSERT INTO customers (email) VALUES ('cdavidson@gmail.com');
 
 -- Parent Categories
-INSERT INTO product_categories (name, parent_id) VALUES ('Electronics', NULL);
-INSERT INTO product_categories (name, parent_id) VALUES ('Furniture', NULL);
-INSERT INTO product_categories (name, parent_id) VALUES ('Clothing', NULL);
-INSERT INTO product_categories (name, parent_id) VALUES ('Kitchenware', NULL);
-INSERT INTO product_categories (name, parent_id) VALUES ('Sports Equipment', NULL);
-INSERT INTO product_categories (name, parent_id) VALUES ('Smartphones', 1); -- Electronics
-INSERT INTO product_categories (name, parent_id) VALUES ('Laptops', 1); -- Electronics
-INSERT INTO product_categories (name, parent_id) VALUES ('Tables', 2); -- Furniture
-INSERT INTO product_categories (name, parent_id) VALUES ('Chairs', 2); -- Furniture
-INSERT INTO product_categories (name, parent_id) VALUES ('Men''s Clothing', 3); -- Clothing
-INSERT INTO product_categories (name, parent_id) VALUES ('Women''s Clothing', 3); -- Clothing
-INSERT INTO product_categories (name, parent_id) VALUES ('Cookware', 4); -- Kitchenware
-INSERT INTO product_categories (name, parent_id) VALUES ('Utensils', 4); -- Kitchenware
-INSERT INTO product_categories (name, parent_id) VALUES ('Fitness Equipment', 5); -- Sports Equipment
-INSERT INTO product_categories (name, parent_id) VALUES ('Outdoor Gear', 5); -- Sports Equipment
+INSERT INTO categories (name, parent_id) VALUES ('Electronics', NULL);
+INSERT INTO categories (name, parent_id) VALUES ('Furniture', NULL);
+INSERT INTO categories (name, parent_id) VALUES ('Clothing', NULL);
+INSERT INTO categories (name, parent_id) VALUES ('Kitchenware', NULL);
+INSERT INTO categories (name, parent_id) VALUES ('Sports Equipment', NULL);
+INSERT INTO categories (name, parent_id) VALUES ('Smartphones', 1); -- Electronics
+INSERT INTO categories (name, parent_id) VALUES ('Laptops', 1); -- Electronics
+INSERT INTO categories (name, parent_id) VALUES ('Tables', 2); -- Furniture
+INSERT INTO categories (name, parent_id) VALUES ('Chairs', 2); -- Furniture
+INSERT INTO categories (name, parent_id) VALUES ('Men''s Clothing', 3); -- Clothing
+INSERT INTO categories (name, parent_id) VALUES ('Women''s Clothing', 3); -- Clothing
+INSERT INTO categories (name, parent_id) VALUES ('Cookware', 4); -- Kitchenware
+INSERT INTO categories (name, parent_id) VALUES ('Utensils', 4); -- Kitchenware
+INSERT INTO categories (name, parent_id) VALUES ('Fitness Equipment', 5); -- Sports Equipment
+INSERT INTO categories (name, parent_id) VALUES ('Outdoor Gear', 5); -- Sports Equipment
 
 INSERT INTO products (category_id, name, description) VALUES (6, 'iPhone 14', 'The latest smartphone with advanced features.'); -- Smartphones
 INSERT INTO products (category_id, name, description) VALUES (6, 'Samsung Galaxy S22', 'A powerful Android smartphone.'); -- Smartphones
@@ -87,7 +87,7 @@ INSERT INTO purchase_items (purchase_id, product_id, quantity, price) VALUES (9,
 INSERT INTO purchase_items (purchase_id, product_id, quantity, price) VALUES (10, 10, 1, 89.99);
 
 -- Product prices
-insert into product_prices (product_id, product_price, product_price_period)
+insert into product_prices (product_id, product_price, valid_period)
 values
     (1, 1200.00,  '[2024-01-01, 2024-06-30)'),
     (1, 1100.00,  '[2024-07-01,)');
@@ -189,3 +189,9 @@ insert into public.currencies (currency_code, currency_value) values ('XOF', 'Fr
 insert into public.currencies (currency_code, currency_value) values ('YER', 'Rial');
 insert into public.currencies (currency_code, currency_value) values ('ZAR', 'Rand');
 insert into public.currencies (currency_code, currency_value) values ('ZWL', 'Dollar');
+
+insert into steps(step_name)
+values ('Payment'),
+       ('Packaging'),
+       ('Transportation'),
+       ('Delivery');
