@@ -298,7 +298,7 @@ INSERT INTO purchase_items (purchase_id, product_id, quantity, price) VALUES (9,
 INSERT INTO purchase_items (purchase_id, product_id, quantity, price) VALUES (10, 10, 1, 89.99);
 
 -- Product prices
-insert into product_prices (product_id, product_price, valid_period)
+insert into product_pricing (product_id, product_price, valid_period)
 values
     (1, 1200.00,  '[2024-01-01, 2024-06-30)'),
     (1, 1100.00,  '[2024-07-01,)');
@@ -401,7 +401,7 @@ insert into public.currencies (currency_code, currency_value) values ('YER', 'Ri
 insert into public.currencies (currency_code, currency_value) values ('ZAR', 'Rand');
 insert into public.currencies (currency_code, currency_value) values ('ZWL', 'Dollar');
 
-insert into steps(step_name)
+insert into workflow_steps(step_name)
 values ('Payment'),
        ('Packaging'),
        ('Transportation'),

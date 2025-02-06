@@ -92,32 +92,32 @@ comment on column purchase_items.product_id is 'Foreign key referencing the purc
 comment on column purchase_items.quantity is 'Number of units of the product in the purchase.';
 comment on column purchase_items.price is 'Price per unit of the product at the time of purchase.';
 
-create table steps
+create table workflow_steps
 (
     record_id serial primary key,
     step_name varchar(32) not null
 );
-create unique index ix_purchase_step_step_name_unq on steps (step_name);
+create unique index ix_purchase_step_step_name_unq on workflow_steps (step_name);
 
-comment on table steps is 'Purchase steps enum: ordered, delivered, etc...';
-comment on column steps.step_name is 'Step name, unique';
+comment on table workflow_steps is 'Purchase steps enum: ordered, delivered, etc...';
+comment on column workflow_steps.step_name is 'Step name, unique';
 
-create table purchase_steps
+create table purchase_statuses
 (
-    record_id    serial primary key,
-    valid_period daterange not null,
-    buy_id       int       not null references purchases,
-    step_id      int       not null references steps,
-    exclude using gist(buy_id with =, step_id with =, valid_period with &&)
+    record_id        serial primary key,
+    valid_period     daterange not null,
+    purchase_id      int       not null references purchases,
+    workflow_step_id int       not null references workflow_steps,
+    exclude using gist(purchase_id with =, workflow_step_id with =, valid_period with &&)
 );
 
-comment on table purchase_steps is 'Buy steps tracking';
-comment on column purchase_steps.record_id is 'PK';
-comment on column purchase_steps.valid_period is 'Period, open means that the step is in progress';
-comment on column purchase_steps.buy_id is 'Buy-order ID';
-comment on column purchase_steps.step_id is 'Step ID';
+comment on table purchase_statuses is 'Buy steps tracking';
+comment on column purchase_statuses.record_id is 'PK';
+comment on column purchase_statuses.valid_period is 'Period, open means that the step is in progress';
+comment on column purchase_statuses.purchase_id is 'Buy-order ID';
+comment on column purchase_statuses.workflow_step_id is 'Step ID';
 
-create table product_prices
+create table product_pricing
 (
     record_id     serial primary key,
     valid_period  daterange      not null default '[1970-01-01,)'::daterange,
@@ -126,11 +126,11 @@ create table product_prices
     exclude using gist (product_id with =, valid_period with &&)
 );
 
-comment on table product_prices is 'Prices of goods and services';
-comment on column product_prices.record_id is 'PK';
-comment on column product_prices.valid_period is 'Effective date range for the price';
-comment on column product_prices.product_id is 'References to products';
-comment on column product_prices.product_price is 'Actual price';
+comment on table product_pricing is 'Prices of goods and services';
+comment on column product_pricing.record_id is 'PK';
+comment on column product_pricing.valid_period is 'Effective date range for the price';
+comment on column product_pricing.product_id is 'References to products';
+comment on column product_pricing.product_price is 'Actual price';
 
 create table currencies
 (
