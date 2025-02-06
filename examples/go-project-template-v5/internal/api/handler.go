@@ -3,11 +3,16 @@ package api
 import (
 	"net/http"
 
-	buyv1 "go-project-template-v5/internal/api/buy/handler/v1"
-	buyItemv1 "go-project-template-v5/internal/api/buy_item/handler/v1"
-	categoryv1 "go-project-template-v5/internal/api/category/handler/v1"
-	clientv1 "go-project-template-v5/internal/api/client/handler/v1"
-	productv1 "go-project-template-v5/internal/api/product/handler/v1"
+	currenciesv1 "go-project-template-v5/internal/api/currencies/handler/v1"
+	customersv1 "go-project-template-v5/internal/api/customers/handler/v1"
+	productCategoriesv1 "go-project-template-v5/internal/api/product_categories/handler/v1"
+	productPricesv1 "go-project-template-v5/internal/api/product_prices/handler/v1"
+	productsv1 "go-project-template-v5/internal/api/products/handler/v1"
+	purchaseItemsv1 "go-project-template-v5/internal/api/purchase_items/handler/v1"
+	purchaseStepsv1 "go-project-template-v5/internal/api/purchase_steps/handler/v1"
+	purchaseWorkflowv1 "go-project-template-v5/internal/api/purchase_workflow/handler/v1"
+	purchasesv1 "go-project-template-v5/internal/api/purchases/handler/v1"
+	usersv1 "go-project-template-v5/internal/api/users/handler/v1"
 )
 
 type Handler struct {
@@ -21,48 +26,93 @@ func NewHandler(services *Services) *Handler {
 }
 
 func (h *Handler) Init(router *http.ServeMux) {
-	// Buy routes
-	buyHandler := buyv1.NewBuyHTTPHandler(h.Services.BuyService)
-	router.HandleFunc("POST /api/v1/buys", buyHandler.Save)
-	router.HandleFunc("PUT /api/v1/buys/{record_id}", buyHandler.UpdateByID)
-	router.HandleFunc("DELETE /api/v1/buys/{record_id}", buyHandler.DeleteByID)
-	router.HandleFunc("GET /api/v1/buys/{record_id}", buyHandler.FindByID)
-	router.HandleFunc("GET /api/v1/buys", buyHandler.FindAll)
-	router.HandleFunc("GET /api/v1/buys/pageable", buyHandler.FindAllPageable)
+	// Currencies routes
+	currenciesHandler := currenciesv1.NewCurrenciesHTTPHandler(h.Services.CurrenciesService)
+	router.HandleFunc("POST /api/v1/currencies", currenciesHandler.Save)
+	router.HandleFunc("PUT /api/v1/currencies/{record_id}", currenciesHandler.UpdateByID)
+	router.HandleFunc("DELETE /api/v1/currencies/{record_id}", currenciesHandler.DeleteByID)
+	router.HandleFunc("GET /api/v1/currencies/{record_id}", currenciesHandler.FindByID)
+	router.HandleFunc("GET /api/v1/currencies", currenciesHandler.FindAll)
+	router.HandleFunc("GET /api/v1/currencies/pageable", currenciesHandler.FindAllPageable)
 
-	// BuyItem routes
-	buyItemHandler := buyItemv1.NewBuyItemHTTPHandler(h.Services.BuyItemService)
-	router.HandleFunc("POST /api/v1/buy-items", buyItemHandler.Save)
-	router.HandleFunc("PUT /api/v1/buy-items/{record_id}", buyItemHandler.UpdateByID)
-	router.HandleFunc("DELETE /api/v1/buy-items/{record_id}", buyItemHandler.DeleteByID)
-	router.HandleFunc("GET /api/v1/buy-items/{record_id}", buyItemHandler.FindByID)
-	router.HandleFunc("GET /api/v1/buy-items", buyItemHandler.FindAll)
-	router.HandleFunc("GET /api/v1/buy-items/pageable", buyItemHandler.FindAllPageable)
+	// Customers routes
+	customersHandler := customersv1.NewCustomersHTTPHandler(h.Services.CustomersService)
+	router.HandleFunc("POST /api/v1/customers", customersHandler.Save)
+	router.HandleFunc("PUT /api/v1/customers/{record_id}", customersHandler.UpdateByID)
+	router.HandleFunc("DELETE /api/v1/customers/{record_id}", customersHandler.DeleteByID)
+	router.HandleFunc("GET /api/v1/customers/{record_id}", customersHandler.FindByID)
+	router.HandleFunc("GET /api/v1/customers", customersHandler.FindAll)
+	router.HandleFunc("GET /api/v1/customers/pageable", customersHandler.FindAllPageable)
 
-	// Category routes
-	categoryHandler := categoryv1.NewCategoryHTTPHandler(h.Services.CategoryService)
-	router.HandleFunc("POST /api/v1/categories", categoryHandler.Save)
-	router.HandleFunc("PUT /api/v1/categories/{record_id}", categoryHandler.UpdateByID)
-	router.HandleFunc("DELETE /api/v1/categories/{record_id}", categoryHandler.DeleteByID)
-	router.HandleFunc("GET /api/v1/categories/{record_id}", categoryHandler.FindByID)
-	router.HandleFunc("GET /api/v1/categories", categoryHandler.FindAll)
-	router.HandleFunc("GET /api/v1/categories/pageable", categoryHandler.FindAllPageable)
+	// ProductCategories routes
+	productCategoriesHandler := productCategoriesv1.NewProductCategoriesHTTPHandler(h.Services.ProductCategoriesService)
+	router.HandleFunc("POST /api/v1/product-categories", productCategoriesHandler.Save)
+	router.HandleFunc("PUT /api/v1/product-categories/{record_id}", productCategoriesHandler.UpdateByID)
+	router.HandleFunc("DELETE /api/v1/product-categories/{record_id}", productCategoriesHandler.DeleteByID)
+	router.HandleFunc("GET /api/v1/product-categories/{record_id}", productCategoriesHandler.FindByID)
+	router.HandleFunc("GET /api/v1/product-categories", productCategoriesHandler.FindAll)
+	router.HandleFunc("GET /api/v1/product-categories/pageable", productCategoriesHandler.FindAllPageable)
 
-	// Client routes
-	clientHandler := clientv1.NewClientHTTPHandler(h.Services.ClientService)
-	router.HandleFunc("POST /api/v1/clients", clientHandler.Save)
-	router.HandleFunc("PUT /api/v1/clients/{record_id}", clientHandler.UpdateByID)
-	router.HandleFunc("DELETE /api/v1/clients/{record_id}", clientHandler.DeleteByID)
-	router.HandleFunc("GET /api/v1/clients/{record_id}", clientHandler.FindByID)
-	router.HandleFunc("GET /api/v1/clients", clientHandler.FindAll)
-	router.HandleFunc("GET /api/v1/clients/pageable", clientHandler.FindAllPageable)
+	// ProductPrices routes
+	productPricesHandler := productPricesv1.NewProductPricesHTTPHandler(h.Services.ProductPricesService)
+	router.HandleFunc("POST /api/v1/product-prices", productPricesHandler.Save)
+	router.HandleFunc("PUT /api/v1/product-prices/{record_id}", productPricesHandler.UpdateByID)
+	router.HandleFunc("DELETE /api/v1/product-prices/{record_id}", productPricesHandler.DeleteByID)
+	router.HandleFunc("GET /api/v1/product-prices/{record_id}", productPricesHandler.FindByID)
+	router.HandleFunc("GET /api/v1/product-prices", productPricesHandler.FindAll)
+	router.HandleFunc("GET /api/v1/product-prices/pageable", productPricesHandler.FindAllPageable)
 
-	// Product routes
-	productHandler := productv1.NewProductHTTPHandler(h.Services.ProductService)
-	router.HandleFunc("POST /api/v1/products", productHandler.Save)
-	router.HandleFunc("PUT /api/v1/products/{record_id}", productHandler.UpdateByID)
-	router.HandleFunc("DELETE /api/v1/products/{record_id}", productHandler.DeleteByID)
-	router.HandleFunc("GET /api/v1/products/{record_id}", productHandler.FindByID)
-	router.HandleFunc("GET /api/v1/products", productHandler.FindAll)
-	router.HandleFunc("GET /api/v1/products/pageable", productHandler.FindAllPageable)
+	// Products routes
+	productsHandler := productsv1.NewProductsHTTPHandler(h.Services.ProductsService)
+	router.HandleFunc("POST /api/v1/products", productsHandler.Save)
+	router.HandleFunc("PUT /api/v1/products/{record_id}", productsHandler.UpdateByID)
+	router.HandleFunc("DELETE /api/v1/products/{record_id}", productsHandler.DeleteByID)
+	router.HandleFunc("GET /api/v1/products/{record_id}", productsHandler.FindByID)
+	router.HandleFunc("GET /api/v1/products", productsHandler.FindAll)
+	router.HandleFunc("GET /api/v1/products/pageable", productsHandler.FindAllPageable)
+
+	// PurchaseItems routes
+	purchaseItemsHandler := purchaseItemsv1.NewPurchaseItemsHTTPHandler(h.Services.PurchaseItemsService)
+	router.HandleFunc("POST /api/v1/purchase-items", purchaseItemsHandler.Save)
+	router.HandleFunc("PUT /api/v1/purchase-items/{record_id}", purchaseItemsHandler.UpdateByID)
+	router.HandleFunc("DELETE /api/v1/purchase-items/{record_id}", purchaseItemsHandler.DeleteByID)
+	router.HandleFunc("GET /api/v1/purchase-items/{record_id}", purchaseItemsHandler.FindByID)
+	router.HandleFunc("GET /api/v1/purchase-items", purchaseItemsHandler.FindAll)
+	router.HandleFunc("GET /api/v1/purchase-items/pageable", purchaseItemsHandler.FindAllPageable)
+
+	// PurchaseSteps routes
+	purchaseStepsHandler := purchaseStepsv1.NewPurchaseStepsHTTPHandler(h.Services.PurchaseStepsService)
+	router.HandleFunc("POST /api/v1/purchase-steps", purchaseStepsHandler.Save)
+	router.HandleFunc("PUT /api/v1/purchase-steps/{record_id}", purchaseStepsHandler.UpdateByID)
+	router.HandleFunc("DELETE /api/v1/purchase-steps/{record_id}", purchaseStepsHandler.DeleteByID)
+	router.HandleFunc("GET /api/v1/purchase-steps/{record_id}", purchaseStepsHandler.FindByID)
+	router.HandleFunc("GET /api/v1/purchase-steps", purchaseStepsHandler.FindAll)
+	router.HandleFunc("GET /api/v1/purchase-steps/pageable", purchaseStepsHandler.FindAllPageable)
+
+	// PurchaseWorkflow routes
+	purchaseWorkflowHandler := purchaseWorkflowv1.NewPurchaseWorkflowHTTPHandler(h.Services.PurchaseWorkflowService)
+	router.HandleFunc("POST /api/v1/purchase-workflow", purchaseWorkflowHandler.Save)
+	router.HandleFunc("PUT /api/v1/purchase-workflow/{record_id}", purchaseWorkflowHandler.UpdateByID)
+	router.HandleFunc("DELETE /api/v1/purchase-workflow/{record_id}", purchaseWorkflowHandler.DeleteByID)
+	router.HandleFunc("GET /api/v1/purchase-workflow/{record_id}", purchaseWorkflowHandler.FindByID)
+	router.HandleFunc("GET /api/v1/purchase-workflow", purchaseWorkflowHandler.FindAll)
+	router.HandleFunc("GET /api/v1/purchase-workflow/pageable", purchaseWorkflowHandler.FindAllPageable)
+
+	// Purchases routes
+	purchasesHandler := purchasesv1.NewPurchasesHTTPHandler(h.Services.PurchasesService)
+	router.HandleFunc("POST /api/v1/purchases", purchasesHandler.Save)
+	router.HandleFunc("PUT /api/v1/purchases/{record_id}", purchasesHandler.UpdateByID)
+	router.HandleFunc("DELETE /api/v1/purchases/{record_id}", purchasesHandler.DeleteByID)
+	router.HandleFunc("GET /api/v1/purchases/{record_id}", purchasesHandler.FindByID)
+	router.HandleFunc("GET /api/v1/purchases", purchasesHandler.FindAll)
+	router.HandleFunc("GET /api/v1/purchases/pageable", purchasesHandler.FindAllPageable)
+
+	// Users routes
+	usersHandler := usersv1.NewUsersHTTPHandler(h.Services.UsersService)
+	router.HandleFunc("POST /api/v1/users", usersHandler.Save)
+	router.HandleFunc("PUT /api/v1/users/{record_id}", usersHandler.UpdateByID)
+	router.HandleFunc("DELETE /api/v1/users/{record_id}", usersHandler.DeleteByID)
+	router.HandleFunc("GET /api/v1/users/{record_id}", usersHandler.FindByID)
+	router.HandleFunc("GET /api/v1/users", usersHandler.FindAll)
+	router.HandleFunc("GET /api/v1/users/pageable", usersHandler.FindAllPageable)
 }
