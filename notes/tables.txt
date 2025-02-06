@@ -1,0 +1,5 @@
+Table Name	            Purpose
+customer_orders	        Stores customer purchase transactions (sales orders).
+customer_order_items	Stores items associated with each customer order.
+supplier_orders	        Stores orders placed with suppliers (purchases).
+supplier_order_items	Stores items in each supplier order.
