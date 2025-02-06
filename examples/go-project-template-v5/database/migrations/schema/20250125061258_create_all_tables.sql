@@ -1,5 +1,17 @@
 -- +goose Up
 
+create table departments
+(
+    record_id       serial primary key,
+    department_name varchar(250) not null unique
+);
+
+create table job_titles
+(
+    record_id  serial primary key,
+    title_name varchar(250) not null unique
+);
+
 create table users
 (
     record_id serial primary key,

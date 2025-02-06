@@ -6,6 +6,8 @@ import (
 	categoriesv1 "go-project-template-v5/internal/api/categories/handler/v1"
 	currenciesv1 "go-project-template-v5/internal/api/currencies/handler/v1"
 	customersv1 "go-project-template-v5/internal/api/customers/handler/v1"
+	departmentsv1 "go-project-template-v5/internal/api/departments/handler/v1"
+	jobTitlesv1 "go-project-template-v5/internal/api/job_titles/handler/v1"
 	productPricesv1 "go-project-template-v5/internal/api/product_prices/handler/v1"
 	productsv1 "go-project-template-v5/internal/api/products/handler/v1"
 	purchaseItemsv1 "go-project-template-v5/internal/api/purchase_items/handler/v1"
@@ -52,6 +54,24 @@ func (h *Handler) Init(router *http.ServeMux) {
 	router.HandleFunc("GET /api/v1/customers/{record_id}", customersHandler.FindByID)
 	router.HandleFunc("GET /api/v1/customers", customersHandler.FindAll)
 	router.HandleFunc("GET /api/v1/customers/pageable", customersHandler.FindAllPageable)
+
+	// Departments routes
+	departmentsHandler := departmentsv1.NewDepartmentsHTTPHandler(h.Services.DepartmentsService)
+	router.HandleFunc("POST /api/v1/departments", departmentsHandler.Save)
+	router.HandleFunc("PUT /api/v1/departments/{record_id}", departmentsHandler.UpdateByID)
+	router.HandleFunc("DELETE /api/v1/departments/{record_id}", departmentsHandler.DeleteByID)
+	router.HandleFunc("GET /api/v1/departments/{record_id}", departmentsHandler.FindByID)
+	router.HandleFunc("GET /api/v1/departments", departmentsHandler.FindAll)
+	router.HandleFunc("GET /api/v1/departments/pageable", departmentsHandler.FindAllPageable)
+
+	// JobTitles routes
+	jobTitlesHandler := jobTitlesv1.NewJobTitlesHTTPHandler(h.Services.JobTitlesService)
+	router.HandleFunc("POST /api/v1/job-titles", jobTitlesHandler.Save)
+	router.HandleFunc("PUT /api/v1/job-titles/{record_id}", jobTitlesHandler.UpdateByID)
+	router.HandleFunc("DELETE /api/v1/job-titles/{record_id}", jobTitlesHandler.DeleteByID)
+	router.HandleFunc("GET /api/v1/job-titles/{record_id}", jobTitlesHandler.FindByID)
+	router.HandleFunc("GET /api/v1/job-titles", jobTitlesHandler.FindAll)
+	router.HandleFunc("GET /api/v1/job-titles/pageable", jobTitlesHandler.FindAllPageable)
 
 	// ProductPrices routes
 	productPricesHandler := productPricesv1.NewProductPricesHTTPHandler(h.Services.ProductPricesService)
