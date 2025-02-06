@@ -59,7 +59,7 @@ create table customer_order_items
     record_id         serial primary key,
     customer_order_id int            not null references customer_orders (record_id),
     product_id        int            not null references products (record_id),
-    quantity          int            not null,
+    quantity          numeric(15, 3) not null,
     price             numeric(15, 2) not null
 );
 
