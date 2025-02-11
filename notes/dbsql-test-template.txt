@@ -1,0 +1,45 @@
+package main
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"log"
+
+	_ "github.com/jackc/pgx/v5/stdlib"
+)
+
+// GetDatabaseConnectionPostgres initializes a PostgreSQL connection
+func GetDatabaseConnectionPostgres(connString string) (*sql.DB, error) {
+	// Open connection using pgx's stdlib adapter
+	db, err := sql.Open("pgx", connString)
+	if err != nil {
+		return nil, fmt.Errorf("failed to open database: %w", err)
+	}
+
+	// Verify the connection
+	if err := db.Ping(); err != nil {
+		db.Close()
+		return nil, fmt.Errorf("failed to ping database: %w", err)
+	}
+
+	return db, nil
+}
+
+func main() {
+	ctx := context.Background()
+	conn, err := GetDatabaseConnectionPostgres("postgres://postgres:postgres@localhost:5432/bookstore")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer conn.Close()
+
+	_, err = conn.ExecContext(ctx, `
+		ALTER SYSTEM SET work_mem = '64MB';
+		ALTER SYSTEM SET work_mem = '63MB';
+	`)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+}
