@@ -27,7 +27,10 @@ func (l *Logger) Log(ctx context.Context, level tracelog.LogLevel, msg string, d
 	for _, k := range keys {
 		v := data[k]
 		if k == "sql" {
-			v = PrettySQL(v.(string))
+			str, ok := v.(string)
+			if ok {
+				v = PrettySQL(str)
+			}
 		}
 		attrs = append(attrs, slog.Any(k, v))
 	}

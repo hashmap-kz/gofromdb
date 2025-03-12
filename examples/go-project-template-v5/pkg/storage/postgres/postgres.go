@@ -43,6 +43,7 @@ func New(logger *slog.Logger, url string, opts ...Option) (*Postgres, error) {
 		return nil, fmt.Errorf("postgres - NewPostgres - pgxpool.ParseConfig: %w", err)
 	}
 
+	// #nosec G115
 	poolConfig.MaxConns = int32(pg.maxPoolSize)
 	poolConfig.ConnConfig.Tracer = NewTracer(logger)
 

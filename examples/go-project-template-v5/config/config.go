@@ -42,7 +42,7 @@ type PostgresConfig struct {
 type KeycloakConfig struct {
 	URL          string
 	Realm        string
-	ClientId     string
+	ClientID     string
 	ClientSecret string
 }
 

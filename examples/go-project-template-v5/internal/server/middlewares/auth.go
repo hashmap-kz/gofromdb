@@ -27,7 +27,7 @@ func AuthorizeMiddleware(nextHandler http.Handler) http.HandlerFunc {
 		c := &Client{
 			URL:          auth.URL,
 			Realm:        auth.Realm,
-			ClientID:     auth.ClientId,
+			ClientID:     auth.ClientID,
 			ClientSecret: auth.ClientSecret,
 		}
 
