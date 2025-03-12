@@ -309,6 +309,6 @@ func mapDtoToPayload(inputDto *dto.CustomerOrdersDto) (customerOrdersResponse, e
 		Description: inputDto.Description,
 		CreatedAt:   inputDto.CreatedAt,
 		UpdatedAt:   inputDto.UpdatedAt,
-		Guid:        inputDto.Guid,
+		GUID:        inputDto.GUID,
 	}, nil
 }

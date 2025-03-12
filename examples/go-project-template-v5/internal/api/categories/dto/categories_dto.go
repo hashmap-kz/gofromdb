@@ -14,7 +14,7 @@ type CategoriesDto struct {
 	IsCurrent   *bool
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
-	Guid        string
+	GUID        string
 }
 
 type CategoriesCreateDto struct {

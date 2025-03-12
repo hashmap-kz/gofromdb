@@ -246,7 +246,7 @@ func scanFullRow(row pgx.Row) (*dbModel.Categories, error) {
 		&scannedEntity.IsCurrent,
 		&scannedEntity.CreatedAt,
 		&scannedEntity.UpdatedAt,
-		&scannedEntity.Guid,
+		&scannedEntity.GUID,
 	)
 	if err != nil {
 		return nil, err

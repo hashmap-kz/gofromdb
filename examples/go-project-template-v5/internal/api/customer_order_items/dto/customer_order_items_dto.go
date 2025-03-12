@@ -10,7 +10,7 @@ type CustomerOrderItemsDto struct {
 	Price           string
 	CreatedAt       time.Time
 	UpdatedAt       time.Time
-	Guid            string
+	GUID            string
 }
 
 type CustomerOrderItemsCreateDto struct {

@@ -62,11 +62,11 @@ func (s *productsService) DeleteByID(ctx context.Context, pkRecordID int) error 
 }
 
 func (s *productsService) FindByID(ctx context.Context, pkRecordID int) (*dto.ProductsDto, error) {
-	entityById, err := s.productsRepository.FindByID(ctx, pkRecordID)
+	entityByID, err := s.productsRepository.FindByID(ctx, pkRecordID)
 	if err != nil {
 		return nil, err
 	}
-	toDto, err := fromEntityToDto(entityById)
+	toDto, err := fromEntityToDto(entityByID)
 	if err != nil {
 		return nil, err
 	}
@@ -144,6 +144,6 @@ func fromEntityToDto(inputEntity *dbModel.Products) (dto.ProductsDto, error) {
 		Description: inputEntity.Description,
 		CreatedAt:   inputEntity.CreatedAt,
 		UpdatedAt:   inputEntity.UpdatedAt,
-		Guid:        inputEntity.Guid,
+		GUID:        inputEntity.GUID,
 	}, nil
 }

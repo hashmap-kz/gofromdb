@@ -62,11 +62,11 @@ func (s *customerOrderItemsService) DeleteByID(ctx context.Context, pkRecordID i
 }
 
 func (s *customerOrderItemsService) FindByID(ctx context.Context, pkRecordID int) (*dto.CustomerOrderItemsDto, error) {
-	entityById, err := s.customerOrderItemsRepository.FindByID(ctx, pkRecordID)
+	entityByID, err := s.customerOrderItemsRepository.FindByID(ctx, pkRecordID)
 	if err != nil {
 		return nil, err
 	}
-	toDto, err := fromEntityToDto(entityById)
+	toDto, err := fromEntityToDto(entityByID)
 	if err != nil {
 		return nil, err
 	}
@@ -147,6 +147,6 @@ func fromEntityToDto(inputEntity *dbModel.CustomerOrderItems) (dto.CustomerOrder
 		Price:           inputEntity.Price,
 		CreatedAt:       inputEntity.CreatedAt,
 		UpdatedAt:       inputEntity.UpdatedAt,
-		Guid:            inputEntity.Guid,
+		GUID:            inputEntity.GUID,
 	}, nil
 }

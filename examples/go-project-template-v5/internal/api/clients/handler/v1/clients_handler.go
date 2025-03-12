@@ -306,6 +306,6 @@ func mapDtoToPayload(inputDto *dto.ClientsDto) (clientsResponse, error) {
 		Email:     inputDto.Email,
 		CreatedAt: inputDto.CreatedAt,
 		UpdatedAt: inputDto.UpdatedAt,
-		Guid:      inputDto.Guid,
+		GUID:      inputDto.GUID,
 	}, nil
 }

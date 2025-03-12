@@ -20,5 +20,5 @@ type CustomerOrders struct {
 	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
 
 	// Internal field, UUID of the row
-	Guid string `json:"guid" db:"guid"`
+	GUID string `json:"guid" db:"guid"`
 }

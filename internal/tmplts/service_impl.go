@@ -109,11 +109,11 @@ func (s *{{.ImplName}}) DeleteByID(ctx context.Context, {{.ParametersByPkeys}}) 
 }
 
 func (s *{{.ImplName}}) FindByID(ctx context.Context, {{.ParametersByPkeys}}) (*dto.{{.DtoName}}, error) {
-	entityById, err := s.{{.RepositoryVarName}}.FindByID(ctx, {{.ArgumentsByPkeys}})
+	entityByID, err := s.{{.RepositoryVarName}}.FindByID(ctx, {{.ArgumentsByPkeys}})
 	if err != nil {
 		return nil, err
 	}
-	toDto, err := fromEntityToDto(entityById)
+	toDto, err := fromEntityToDto(entityByID)
 	if err != nil {
 		return nil, err
 	}

@@ -9,7 +9,7 @@ type ProductsDto struct {
 	Description *string
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
-	Guid        string
+	GUID        string
 }
 
 type ProductsCreateDto struct {

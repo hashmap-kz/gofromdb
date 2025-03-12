@@ -62,11 +62,11 @@ func (s *clientsService) DeleteByID(ctx context.Context, pkRecordID int) error {
 }
 
 func (s *clientsService) FindByID(ctx context.Context, pkRecordID int) (*dto.ClientsDto, error) {
-	entityById, err := s.clientsRepository.FindByID(ctx, pkRecordID)
+	entityByID, err := s.clientsRepository.FindByID(ctx, pkRecordID)
 	if err != nil {
 		return nil, err
 	}
-	toDto, err := fromEntityToDto(entityById)
+	toDto, err := fromEntityToDto(entityByID)
 	if err != nil {
 		return nil, err
 	}
@@ -138,6 +138,6 @@ func fromEntityToDto(inputEntity *dbModel.Clients) (dto.ClientsDto, error) {
 		Email:     inputEntity.Email,
 		CreatedAt: inputEntity.CreatedAt,
 		UpdatedAt: inputEntity.UpdatedAt,
-		Guid:      inputEntity.Guid,
+		GUID:      inputEntity.GUID,
 	}, nil
 }

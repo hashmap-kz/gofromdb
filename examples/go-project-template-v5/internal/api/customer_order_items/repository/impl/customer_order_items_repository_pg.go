@@ -250,7 +250,7 @@ func scanFullRow(row pgx.Row) (*dbModel.CustomerOrderItems, error) {
 		&scannedEntity.Price,
 		&scannedEntity.CreatedAt,
 		&scannedEntity.UpdatedAt,
-		&scannedEntity.Guid,
+		&scannedEntity.GUID,
 	)
 	if err != nil {
 		return nil, err

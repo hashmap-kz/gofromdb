@@ -33,7 +33,7 @@ type clientsResponse struct {
 	UpdatedAt time.Time `json:"updated_at"`
 
 	// Internal field, UUID of the row
-	Guid string `json:"guid"`
+	GUID string `json:"guid"`
 }
 
 // clientsResponseList response list

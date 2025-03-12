@@ -313,6 +313,6 @@ func mapDtoToPayload(inputDto *dto.CategoriesDto) (categoriesResponse, error) {
 		IsCurrent:   inputDto.IsCurrent,
 		CreatedAt:   inputDto.CreatedAt,
 		UpdatedAt:   inputDto.UpdatedAt,
-		Guid:        inputDto.Guid,
+		GUID:        inputDto.GUID,
 	}, nil
 }

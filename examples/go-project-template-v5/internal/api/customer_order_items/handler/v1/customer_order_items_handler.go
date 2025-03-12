@@ -315,6 +315,6 @@ func mapDtoToPayload(inputDto *dto.CustomerOrderItemsDto) (customerOrderItemsRes
 		Price:           inputDto.Price,
 		CreatedAt:       inputDto.CreatedAt,
 		UpdatedAt:       inputDto.UpdatedAt,
-		Guid:            inputDto.Guid,
+		GUID:            inputDto.GUID,
 	}, nil
 }

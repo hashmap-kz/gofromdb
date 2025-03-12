@@ -60,7 +60,7 @@ type customerOrderItemsResponse struct {
 	UpdatedAt time.Time `json:"updated_at"`
 
 	// Internal field, UUID of the row
-	Guid string `json:"guid"`
+	GUID string `json:"guid"`
 }
 
 // customerOrderItemsResponseList response list

@@ -7,7 +7,7 @@ type ClientsDto struct {
 	Email     string
 	CreatedAt time.Time
 	UpdatedAt time.Time
-	Guid      string
+	GUID      string
 }
 
 type ClientsCreateDto struct {

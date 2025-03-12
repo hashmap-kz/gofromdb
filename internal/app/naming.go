@@ -30,8 +30,15 @@ func makeName(from string) string {
 	r := strings.Split(from, "_")
 	sb := strings.Builder{}
 	for _, elem := range r {
+		// TODO: simplify, extend (URL, etc...)
 		if strings.ToLower(elem) == "id" {
 			elem = "ID"
+		}
+		if strings.ToLower(elem) == "guid" {
+			elem = "GUID"
+		}
+		if strings.ToLower(elem) == "uuid" {
+			elem = "UUID"
 		}
 		sb.WriteString(capitalizeFirstLetter(elem))
 	}

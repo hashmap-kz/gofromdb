@@ -51,7 +51,7 @@ type productsResponse struct {
 	UpdatedAt time.Time `json:"updated_at"`
 
 	// Internal field, UUID of the row
-	Guid string `json:"guid"`
+	GUID string `json:"guid"`
 }
 
 // productsResponseList response list
