@@ -51,7 +51,7 @@ func (h *CustomerOrdersHTTPHandler) Save(w http.ResponseWriter, r *http.Request)
 
 	// convert handler-request-payload into service-dto
 	createInput, err := mapCreateRequestToCreateInputDto(req)
-	if err := validator.ValidateStruct(req); err != nil {
+	if err != nil {
 		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
 		return
 	}
@@ -99,10 +99,14 @@ func (h *CustomerOrdersHTTPHandler) UpdateByID(w http.ResponseWriter, r *http.Re
 		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
 		return
 	}
+	if err := validator.ValidateStruct(req); err != nil {
+		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
+		return
+	}
 
 	// convert handler-request-payload into service-dto
 	updateInput, err := mapUpdateRequestToUpdateInputDto(req)
-	if err := validator.ValidateStruct(req); err != nil {
+	if err != nil {
 		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
 		return
 	}

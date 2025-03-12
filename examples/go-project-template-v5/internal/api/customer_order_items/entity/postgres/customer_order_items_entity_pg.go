@@ -14,7 +14,7 @@ type CustomerOrderItems struct {
 	ProductID int `json:"product_id" db:"product_id"`
 
 	// Number of units of the product.
-	Quantity int `json:"quantity" db:"quantity"`
+	Quantity string `json:"quantity" db:"quantity"`
 
 	// Price per unit of the product at the time of ordering.
 	Price string `json:"price" db:"price"`

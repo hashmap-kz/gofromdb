@@ -71,7 +71,7 @@ func (r *customerOrderItemsRepository) UpdateByID(ctx context.Context, inputEnti
 		set 
 			customer_order_id = coalesce(nullif($2, 0::int4), customer_order_id),
 			product_id        = coalesce(nullif($3, 0::int4), product_id),
-			quantity          = coalesce(nullif($4, 0::int4), quantity),
+			quantity          = coalesce(nullif($4, 0::numeric), quantity),
 			price             = coalesce(nullif($5, 0::numeric), price)
 		where record_id = $1
 		returning 

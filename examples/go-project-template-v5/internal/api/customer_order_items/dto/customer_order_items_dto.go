@@ -6,7 +6,7 @@ type CustomerOrderItemsDto struct {
 	RecordID        int
 	CustomerOrderID int
 	ProductID       int
-	Quantity        int
+	Quantity        string
 	Price           string
 	CreatedAt       time.Time
 	UpdatedAt       time.Time
@@ -16,13 +16,13 @@ type CustomerOrderItemsDto struct {
 type CustomerOrderItemsCreateDto struct {
 	CustomerOrderID int
 	ProductID       int
-	Quantity        int
+	Quantity        string
 	Price           string
 }
 
 type CustomerOrderItemsUpdateDto struct {
 	CustomerOrderID int
 	ProductID       int
-	Quantity        int
+	Quantity        string
 	Price           string
 }

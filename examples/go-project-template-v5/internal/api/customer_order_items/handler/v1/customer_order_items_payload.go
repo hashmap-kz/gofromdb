@@ -15,7 +15,7 @@ type customerOrderItemsCreateRequest struct {
 	ProductID int `json:"product_id"`
 
 	// Number of units of the product.
-	Quantity int `json:"quantity"`
+	Quantity string `json:"quantity"`
 
 	// Price per unit of the product at the time of ordering.
 	Price string `json:"price"`
@@ -30,7 +30,7 @@ type customerOrderItemsUpdateRequest struct {
 	ProductID int `json:"product_id"`
 
 	// Number of units of the product.
-	Quantity int `json:"quantity"`
+	Quantity string `json:"quantity"`
 
 	// Price per unit of the product at the time of ordering.
 	Price string `json:"price"`
@@ -48,7 +48,7 @@ type customerOrderItemsResponse struct {
 	ProductID int `json:"product_id"`
 
 	// Number of units of the product.
-	Quantity int `json:"quantity"`
+	Quantity string `json:"quantity"`
 
 	// Price per unit of the product at the time of ordering.
 	Price string `json:"price"`

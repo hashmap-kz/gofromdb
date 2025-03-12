@@ -4,7 +4,6 @@ import (
 	"io"
 	"log/slog"
 	"os"
-	"time"
 )
 
 // For mapping config logger to app logger levels
@@ -18,14 +17,6 @@ var loggerLevelMap = map[string]slog.Level{
 func InitLogger(enc, lvl string) *slog.Logger {
 	opts := &slog.HandlerOptions{
 		Level: getLoggerLevel(lvl),
-		ReplaceAttr: func(_ []string, a slog.Attr) slog.Attr {
-			if a.Key == slog.TimeKey {
-				// Convert time to custom format
-				t := a.Value.Time()
-				a.Value = slog.StringValue(t.Format(time.DateTime))
-			}
-			return a
-		},
 	}
 	var logger *slog.Logger
 	if enc == "json" {
