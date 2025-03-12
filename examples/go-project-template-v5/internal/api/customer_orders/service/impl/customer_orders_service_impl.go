@@ -120,7 +120,7 @@ func fromUpdateDtoToEntity(input *dto.CustomerOrdersUpdateDto) (*dbModel.Custome
 }
 
 func fromEntitiesToDtos(inputEntities []dbModel.CustomerOrders) ([]dto.CustomerOrdersDto, error) {
-	outputDtos := make([]CustomerOrdersDto, 0, len(inputEntities))
+	outputDtos := make([]dto.CustomerOrdersDto, 0, len(inputEntities))
 	for _, inputEntity := range inputEntities {
 		toDto, err := fromEntityToDto(&inputEntity)
 		if err != nil {

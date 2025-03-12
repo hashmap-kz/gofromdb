@@ -122,7 +122,7 @@ func fromUpdateDtoToEntity(input *dto.ProductsUpdateDto) (*dbModel.Products, err
 }
 
 func fromEntitiesToDtos(inputEntities []dbModel.Products) ([]dto.ProductsDto, error) {
-	outputDtos := make([]ProductsDto, 0, len(inputEntities))
+	outputDtos := make([]dto.ProductsDto, 0, len(inputEntities))
 	for _, inputEntity := range inputEntities {
 		toDto, err := fromEntityToDto(&inputEntity)
 		if err != nil {
