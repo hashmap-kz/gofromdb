@@ -123,8 +123,8 @@ func fromUpdateDtoToEntity(input *dto.ProductsUpdateDto) (*dbModel.Products, err
 
 func fromEntitiesToDtos(inputEntities []dbModel.Products) ([]dto.ProductsDto, error) {
 	outputDtos := make([]dto.ProductsDto, 0, len(inputEntities))
-	for _, inputEntity := range inputEntities {
-		toDto, err := fromEntityToDto(&inputEntity)
+	for i := range inputEntities { // Iterate using index to avoid copying (gocritic:rangeValCopy)
+		toDto, err := fromEntityToDto(&inputEntities[i])
 		if err != nil {
 			return nil, err
 		}

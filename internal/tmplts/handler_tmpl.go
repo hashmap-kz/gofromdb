@@ -345,8 +345,8 @@ func mapUpdateRequestToUpdateInputDto(inputRequest *{{.UpdateRequestName}}) (*dt
 
 func mapDtosToPayloads(inputDtos []dto.{{.DtoName}}) ([]{{.ResponseName}}, error) {
 	outputResponses := make([]{{.ResponseName}}, 0, len(inputDtos))
-	for _, inputDto := range inputDtos {
-		toPayload, err := mapDtoToPayload(&inputDto)
+	for i := range inputDtos { // Iterate using index to avoid copying (gocritic:rangeValCopy)
+		toPayload, err := mapDtoToPayload(&inputDtos[i])
 		if err != nil {
 			return nil, err
 		}

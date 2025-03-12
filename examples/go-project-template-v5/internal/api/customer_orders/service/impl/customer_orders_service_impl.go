@@ -121,8 +121,8 @@ func fromUpdateDtoToEntity(input *dto.CustomerOrdersUpdateDto) (*dbModel.Custome
 
 func fromEntitiesToDtos(inputEntities []dbModel.CustomerOrders) ([]dto.CustomerOrdersDto, error) {
 	outputDtos := make([]dto.CustomerOrdersDto, 0, len(inputEntities))
-	for _, inputEntity := range inputEntities {
-		toDto, err := fromEntityToDto(&inputEntity)
+	for i := range inputEntities { // Iterate using index to avoid copying (gocritic:rangeValCopy)
+		toDto, err := fromEntityToDto(&inputEntities[i])
 		if err != nil {
 			return nil, err
 		}
