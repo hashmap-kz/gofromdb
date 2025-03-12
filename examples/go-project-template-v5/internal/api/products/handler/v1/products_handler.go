@@ -290,7 +290,7 @@ func mapUpdateRequestToUpdateInputDto(inputRequest *productsUpdateRequest) (*dto
 }
 
 func mapDtosToPayloads(inputDtos []dto.ProductsDto) ([]productsResponse, error) {
-	var outputResponses []productsResponse
+	outputResponses := make([]productsResponse, 0, len(inputDtos))
 	for _, inputDto := range inputDtos {
 		toPayload, err := mapDtoToPayload(&inputDto)
 		if err != nil {

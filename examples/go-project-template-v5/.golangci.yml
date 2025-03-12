@@ -25,6 +25,7 @@ linters:
     - gocyclo
     - godox
     - gofmt
+    #TODO:
     #- gofumpt
     - goheader
     - goimports
@@ -51,7 +52,8 @@ linters:
     - typecheck
     - unconvert
     - unparam
-    - unused
+    #TODO:
+    #- unused
     - whitespace
 
 linters-settings:

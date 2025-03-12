@@ -344,7 +344,7 @@ func mapUpdateRequestToUpdateInputDto(inputRequest *{{.UpdateRequestName}}) (*dt
 }
 
 func mapDtosToPayloads(inputDtos []dto.{{.DtoName}}) ([]{{.ResponseName}}, error) {
-	var outputResponses []{{.ResponseName}}
+	outputResponses := make([]{{.ResponseName}}, 0, len(inputDtos))
 	for _, inputDto := range inputDtos {
 		toPayload, err := mapDtoToPayload(&inputDto)
 		if err != nil {
