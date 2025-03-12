@@ -11,6 +11,8 @@ import (
 	"syscall"
 	"time"
 
+	slogLogger "go-project-template-v5/pkg/logger"
+
 	"go-project-template-v5/internal/server/middlewares"
 
 	"go-project-template-v5/internal/api"
@@ -30,7 +32,7 @@ func Run(configFilePath string) {
 	cfg := config.Cfg()
 
 	// init logger
-	logger := initLogger(cfg)
+	logger := slogLogger.InitLogger(cfg.Logger.Format, cfg.Logger.Level)
 	slog.SetDefault(logger)
 
 	// init pgxpool
@@ -81,36 +83,4 @@ func Run(configFilePath string) {
 	if err := srv.Stop(ctx); err != nil {
 		logger.Error("failed to stop server", slog.String("err", err.Error()))
 	}
-}
-
-// TODO: move logger routine from here to special package
-
-func initLogger(cfg *config.Config) *slog.Logger {
-	opts := &slog.HandlerOptions{
-		Level: getLoggerLevel(cfg),
-	}
-	var logger *slog.Logger
-	if cfg.Logger.Encoding == "console" {
-		logger = slog.New(slog.NewTextHandler(os.Stdout, opts))
-	} else {
-		logger = slog.New(slog.NewJSONHandler(os.Stdout, opts))
-	}
-	return logger
-}
-
-// For mapping config logger to app logger levels
-var loggerLevelMap = map[string]slog.Level{
-	"debug": slog.LevelDebug,
-	"info":  slog.LevelInfo,
-	"warn":  slog.LevelWarn,
-	"error": slog.LevelError,
-}
-
-func getLoggerLevel(cfg *config.Config) slog.Level {
-	level, exist := loggerLevelMap[cfg.Logger.Level]
-	if !exist {
-		return slog.LevelDebug
-	}
-
-	return level
 }

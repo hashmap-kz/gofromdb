@@ -5,7 +5,7 @@ server:
 
 logger:
   # console/json
-  Encoding: console
+  Format: console
   # debug info warn error
   Level: debug
 

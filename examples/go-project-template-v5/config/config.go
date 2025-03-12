@@ -30,8 +30,8 @@ type ServerConfig struct {
 }
 
 type LoggerConfig struct {
-	Encoding string
-	Level    string
+	Format string
+	Level  string
 }
 
 type PostgresConfig struct {
