@@ -1,16 +1,16 @@
 -- +goose Up
 
 -- clients
-INSERT INTO clients (email) VALUES ('brent58@yahoo.com');
-INSERT INTO clients (email) VALUES ('vrodriguez@perez.org');
-INSERT INTO clients (email) VALUES ('mikayla87@yahoo.com');
-INSERT INTO clients (email) VALUES ('millerwillie@yahoo.com');
-INSERT INTO clients (email) VALUES ('lwright@yahoo.com');
-INSERT INTO clients (email) VALUES ('knightkatherine@gmail.com');
-INSERT INTO clients (email) VALUES ('brooksanthony@gmail.com');
-INSERT INTO clients (email) VALUES ('jamesmichael@gmail.com');
-INSERT INTO clients (email) VALUES ('scottkeith@yahoo.com');
-INSERT INTO clients (email) VALUES ('cdavidson@gmail.com');
+INSERT INTO users (email) VALUES ('brent58@yahoo.com');
+INSERT INTO users (email) VALUES ('vrodriguez@perez.org');
+INSERT INTO users (email) VALUES ('mikayla87@yahoo.com');
+INSERT INTO users (email) VALUES ('millerwillie@yahoo.com');
+INSERT INTO users (email) VALUES ('lwright@yahoo.com');
+INSERT INTO users (email) VALUES ('knightkatherine@gmail.com');
+INSERT INTO users (email) VALUES ('brooksanthony@gmail.com');
+INSERT INTO users (email) VALUES ('jamesmichael@gmail.com');
+INSERT INTO users (email) VALUES ('scottkeith@yahoo.com');
+INSERT INTO users (email) VALUES ('cdavidson@gmail.com');
 
 -- categories
 INSERT INTO categories (name, parent_id) VALUES ('Electronics', NULL);
@@ -50,26 +50,26 @@ INSERT INTO products (category_id, name, description) VALUES (14, 'Dumbbell Set'
 INSERT INTO products (category_id, name, description) VALUES (15, 'Tent', 'A waterproof camping tent for 4 people.'); -- Outdoor Gear
 INSERT INTO products (category_id, name, description) VALUES (15, 'Sleeping Bag', 'A lightweight sleeping bag for outdoor adventures.'); -- Outdoor Gear
 
--- Buys
-INSERT INTO customer_orders (client_id, description) VALUES (3, 'Bought office supplies.');
-INSERT INTO customer_orders (client_id, description) VALUES (1, 'Purchased electronics.');
-INSERT INTO customer_orders (client_id, description) VALUES (5, 'Ordered home furniture.');
-INSERT INTO customer_orders (client_id, description) VALUES (8, 'Shopping for a party.');
-INSERT INTO customer_orders (client_id, description) VALUES (2, 'Bought a gift for a friend.');
-INSERT INTO customer_orders (client_id, description) VALUES (6, 'Bulk order for work.');
-INSERT INTO customer_orders (client_id, description) VALUES (4, 'Personal shopping.');
-INSERT INTO customer_orders (client_id, description) VALUES (9, 'Last-minute shopping.');
-INSERT INTO customer_orders (client_id, description) VALUES (7, 'Gift for a colleague.');
-INSERT INTO customer_orders (client_id, description) VALUES (10, 'Birthday shopping.');
+-- Sales
+INSERT INTO orders (user_id, description) VALUES (3, 'Bought office supplies.');
+INSERT INTO orders (user_id, description) VALUES (1, 'Purchased electronics.');
+INSERT INTO orders (user_id, description) VALUES (5, 'Ordered home furniture.');
+INSERT INTO orders (user_id, description) VALUES (8, 'Shopping for a party.');
+INSERT INTO orders (user_id, description) VALUES (2, 'Bought a gift for a friend.');
+INSERT INTO orders (user_id, description) VALUES (6, 'Bulk order for work.');
+INSERT INTO orders (user_id, description) VALUES (4, 'Personal shopping.');
+INSERT INTO orders (user_id, description) VALUES (9, 'Last-minute shopping.');
+INSERT INTO orders (user_id, description) VALUES (7, 'Gift for a colleague.');
+INSERT INTO orders (user_id, description) VALUES (10, 'Birthday shopping.');
 
 -- Items
-INSERT INTO customer_order_items (customer_order_id, product_id, quantity, price) VALUES (1, 2, 2, 99.99);
-INSERT INTO customer_order_items (customer_order_id, product_id, quantity, price) VALUES (2, 3, 1, 49.99);
-INSERT INTO customer_order_items (customer_order_id, product_id, quantity, price) VALUES (3, 5, 3, 19.99);
-INSERT INTO customer_order_items (customer_order_id, product_id, quantity, price) VALUES (4, 7, 2, 9.99);
-INSERT INTO customer_order_items (customer_order_id, product_id, quantity, price) VALUES (5, 9, 1, 39.99);
-INSERT INTO customer_order_items (customer_order_id, product_id, quantity, price) VALUES (6, 1, 4, 12.99);
-INSERT INTO customer_order_items (customer_order_id, product_id, quantity, price) VALUES (7, 4, 2, 25.99);
-INSERT INTO customer_order_items (customer_order_id, product_id, quantity, price) VALUES (8, 6, 3, 15.99);
-INSERT INTO customer_order_items (customer_order_id, product_id, quantity, price) VALUES (9, 8, 2, 59.99);
-INSERT INTO customer_order_items (customer_order_id, product_id, quantity, price) VALUES (10, 10, 1, 89.99);
+INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (1, 2, 2, 99.99);
+INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (2, 3, 1, 49.99);
+INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (3, 5, 3, 19.99);
+INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (4, 7, 2, 9.99);
+INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (5, 9, 1, 39.99);
+INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (6, 1, 4, 12.99);
+INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (7, 4, 2, 25.99);
+INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (8, 6, 3, 15.99);
+INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (9, 8, 2, 59.99);
+INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (10, 10, 1, 89.99);
