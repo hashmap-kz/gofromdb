@@ -18,3 +18,9 @@ auth:
   realm: "${AUTH_KEYCLOAK_REALM}"
   clientId: "${AUTH_KEYCLOAK_CLIENT_ID}"
   clientSecret: "${AUTH_KEYCLOAK_CLIENT_SECRET}"
+
+redis:
+  addr: "10.40.240.63:31003"
+  database: 8
+  # Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h".
+  ttl: 5m

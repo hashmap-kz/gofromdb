@@ -20,6 +20,7 @@ type Config struct {
 	Server   ServerConfig
 	Postgres PostgresConfig
 	Logger   LoggerConfig
+	Redis    RedisConfig
 	Auth     KeycloakConfig
 }
 
@@ -44,6 +45,12 @@ type KeycloakConfig struct {
 	Realm        string
 	ClientID     string
 	ClientSecret string
+}
+
+type RedisConfig struct {
+	Addr     string
+	Database int
+	TTL      string // time.Duration
 }
 
 // LoadConfigFromFile: unmarshal file into config struct
