@@ -1,10 +1,6 @@
 package app
 
-import (
-	"strings"
-
-	"genpg-v5/internal/tmplts"
-)
+import "genpg-v5/internal/tmplts"
 
 type GenRepo struct {
 	RepoEntity    string
@@ -12,40 +8,8 @@ type GenRepo struct {
 	RepoImpl      string
 }
 
-type queriesResults struct {
-	repoSaveQueryResult            string
-	repoUpdateQueryResult          string
-	repoDeleteQueryResult          string
-	repoGetByIdQueryResult         string
-	repoGetAllQueryResult          string
-	repoCountQueryResult           string
-	repoGetAllPaginatedQueryResult string
-}
-
 func GenRepository(s TableToStructInfo) GenRepo {
-	pk := NewPrimaryKeyView(s.PrimaryKeys)
-	queries := genQueries(s, pk)
-	data := map[string]any{
-		"StructName":               s.StructName,
-		"StructComment":            s.StructComment,
-		"PackageName":              strings.ToLower(s.DbTableName),
-		"InterfaceName":            s.StructName + "Repository",
-		"ImplName":                 LowerFirstLetter(s.StructName) + "Repository",
-		"ParametersByPkeys":        pk.Params,
-		"ArgumentsByPkeys":         pk.Args,
-		"RepoSaveQuery":            queries.repoSaveQueryResult,
-		"RepoUpdateQuery":          queries.repoUpdateQueryResult,
-		"RepoDeleteQuery":          queries.repoDeleteQueryResult,
-		"RepoGetByIdQuery":         queries.repoGetByIdQueryResult,
-		"RepoGetAllQuery":          queries.repoGetAllQueryResult,
-		"RepoCountQuery":           queries.repoCountQueryResult,
-		"RepoGetAllPaginatedQuery": queries.repoGetAllPaginatedQueryResult,
-		"DtoFieldsCreate":          s.InsertFields(),
-		"DtoFieldsUpdate":          s.UpdateFields(),
-		"HasPrimaryKey":            s.HasPrimaryKey,
-		"HasUpdateFields":          s.HasUpdateFields,
-		"DtoFieldsFull":            s.FullFields(),
-	}
+	data := NewRepoTemplateData(s)
 
 	interfaceRes := ExecTemplate("entity-interface", tmplts.RepoInterfaceTemplate, data, FuncMap)
 	modelsRes := ExecTemplate("entity", tmplts.EntityTemplate, data, FuncMap)
@@ -55,40 +19,5 @@ func GenRepository(s TableToStructInfo) GenRepo {
 		RepoEntity:    PrintFormatted(modelsRes),
 		RepoInterface: PrintFormatted(interfaceRes),
 		RepoImpl:      PrintFormatted(implRes),
-	}
-}
-
-func genQueries(s TableToStructInfo, pk PrimaryKeyView) queriesResults {
-	insertFields := s.InsertDBFields()
-	fieldsWithPkeysAndDefaults := s.ScanDBFields()
-	updateSets := GenUpdateSets(s.UpdateFields(), len(s.PrimaryKeys))
-
-	queryTemplatesData := map[string]any{
-		"QSchemaName":         s.DbSchemaName,
-		"QTableName":          s.DbTableName,
-		"QFieldsNoPKeys":      strings.Join(insertFields, ",\n"),
-		"QFieldsWithPKeys":    strings.Join(fieldsWithPkeysAndDefaults, ",\n"),
-		"QWhereClause":        pk.WhereClause,
-		"QOrderClause":        pk.OrderSQL,
-		"QInsertPlaceholders": strings.Join(CreatePlaceholders(len(insertFields)), ", "),
-		"QUpdateSets":         strings.Join(updateSets, ",\n"),
-	}
-
-	repoSaveQueryResult := ExecTemplate("query-save", tmplts.RepoSaveQueryTemplate, queryTemplatesData, FuncMap)
-	repoUpdateQueryResult := ExecTemplate("query-update", tmplts.RepoUpdateQueryTemplate, queryTemplatesData, FuncMap)
-	repoDeleteQueryResult := ExecTemplate("query-delete", tmplts.RepoDeleteQueryTemplate, queryTemplatesData, FuncMap)
-	repoGetByIdQueryResult := ExecTemplate("query-get-by-id", tmplts.RepoGetByIdQueryTemplate, queryTemplatesData, FuncMap)
-	repoGetAllQueryResult := ExecTemplate("query-get-all", tmplts.RepoGetAllQueryTemplate, queryTemplatesData, FuncMap)
-	repoCountQueryResult := ExecTemplate("query-count", tmplts.RepoCountQueryTemplate, queryTemplatesData, FuncMap)
-	repoGetAllPaginatedQueryResult := ExecTemplate("query-get-all-paginated", tmplts.RepoGetAllPaginatedQueryTemplate, queryTemplatesData, FuncMap)
-
-	return queriesResults{
-		repoSaveQueryResult:            repoSaveQueryResult,
-		repoUpdateQueryResult:          repoUpdateQueryResult,
-		repoDeleteQueryResult:          repoDeleteQueryResult,
-		repoGetByIdQueryResult:         repoGetByIdQueryResult,
-		repoGetAllQueryResult:          repoGetAllQueryResult,
-		repoCountQueryResult:           repoCountQueryResult,
-		repoGetAllPaginatedQueryResult: repoGetAllPaginatedQueryResult,
 	}
 }

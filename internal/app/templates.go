@@ -6,7 +6,7 @@ import (
 	"text/template"
 )
 
-func ExecTemplate(name, t string, data map[string]any, funcMap map[string]any) string {
+func ExecTemplate(name, t string, data any, funcMap map[string]any) string {
 	var result bytes.Buffer
 	tmpl, err := template.New(name).Funcs(funcMap).Parse(t)
 	if err != nil {
