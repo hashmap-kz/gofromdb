@@ -178,7 +178,7 @@ func makeOneStruct(relPath string, cols []genpg.ColumnInfo) TableToStructInfo {
 		StructName:                  structName,
 		StructNameLowerFirstLetter:  LowerFirstLetter(structName),
 		StructNamePluralRequestPath: makeDnsPathPluralFromDbTable(table),
-		PkeysURLPath:                genUrlPathValuesByPkeys(primaryKeys),
+		PkeysURLPath:                NewPrimaryKeyView(primaryKeys).URLPath,
 		StructComment:               structComment,
 		DbSchemaName:                schema,
 		DbTableName:                 table,

@@ -13,16 +13,15 @@ type GenSvc struct {
 }
 
 func GenService(s TableToStructInfo) GenSvc {
-	parametersByPkeys := genParametersByPkeys(s)
-	argumentsByPkeys := genArgumentsByPkeys(s)
+	pk := NewPrimaryKeyView(s.PrimaryKeys)
 
 	data := map[string]any{
 		"StructName":              s.StructName,
 		"PackageName":             strings.ToLower(s.DbTableName),
 		"InterfaceName":           s.StructName + "Service",
 		"ImplName":                LowerFirstLetter(s.StructName) + "Service",
-		"ParametersByPkeys":       parametersByPkeys,
-		"ArgumentsByPkeys":        argumentsByPkeys,
+		"ParametersByPkeys":       pk.Params,
+		"ArgumentsByPkeys":        pk.Args,
 		"RepositoryInterfaceName": s.StructName + "Repository",
 		"RepositoryVarName":       s.StructNameLowerFirstLetter + "Repository",
 		"DtoName":                 s.StructName + "Dto",

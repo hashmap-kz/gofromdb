@@ -23,18 +23,16 @@ type queriesResults struct {
 }
 
 func GenRepository(s TableToStructInfo) GenRepo {
-	parametersByPkeys := genParametersByPkeys(s)
-	argumentsByPkeys := genArgumentsByPkeys(s)
-
-	queries := genQueries(s)
+	pk := NewPrimaryKeyView(s.PrimaryKeys)
+	queries := genQueries(s, pk)
 	data := map[string]any{
 		"StructName":               s.StructName,
 		"StructComment":            s.StructComment,
 		"PackageName":              strings.ToLower(s.DbTableName),
 		"InterfaceName":            s.StructName + "Repository",
 		"ImplName":                 LowerFirstLetter(s.StructName) + "Repository",
-		"ParametersByPkeys":        parametersByPkeys,
-		"ArgumentsByPkeys":         argumentsByPkeys,
+		"ParametersByPkeys":        pk.Params,
+		"ArgumentsByPkeys":         pk.Args,
 		"RepoSaveQuery":            queries.repoSaveQueryResult,
 		"RepoUpdateQuery":          queries.repoUpdateQueryResult,
 		"RepoDeleteQuery":          queries.repoDeleteQueryResult,
@@ -60,7 +58,7 @@ func GenRepository(s TableToStructInfo) GenRepo {
 	}
 }
 
-func genQueries(s TableToStructInfo) queriesResults {
+func genQueries(s TableToStructInfo, pk PrimaryKeyView) queriesResults {
 	insertFields := s.InsertDBFields()
 	fieldsWithPkeysAndDefaults := s.ScanDBFields()
 	updateSets := GenUpdateSets(s.UpdateFields(), len(s.PrimaryKeys))
@@ -70,8 +68,8 @@ func genQueries(s TableToStructInfo) queriesResults {
 		"QTableName":          s.DbTableName,
 		"QFieldsNoPKeys":      strings.Join(insertFields, ",\n"),
 		"QFieldsWithPKeys":    strings.Join(fieldsWithPkeysAndDefaults, ",\n"),
-		"QWhereClause":        genWhereClauseByPkeys(s),
-		"QOrderClause":        genOrderBySQLByPkeys(s),
+		"QWhereClause":        pk.WhereClause,
+		"QOrderClause":        pk.OrderSQL,
 		"QInsertPlaceholders": strings.Join(CreatePlaceholders(len(insertFields)), ", "),
 		"QUpdateSets":         strings.Join(updateSets, ",\n"),
 	}
