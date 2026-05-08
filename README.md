@@ -15,5 +15,4 @@
 3. Natural PKs must not be updated accidentally.
 4. Path parsing must match actual PK Go types.
 5. Type mapping needs a stricter tested subset or pgtype-heavy mapping.
-6. Schema/table/column identifiers should be quoted.
-7. Update semantics should avoid nullif-zero-value unless you intentionally want PATCH-like behavior.
+6. Schema/table/column identifiers should be quoted (only pg-keywords).
