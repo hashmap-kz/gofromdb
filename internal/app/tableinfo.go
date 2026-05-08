@@ -87,8 +87,46 @@ func (s *TableToStructInfo) GetStructFields(filters Filters) []TableToStructFiel
 }
 
 func (s *TableToStructInfo) GetDbFieldsAsString(filters Filters) []string {
-	var result []string
-	for _, f := range s.GetStructFields(filters) {
+	return dbFieldNames(s.GetStructFields(filters))
+}
+
+func (s *TableToStructInfo) FullFields() []TableToStructFieldInfo {
+	return s.GetStructFields(Filters{
+		WithInsertableOnly: false,
+		WithInternals:      true,
+	})
+}
+
+func (s *TableToStructInfo) InsertFields() []TableToStructFieldInfo {
+	return s.GetStructFields(Filters{
+		WithInsertableOnly: true,
+		WithInternals:      false,
+	})
+}
+
+func (s *TableToStructInfo) UpdateFields() []TableToStructFieldInfo {
+	return s.GetStructFields(Filters{
+		WithInsertableOnly: true,
+		WithInternals:      false,
+		WithoutPrimaryKeys: true,
+	})
+}
+
+func (s *TableToStructInfo) ScanFields() []TableToStructFieldInfo {
+	return s.FullFields()
+}
+
+func (s *TableToStructInfo) InsertDBFields() []string {
+	return dbFieldNames(s.InsertFields())
+}
+
+func (s *TableToStructInfo) ScanDBFields() []string {
+	return dbFieldNames(s.ScanFields())
+}
+
+func dbFieldNames(fields []TableToStructFieldInfo) []string {
+	result := make([]string, 0, len(fields))
+	for _, f := range fields {
 		result = append(result, f.DbFieldName)
 	}
 	return result
@@ -148,11 +186,7 @@ func makeOneStruct(relPath string, cols []genpg.ColumnInfo) TableToStructInfo {
 		PrimaryKeys:                 primaryKeys,
 		HasPrimaryKey:               len(primaryKeys) > 0,
 	}
-	info.HasUpdateFields = info.HasPrimaryKey && len(info.GetStructFields(Filters{
-		WithInsertableOnly: true,
-		WithInternals:      false,
-		WithoutPrimaryKeys: true,
-	})) > 0
+	info.HasUpdateFields = info.HasPrimaryKey && len(info.UpdateFields()) > 0
 	return info
 }
 

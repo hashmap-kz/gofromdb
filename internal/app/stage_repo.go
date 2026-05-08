@@ -42,21 +42,11 @@ func GenRepository(s TableToStructInfo) GenRepo {
 		"RepoGetAllQuery":          queries.repoGetAllQueryResult,
 		"RepoCountQuery":           queries.repoCountQueryResult,
 		"RepoGetAllPaginatedQuery": queries.repoGetAllPaginatedQueryResult,
-		"DtoFieldsCreate": s.GetStructFields(Filters{
-			WithInsertableOnly: true,
-			WithInternals:      false,
-		}),
-		"DtoFieldsUpdate": s.GetStructFields(Filters{
-			WithInsertableOnly: true,
-			WithInternals:      false,
-			WithoutPrimaryKeys: true,
-		}),
-		"HasPrimaryKey":   s.HasPrimaryKey,
-		"HasUpdateFields": s.HasUpdateFields,
-		"DtoFieldsFull": s.GetStructFields(Filters{
-			WithInsertableOnly: false,
-			WithInternals:      true,
-		}),
+		"DtoFieldsCreate":          s.InsertFields(),
+		"DtoFieldsUpdate":          s.UpdateFields(),
+		"HasPrimaryKey":            s.HasPrimaryKey,
+		"HasUpdateFields":          s.HasUpdateFields,
+		"DtoFieldsFull":            s.FullFields(),
 	}
 
 	interfaceRes := ExecTemplate("entity-interface", tmplts.RepoInterfaceTemplate, data, FuncMap)
@@ -71,21 +61,9 @@ func GenRepository(s TableToStructInfo) GenRepo {
 }
 
 func genQueries(s TableToStructInfo) queriesResults {
-	insertFields := s.GetDbFieldsAsString(Filters{
-		WithInsertableOnly: true,
-		WithInternals:      false,
-	})
-
-	fieldsWithPkeysAndDefaults := s.GetDbFieldsAsString(Filters{
-		WithInsertableOnly: false,
-		WithInternals:      true,
-	})
-
-	updateSets := GenUpdateSets(s.GetStructFields(Filters{
-		WithInsertableOnly: true,
-		WithInternals:      false,
-		WithoutPrimaryKeys: true,
-	}), len(s.PrimaryKeys))
+	insertFields := s.InsertDBFields()
+	fieldsWithPkeysAndDefaults := s.ScanDBFields()
+	updateSets := GenUpdateSets(s.UpdateFields(), len(s.PrimaryKeys))
 
 	queryTemplatesData := map[string]any{
 		"QSchemaName":         s.DbSchemaName,

@@ -28,21 +28,11 @@ func GenService(s TableToStructInfo) GenSvc {
 		"DtoName":                 s.StructName + "Dto",
 		"DtoUpdateName":           s.StructName + "UpdateDto",
 		"DtoCreateName":           s.StructName + "CreateDto",
-		"DtoFieldsFull": s.GetStructFields(Filters{
-			WithInsertableOnly: false,
-			WithInternals:      true,
-		}),
-		"DtoFieldsCreate": s.GetStructFields(Filters{
-			WithInsertableOnly: true,
-			WithInternals:      false,
-		}),
-		"DtoFieldsUpdate": s.GetStructFields(Filters{
-			WithInsertableOnly: true,
-			WithInternals:      false,
-			WithoutPrimaryKeys: true,
-		}),
-		"HasPrimaryKey":   s.HasPrimaryKey,
-		"HasUpdateFields": s.HasUpdateFields,
+		"DtoFieldsFull":           s.FullFields(),
+		"DtoFieldsCreate":         s.InsertFields(),
+		"DtoFieldsUpdate":         s.UpdateFields(),
+		"HasPrimaryKey":           s.HasPrimaryKey,
+		"HasUpdateFields":         s.HasUpdateFields,
 	}
 
 	interfaceRes := ExecTemplate("service-interface", tmplts.ServiceInterfaceTemplate, data, FuncMap)
