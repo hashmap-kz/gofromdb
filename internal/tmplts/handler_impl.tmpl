@@ -1,69 +1,4 @@
-package tmplts
 
-var HandlerPayloadsTmpl = `
-package v1
-
-import (
-	"go-project-template-v5/pkg/pageable"
-	"time"
-)
-
-{{- if .StructComment}}
-// {{.CreateRequestName}} {{.StructComment | ToLower}}
-{{- end}}
-type {{.CreateRequestName}} struct {
-{{- range .DtoFieldsCreate}}
-	{{- if .FieldComment}}
-	// {{.FieldComment}}
-	{{- end}}
-	{{.FieldName}} {{.FieldType}} ` + "`json:\"{{.DbFieldName}}\"`" + `
-	{{- if .FieldComment}}
-		{{print "\n"}}
-	{{- end}}
-{{- end}}
-}
-
-{{- if .StructComment}}
-// {{.UpdateRequestName}} {{.StructComment | ToLower}}
-{{- end}}
-type {{.UpdateRequestName}} struct {
-{{- range .DtoFieldsUpdate}}
-	{{- if .FieldComment}}
-	// {{.FieldComment}}
-	{{- end}}
-	{{.FieldName}} {{.FieldType}} ` + "`json:\"{{.DbFieldName}}\"`" + `
-	{{- if .FieldComment}}
-		{{print "\n"}}
-	{{- end}}
-{{- end}}
-}
-
-{{- if .StructComment}}
-// {{.ResponseName}} {{.StructComment | ToLower}}
-{{- end}}
-type {{.ResponseName}} struct {
-{{- range .DtoFieldsFull}}
-	{{- if .FieldComment}}
-	// {{.FieldComment}}
-	{{- end}}
-	{{.FieldName}} {{.FieldType}} ` + "`json:\"{{.DbFieldName}}\"`" + `
-	{{- if .FieldComment}}
-		{{print "\n"}}
-	{{- end}}
-{{- end}}
-}
-
-// {{.ResponseListName}} response list
-type {{.ResponseListName}} struct {
-	// Page information (if present)
-	Page *pageable.Page ` + "`json:\"page,omitempty\"`" + `
-	
-	// Payload
-	Data []{{.ResponseName}} ` + "`json:\"data\"`" + `
-}
-`
-
-var HandlerImpl = `
 package v1
 
 import (
@@ -331,9 +266,9 @@ func mapCreateRequestToCreateInputDto(inputRequest *{{.CreateRequestName}}) (*dt
 	if inputRequest == nil {
 		return nil, fmt.Errorf("unexpected nil input for mapping between {{.CreateRequestName}}->{{.DtoCreateName}}")
 	}
-	return &dto.{{.DtoCreateName}} {
+	return &dto.{{.DtoCreateName}}{
 {{- range .DtoFieldsCreate}}
-	{{.FieldName}}: inputRequest.{{.FieldName}},
+		{{.FieldName}}: inputRequest.{{.FieldName}},
 {{- end}}
 	}, nil
 }
@@ -342,9 +277,9 @@ func mapUpdateRequestToUpdateInputDto(inputRequest *{{.UpdateRequestName}}) (*dt
 	if inputRequest == nil {
 		return nil, fmt.Errorf("unexpected nil input for mapping between {{.UpdateRequestName}}->{{.DtoUpdateName}}")
 	}
-	return &dto.{{.DtoUpdateName}} {
+	return &dto.{{.DtoUpdateName}}{
 {{- range .DtoFieldsUpdate}}
-	{{.FieldName}}: inputRequest.{{.FieldName}},
+		{{.FieldName}}: inputRequest.{{.FieldName}},
 {{- end}}
 	}, nil
 }
@@ -368,7 +303,6 @@ func mapDtoToPayload(inputDto *dto.{{.DtoName}}) ({{.ResponseName}}, error) {
 	return {{.ResponseName}}{
 {{- range .DtoFieldsFull}}
 		{{.FieldName}}: inputDto.{{.FieldName}},
-{{- end }}
+{{- end}}
 	}, nil
 }
-`

@@ -58,10 +58,10 @@ func (r *uUIDPkRepository) UpdateByID(ctx context.Context, inputEntity *dbModel.
 
 	query := `		
 		update public.uuid_pk
-		set 
+		set
 			name = coalesce(nullif($2, ''), name)
 		where id = $1
-		returning 
+		returning
 			id,
 			name
 		`

@@ -69,14 +69,14 @@ func (r *nullableTypesRepository) UpdateByID(ctx context.Context, inputEntity *d
 
 	query := `		
 		update public.nullable_types
-		set 
+		set
 			name    = coalesce(nullif($2, ''), name),
 			amount  = coalesce(nullif($3, 0::numeric), amount),
 			payload = coalesce(nullif($4, '{}'::jsonb), payload),
 			tags    = coalesce(nullif($5, '{}'::text[]), tags),
 			active  = coalesce(nullif($6, 'false'::bool), active)
 		where id = $1
-		returning 
+		returning
 			id,
 			name,
 			amount,

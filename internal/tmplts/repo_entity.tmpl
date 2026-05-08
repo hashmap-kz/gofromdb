@@ -1,6 +1,4 @@
-package tmplts
 
-var EntityTemplate = `
 package postgres
 import "time"
 
@@ -12,10 +10,9 @@ type {{.StructName}} struct {
 	{{- if .FieldComment}}
 	// {{.FieldComment}}
 	{{- end}}
-	{{.FieldName}} {{.FieldType}} ` + "`json:\"{{.DbFieldName}}\" db:\"{{.DbFieldName}}\"`" + `
+	{{.FieldName}} {{.FieldType}} `json:"{{.DbFieldName}}" db:"{{.DbFieldName}}"`
 	{{- if .FieldComment}}
 		{{print "\n"}}
 	{{- end}}
 {{- end}}
 }
-`

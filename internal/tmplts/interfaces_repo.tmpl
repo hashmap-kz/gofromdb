@@ -1,0 +1,29 @@
+
+package api
+
+import (
+	"context"
+
+{{- range .Structs}}
+	{{.StructNameLowerFirstLetter}}Repo "go-project-template-v5/internal/api/{{.DbTableName}}/repository"
+	{{.StructNameLowerFirstLetter}}Impl "go-project-template-v5/internal/api/{{.DbTableName}}/repository/impl"
+{{- end }}
+
+	"go-project-template-v5/pkg/storage/postgres"
+)
+
+// Init all repos
+
+type Repositories struct {
+{{- range .Structs}}
+	{{.StructName}}Repository {{.StructNameLowerFirstLetter}}Repo.{{.StructName}}Repository
+{{- end }}
+}
+
+func NewRepositories(ctx context.Context, db *postgres.Postgres) *Repositories {
+	return &Repositories{
+{{- range .Structs}}
+		{{.StructName}}Repository: {{.StructNameLowerFirstLetter}}Impl.New{{.StructName}}Repository(ctx, db),
+{{- end }}
+	}
+}

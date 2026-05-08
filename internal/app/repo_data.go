@@ -1,10 +1,6 @@
 package app
 
-import (
-	"strings"
-
-	"genpg-v5/internal/tmplts"
-)
+import "strings"
 
 type RepoTemplateData struct {
 	StructName           string
@@ -91,12 +87,12 @@ func NewRepoQueries(s TableToStructInfo, pk PrimaryKeyView) RepoQueries {
 	}
 
 	return RepoQueries{
-		Save:            ExecTemplate("query-save", tmplts.RepoSaveQueryTemplate, queryTemplatesData, FuncMap),
-		UpdateByID:      ExecTemplate("query-update", tmplts.RepoUpdateQueryTemplate, queryTemplatesData, FuncMap),
-		DeleteByID:      ExecTemplate("query-delete", tmplts.RepoDeleteQueryTemplate, queryTemplatesData, FuncMap),
-		GetByID:         ExecTemplate("query-get-by-id", tmplts.RepoGetByIdQueryTemplate, queryTemplatesData, FuncMap),
-		GetAll:          ExecTemplate("query-get-all", tmplts.RepoGetAllQueryTemplate, queryTemplatesData, FuncMap),
-		Count:           ExecTemplate("query-count", tmplts.RepoCountQueryTemplate, queryTemplatesData, FuncMap),
-		GetAllPaginated: ExecTemplate("query-get-all-paginated", tmplts.RepoGetAllPaginatedQueryTemplate, queryTemplatesData, FuncMap),
+		Save:            ExecTemplate("query_save", queryTemplatesData, FuncMap),
+		UpdateByID:      ExecTemplate("query_update", queryTemplatesData, FuncMap),
+		DeleteByID:      ExecTemplate("query_delete", queryTemplatesData, FuncMap),
+		GetByID:         ExecTemplate("query_get_by_id", queryTemplatesData, FuncMap),
+		GetAll:          ExecTemplate("query_get_all", queryTemplatesData, FuncMap),
+		Count:           ExecTemplate("query_count", queryTemplatesData, FuncMap),
+		GetAllPaginated: ExecTemplate("query_get_all_paginated", queryTemplatesData, FuncMap),
 	}
 }

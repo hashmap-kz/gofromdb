@@ -66,12 +66,12 @@ func (r *categoriesRepository) UpdateByID(ctx context.Context, inputEntity *dbMo
 
 	query := `		
 		update public.categories
-		set 
+		set
 			name         = coalesce(nullif($2, ''), name),
 			parent_id    = coalesce(nullif($3, 0::int4), parent_id),
 			valid_period = coalesce(nullif($4, 'empty'::daterange), valid_period)
 		where record_id = $1
-		returning 
+		returning
 			record_id,
 			name,
 			parent_id,

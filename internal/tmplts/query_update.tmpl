@@ -1,0 +1,7 @@
+
+update {{.QSchemaName}}.{{.QTableName}}
+set
+{{.QUpdateSets | AddPadding}}
+where {{.QWhereClause}}
+returning
+{{.QFieldsWithPKeys | AddPadding}}

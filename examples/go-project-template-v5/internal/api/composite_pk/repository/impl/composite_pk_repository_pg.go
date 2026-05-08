@@ -61,10 +61,10 @@ func (r *compositePkRepository) UpdateByID(ctx context.Context, inputEntity *dbM
 
 	query := `		
 		update public.composite_pk
-		set 
+		set
 			name = coalesce(nullif($3, ''), name)
 		where tenant_id = $1 and code = $2
-		returning 
+		returning
 			tenant_id,
 			code,
 			name

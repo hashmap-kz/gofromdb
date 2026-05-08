@@ -56,10 +56,10 @@ func (r *serialPkRepository) UpdateByID(ctx context.Context, inputEntity *dbMode
 
 	query := `		
 		update public.serial_pk
-		set 
+		set
 			name = coalesce(nullif($2, ''), name)
 		where id = $1
-		returning 
+		returning
 			id,
 			name
 		`

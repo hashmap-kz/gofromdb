@@ -1,0 +1,6 @@
+
+select
+{{.QFieldsWithPKeys | AddPadding}}
+from {{.QSchemaName}}.{{.QTableName}}
+{{.QOrderClause}}
+offset $1 limit $2

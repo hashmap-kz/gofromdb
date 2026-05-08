@@ -1,10 +1,6 @@
 package app
 
-import (
-	"strings"
-
-	"genpg-v5/internal/tmplts"
-)
+import "strings"
 
 type GenSvc struct {
 	ServiceDtos      string
@@ -34,13 +30,9 @@ func GenService(s TableToStructInfo) GenSvc {
 		"HasUpdateFields":         s.HasUpdateFields,
 	}
 
-	interfaceRes := ExecTemplate("service-interface", tmplts.ServiceInterfaceTemplate, data, FuncMap)
-	modelsRes := ExecTemplate("service-dtos", tmplts.ServiceDtosTemplate, data, FuncMap)
-	implRes := ExecTemplate("service-impl", tmplts.ServiceImplTemplate, data, FuncMap)
-
 	return GenSvc{
-		ServiceDtos:      PrintFormatted(modelsRes),
-		ServiceInterface: PrintFormatted(interfaceRes),
-		ServiceImpl:      PrintFormatted(implRes),
+		ServiceDtos:      PrintFormatted(ExecTemplate("service_dtos", data, FuncMap)),
+		ServiceInterface: PrintFormatted(ExecTemplate("service_interface", data, FuncMap)),
+		ServiceImpl:      PrintFormatted(ExecTemplate("service_impl", data, FuncMap)),
 	}
 }

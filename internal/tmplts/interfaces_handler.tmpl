@@ -1,0 +1,37 @@
+
+package api
+
+import (
+	"net/http"
+{{- range .Structs}}
+	{{.StructNameLowerFirstLetter}}v1 "go-project-template-v5/internal/api/{{.DbTableName}}/handler/v1"
+{{- end }}
+)
+
+type Handler struct {
+	Services *Services
+}
+
+func NewHandler(services *Services) *Handler {
+	return &Handler{
+		Services: services,
+	}
+}
+
+func (h *Handler) Init(router *http.ServeMux) {
+{{- range .Structs}}
+	// {{.StructName}} routes
+	{{.StructNameLowerFirstLetter}}Handler := {{.StructNameLowerFirstLetter}}v1.New{{.StructName}}HTTPHandler(h.Services.{{.StructName}}Service)
+	router.HandleFunc("POST /api/v1/{{.StructNamePluralRequestPath}}"          , {{.StructNameLowerFirstLetter}}Handler.Save)
+{{- if .HasUpdateFields}}
+	router.HandleFunc("PUT /api/v1/{{.StructNamePluralRequestPath}}/{{.PkeysURLPath}}"  , {{.StructNameLowerFirstLetter}}Handler.UpdateByID)
+{{- end}}
+{{- if .HasPrimaryKey}}
+	router.HandleFunc("DELETE /api/v1/{{.StructNamePluralRequestPath}}/{{.PkeysURLPath}}", {{.StructNameLowerFirstLetter}}Handler.DeleteByID)
+	router.HandleFunc("GET /api/v1/{{.StructNamePluralRequestPath}}/{{.PkeysURLPath}}"  , {{.StructNameLowerFirstLetter}}Handler.FindByID)
+{{- end}}
+	router.HandleFunc("GET /api/v1/{{.StructNamePluralRequestPath}}"           , {{.StructNameLowerFirstLetter}}Handler.FindAll)
+	router.HandleFunc("GET /api/v1/{{.StructNamePluralRequestPath}}/pageable"  , {{.StructNameLowerFirstLetter}}Handler.FindAllPageable)
+{{print "\n"}}
+{{- end }}
+}

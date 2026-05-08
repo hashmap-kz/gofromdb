@@ -68,13 +68,13 @@ func (r *orderItemsRepository) UpdateByID(ctx context.Context, inputEntity *dbMo
 
 	query := `		
 		update public.order_items
-		set 
+		set
 			order_id   = coalesce(nullif($2, 0::int4), order_id),
 			product_id = coalesce(nullif($3, 0::int4), product_id),
 			quantity   = coalesce(nullif($4, 0::numeric), quantity),
 			price      = coalesce(nullif($5, 0::numeric), price)
 		where record_id = $1
-		returning 
+		returning
 			record_id,
 			order_id,
 			product_id,

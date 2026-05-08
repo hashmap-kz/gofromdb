@@ -1,0 +1,21 @@
+
+package dto
+import "time"
+
+type {{.DtoName}} struct {
+{{- range .DtoFieldsFull}}
+	{{.FieldName}} {{.FieldType}}
+{{- end}}
+}
+
+type {{.DtoCreateName}} struct {
+{{- range .DtoFieldsCreate}}
+	{{.FieldName}} {{.FieldType}}
+{{- end}}
+}
+
+type {{.DtoUpdateName}} struct {
+{{- range .DtoFieldsUpdate}}
+	{{.FieldName}} {{.FieldType}}
+{{- end}}
+}

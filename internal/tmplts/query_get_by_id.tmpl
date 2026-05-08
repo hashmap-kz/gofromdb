@@ -1,0 +1,6 @@
+
+select
+{{.QFieldsWithPKeys | AddPadding}}
+from {{.QSchemaName}}.{{.QTableName}}
+where {{.QWhereClause}}
+{{.QOrderClause}}

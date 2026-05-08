@@ -75,7 +75,7 @@ func LoadConfigFromFile(filename string) *Config {
 			for _, e := range errors {
 				log.Printf("%v", e)
 			}
-			log.Fatalln("config-file is not completely set")
+			// log.Fatalln("config-file is not completely set")
 		}
 	})
 

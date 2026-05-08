@@ -1,54 +1,4 @@
-package tmplts
 
-var ServiceDtosTemplate = `
-package dto
-import "time"
-
-type {{.DtoName}} struct {
-{{- range .DtoFieldsFull}}
-	{{.FieldName}} {{.FieldType}}
-{{- end}}
-}
-
-type {{.DtoCreateName}} struct {
-{{- range .DtoFieldsCreate}}
-	{{.FieldName}} {{.FieldType}}
-{{- end}}
-}
-
-type {{.DtoUpdateName}} struct {
-{{- range .DtoFieldsUpdate}}
-	{{.FieldName}} {{.FieldType}}
-{{- end}}
-}
-`
-
-var ServiceInterfaceTemplate = `
-package service
-
-import (
-	"context"
-
-	"go-project-template-v5/pkg/pageable"
-
-	"go-project-template-v5/internal/api/{{.PackageName}}/dto"
-)
-
-type {{.InterfaceName}} interface {
-	Save(ctx context.Context, input *dto.{{.DtoCreateName}}) (*dto.{{.DtoName}}, error)
-{{- if .HasUpdateFields}}
-	UpdateByID(ctx context.Context, input *dto.{{.DtoUpdateName}}, {{.ParametersByPkeys}}) (*dto.{{.DtoName}}, error)
-{{- end}}
-{{- if .HasPrimaryKey}}
-	DeleteByID(ctx context.Context, {{.ParametersByPkeys}}) error
-	FindByID(ctx context.Context, {{.ParametersByPkeys}}) (*dto.{{.DtoName}}, error)
-{{- end}}
-	FindAll(ctx context.Context) ([]dto.{{.DtoName}}, error)
-	FindAllPageable(ctx context.Context, pq *pageable.PaginationQuery) ([]dto.{{.DtoName}}, pageable.Page, error)
-}
-`
-
-var ServiceImplTemplate = `
 package impl
 
 import (
@@ -80,7 +30,7 @@ func (s *{{.ImplName}}) Save(ctx context.Context, input *dto.{{.DtoCreateName}})
 	entityToCreate, err := fromCreateDtoToEntity(input)
 	if err != nil {
 		return nil, err
-	}	
+	}
 	save, err := s.{{.RepositoryVarName}}.Save(ctx, entityToCreate)
 	if err != nil {
 		return nil, err
@@ -200,4 +150,3 @@ func fromEntityToDto(inputEntity *dbModel.{{.StructName}}) (dto.{{.DtoName}}, er
 {{- end}}
 	}, nil
 }
-`

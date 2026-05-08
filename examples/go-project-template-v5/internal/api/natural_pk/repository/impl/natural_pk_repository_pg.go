@@ -58,10 +58,10 @@ func (r *naturalPkRepository) UpdateByID(ctx context.Context, inputEntity *dbMod
 
 	query := `		
 		update public.natural_pk
-		set 
+		set
 			name = coalesce(nullif($2, ''), name)
 		where code = $1
-		returning 
+		returning
 			code,
 			name
 		`

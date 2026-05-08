@@ -1,10 +1,6 @@
 package app
 
-import (
-	"strings"
-
-	"genpg-v5/internal/tmplts"
-)
+import "strings"
 
 type GenHandl struct {
 	HandlerDtos string
@@ -40,11 +36,8 @@ func GenHandler(s TableToStructInfo) GenHandl {
 		"HasUpdateFields":             s.HasUpdateFields,
 	}
 
-	dtosResult := ExecTemplate("handler-dtos", tmplts.HandlerPayloadsTmpl, data, FuncMap)
-	implResult := ExecTemplate("handler-impl", tmplts.HandlerImpl, data, FuncMap)
-
 	return GenHandl{
-		HandlerDtos: PrintFormatted(dtosResult),
-		HandlerImpl: PrintFormatted(implResult),
+		HandlerDtos: PrintFormatted(ExecTemplate("handler_payloads", data, FuncMap)),
+		HandlerImpl: PrintFormatted(ExecTemplate("handler_impl", data, FuncMap)),
 	}
 }

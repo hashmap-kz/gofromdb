@@ -59,10 +59,10 @@ func (r *usersRepository) UpdateByID(ctx context.Context, inputEntity *dbModel.U
 
 	query := `		
 		update public.users
-		set 
+		set
 			email = coalesce(nullif($2, ''), email)
 		where record_id = $1
-		returning 
+		returning
 			record_id,
 			email,
 			created_at,
