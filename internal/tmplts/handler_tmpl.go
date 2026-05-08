@@ -12,7 +12,7 @@ import (
 // {{.CreateRequestName}} {{.StructComment | ToLower}}
 {{- end}}
 type {{.CreateRequestName}} struct {
-{{- range .DtoFieldsNoPkeysNoDefaults}}
+{{- range .DtoFieldsCreate}}
 	{{- if .FieldComment}}
 	// {{.FieldComment}}
 	{{- end}}
@@ -27,7 +27,7 @@ type {{.CreateRequestName}} struct {
 // {{.UpdateRequestName}} {{.StructComment | ToLower}}
 {{- end}}
 type {{.UpdateRequestName}} struct {
-{{- range .DtoFieldsNoPkeysNoDefaults}}
+{{- range .DtoFieldsUpdate}}
 	{{- if .FieldComment}}
 	// {{.FieldComment}}
 	{{- end}}
@@ -140,6 +140,7 @@ func (h *{{.ImplName}}) Save(w http.ResponseWriter, r *http.Request) {
 	httputils.WriteJSON(w, http.StatusOK, dtoToPayload)
 }
 
+{{- if .HasUpdateFields}}
 // UpdateByID
 //
 // @Summary Update existing item
@@ -191,6 +192,9 @@ func (h *{{.ImplName}}) UpdateByID(w http.ResponseWriter, r *http.Request) {
 	httputils.WriteJSON(w, http.StatusCreated, dtoToPayload)
 }
 
+{{- end}}
+
+{{- if .HasPrimaryKey}}
 // DeleteByID
 //
 // @Summary Delete existing item
@@ -244,6 +248,8 @@ func (h *{{.ImplName}}) FindByID(w http.ResponseWriter, r *http.Request) {
 
 	httputils.WriteJSON(w, http.StatusOK, dtoToPayload)
 }
+
+{{- end}}
 
 // FindAll
 //
@@ -326,7 +332,7 @@ func mapCreateRequestToCreateInputDto(inputRequest *{{.CreateRequestName}}) (*dt
 		return nil, fmt.Errorf("unexpected nil input for mapping between {{.CreateRequestName}}->{{.DtoCreateName}}")
 	}
 	return &dto.{{.DtoCreateName}} {
-{{- range .DtoFieldsNoPkeysNoDefaults}}
+{{- range .DtoFieldsCreate}}
 	{{.FieldName}}: inputRequest.{{.FieldName}},
 {{- end}}
 	}, nil
@@ -337,7 +343,7 @@ func mapUpdateRequestToUpdateInputDto(inputRequest *{{.UpdateRequestName}}) (*dt
 		return nil, fmt.Errorf("unexpected nil input for mapping between {{.UpdateRequestName}}->{{.DtoUpdateName}}")
 	}
 	return &dto.{{.DtoUpdateName}} {
-{{- range .DtoFieldsNoPkeysNoDefaults}}
+{{- range .DtoFieldsUpdate}}
 	{{.FieldName}}: inputRequest.{{.FieldName}},
 {{- end}}
 	}, nil

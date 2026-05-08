@@ -13,9 +13,13 @@ import (
 
 type {{.InterfaceName}} interface {
 	Save(ctx context.Context, inputEntity *dbModel.{{.StructName}}) (*dbModel.{{.StructName}}, error)
+{{- if .HasUpdateFields}}
 	UpdateByID(ctx context.Context, inputEntity *dbModel.{{.StructName}}, {{.ParametersByPkeys}}) (*dbModel.{{.StructName}}, error)
+{{- end}}
+{{- if .HasPrimaryKey}}
 	DeleteByID(ctx context.Context, {{.ParametersByPkeys}}) error
 	FindByID(ctx context.Context, {{.ParametersByPkeys}}) (*dbModel.{{.StructName}}, error)
+{{- end}}
 	FindAll(ctx context.Context) ([]dbModel.{{.StructName}}, error)
 	FindAllPageable(ctx context.Context, pq *pageable.PaginationQuery) ([]dbModel.{{.StructName}}, pageable.Page, error)
 }
@@ -57,7 +61,7 @@ func (r *{{.ImplName}}) Save(ctx context.Context, inputEntity *dbModel.{{.Struct
 	query := ` + "`{{.RepoSaveQuery | AddPadding2}}`" + `
 
 	row := r.db.Pool.QueryRow(ctx, query,
-{{- range .DtoFieldsNoPkeysNoDefaults}}
+{{- range .DtoFieldsCreate}}
 		inputEntity.{{.FieldName}},
 {{- end}}
 	)
@@ -69,6 +73,7 @@ func (r *{{.ImplName}}) Save(ctx context.Context, inputEntity *dbModel.{{.Struct
 	return scannedEntity, nil
 }
 
+{{- if .HasUpdateFields}}
 func (r *{{.ImplName}}) UpdateByID(ctx context.Context, inputEntity *dbModel.{{.StructName}}, {{.ParametersByPkeys}}) (*dbModel.{{.StructName}}, error) {
 	tag := "{{.ImplName}}.UpdateByID"
 
@@ -76,7 +81,7 @@ func (r *{{.ImplName}}) UpdateByID(ctx context.Context, inputEntity *dbModel.{{.
 
 	row := r.db.Pool.QueryRow(ctx, query,
 		{{.ArgumentsByPkeys}},
-{{- range .DtoFieldsNoPkeysNoDefaults}}
+{{- range .DtoFieldsUpdate}}
 		inputEntity.{{.FieldName}},
 {{- end}}
 	)
@@ -88,6 +93,9 @@ func (r *{{.ImplName}}) UpdateByID(ctx context.Context, inputEntity *dbModel.{{.
 	return scannedEntity, nil
 }
 
+{{- end}}
+
+{{- if .HasPrimaryKey}}
 func (r *{{.ImplName}}) DeleteByID(ctx context.Context, {{.ParametersByPkeys}}) error {
 	tag := "{{.ImplName}}.DeleteByID"
 
@@ -113,6 +121,8 @@ func (r *{{.ImplName}}) FindByID(ctx context.Context, {{.ParametersByPkeys}}) (*
 	}
 	return scannedEntity, nil
 }
+
+{{- end}}
 
 func (r *{{.ImplName}}) FindAll(ctx context.Context) ([]dbModel.{{.StructName}}, error) {
 	tag := "{{.ImplName}}.FindAll"

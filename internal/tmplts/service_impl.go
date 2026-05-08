@@ -11,13 +11,13 @@ type {{.DtoName}} struct {
 }
 
 type {{.DtoCreateName}} struct {
-{{- range .DtoFieldsNoPkeysNoDefaults}}
+{{- range .DtoFieldsCreate}}
 	{{.FieldName}} {{.FieldType}}
 {{- end}}
 }
 
 type {{.DtoUpdateName}} struct {
-{{- range .DtoFieldsNoPkeysNoDefaults}}
+{{- range .DtoFieldsUpdate}}
 	{{.FieldName}} {{.FieldType}}
 {{- end}}
 }
@@ -36,9 +36,13 @@ import (
 
 type {{.InterfaceName}} interface {
 	Save(ctx context.Context, input *dto.{{.DtoCreateName}}) (*dto.{{.DtoName}}, error)
+{{- if .HasUpdateFields}}
 	UpdateByID(ctx context.Context, input *dto.{{.DtoUpdateName}}, {{.ParametersByPkeys}}) (*dto.{{.DtoName}}, error)
+{{- end}}
+{{- if .HasPrimaryKey}}
 	DeleteByID(ctx context.Context, {{.ParametersByPkeys}}) error
 	FindByID(ctx context.Context, {{.ParametersByPkeys}}) (*dto.{{.DtoName}}, error)
+{{- end}}
 	FindAll(ctx context.Context) ([]dto.{{.DtoName}}, error)
 	FindAllPageable(ctx context.Context, pq *pageable.PaginationQuery) ([]dto.{{.DtoName}}, pageable.Page, error)
 }
@@ -88,6 +92,7 @@ func (s *{{.ImplName}}) Save(ctx context.Context, input *dto.{{.DtoCreateName}})
 	return &toDto, err
 }
 
+{{- if .HasUpdateFields}}
 func (s *{{.ImplName}}) UpdateByID(ctx context.Context, input *dto.{{.DtoUpdateName}}, {{.ParametersByPkeys}}) (*dto.{{.DtoName}}, error) {
 	entityToUpdate, err := fromUpdateDtoToEntity(input)
 	if err != nil {
@@ -104,6 +109,9 @@ func (s *{{.ImplName}}) UpdateByID(ctx context.Context, input *dto.{{.DtoUpdateN
 	return &toDto, err
 }
 
+{{- end}}
+
+{{- if .HasPrimaryKey}}
 func (s *{{.ImplName}}) DeleteByID(ctx context.Context, {{.ParametersByPkeys}}) error {
 	return s.{{.RepositoryVarName}}.DeleteByID(ctx, {{.ArgumentsByPkeys}})
 }
@@ -119,6 +127,8 @@ func (s *{{.ImplName}}) FindByID(ctx context.Context, {{.ParametersByPkeys}}) (*
 	}
 	return &toDto, err
 }
+
+{{- end}}
 
 func (s *{{.ImplName}}) FindAll(ctx context.Context) ([]dto.{{.DtoName}}, error) {
 	entities, err := s.{{.RepositoryVarName}}.FindAll(ctx)
@@ -151,7 +161,7 @@ func fromCreateDtoToEntity(input *dto.{{.DtoCreateName}}) (*dbModel.{{.StructNam
 		return nil, fmt.Errorf("convert {{.DtoCreateName}}->{{.StructName}}: input dto cannot be nil")
 	}
 	return &dbModel.{{.StructName}}{
-{{- range .DtoFieldsNoPkeysNoDefaults}}
+{{- range .DtoFieldsCreate}}
 		{{.FieldName}}: input.{{.FieldName}},
 {{- end}}
 	}, nil
@@ -162,7 +172,7 @@ func fromUpdateDtoToEntity(input *dto.{{.DtoUpdateName}}) (*dbModel.{{.StructNam
 		return nil, fmt.Errorf("convert {{.DtoUpdateName}}->{{.StructName}}: input dto cannot be nil")
 	}
 	return &dbModel.{{.StructName}}{
-{{- range .DtoFieldsNoPkeysNoDefaults}}
+{{- range .DtoFieldsUpdate}}
 		{{.FieldName}}: input.{{.FieldName}},
 {{- end}}
 	}, nil

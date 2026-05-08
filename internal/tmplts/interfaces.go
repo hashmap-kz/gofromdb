@@ -89,9 +89,13 @@ func (h *Handler) Init(router *http.ServeMux) {
 	// {{.StructName}} routes
 	{{.StructNameLowerFirstLetter}}Handler := {{.StructNameLowerFirstLetter}}v1.New{{.StructName}}HTTPHandler(h.Services.{{.StructName}}Service)
 	router.HandleFunc("POST /api/v1/{{.StructNamePluralRequestPath}}"						, {{.StructNameLowerFirstLetter}}Handler.Save)
+{{- if .HasUpdateFields}}
 	router.HandleFunc("PUT /api/v1/{{.StructNamePluralRequestPath}}/{{.PkeysURLPath}}"		, {{.StructNameLowerFirstLetter}}Handler.UpdateByID)
+{{- end}}
+{{- if .HasPrimaryKey}}
 	router.HandleFunc("DELETE /api/v1/{{.StructNamePluralRequestPath}}/{{.PkeysURLPath}}"	, {{.StructNameLowerFirstLetter}}Handler.DeleteByID)
 	router.HandleFunc("GET /api/v1/{{.StructNamePluralRequestPath}}/{{.PkeysURLPath}}"		, {{.StructNameLowerFirstLetter}}Handler.FindByID)
+{{- end}}
 	router.HandleFunc("GET /api/v1/{{.StructNamePluralRequestPath}}"						, {{.StructNameLowerFirstLetter}}Handler.FindAll)
 	router.HandleFunc("GET /api/v1/{{.StructNamePluralRequestPath}}/pageable"				, {{.StructNameLowerFirstLetter}}Handler.FindAllPageable)
 {{print "\n"}}

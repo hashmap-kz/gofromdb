@@ -42,10 +42,17 @@ func GenRepository(s TableToStructInfo) GenRepo {
 		"RepoGetAllQuery":          queries.repoGetAllQueryResult,
 		"RepoCountQuery":           queries.repoCountQueryResult,
 		"RepoGetAllPaginatedQuery": queries.repoGetAllPaginatedQueryResult,
-		"DtoFieldsNoPkeysNoDefaults": s.GetStructFields(Filters{
+		"DtoFieldsCreate": s.GetStructFields(Filters{
 			WithInsertableOnly: true,
 			WithInternals:      false,
 		}),
+		"DtoFieldsUpdate": s.GetStructFields(Filters{
+			WithInsertableOnly: true,
+			WithInternals:      false,
+			WithoutPrimaryKeys: true,
+		}),
+		"HasPrimaryKey":   s.HasPrimaryKey,
+		"HasUpdateFields": s.HasUpdateFields,
 		"DtoFieldsFull": s.GetStructFields(Filters{
 			WithInsertableOnly: false,
 			WithInternals:      true,
@@ -64,7 +71,7 @@ func GenRepository(s TableToStructInfo) GenRepo {
 }
 
 func genQueries(s TableToStructInfo) queriesResults {
-	fieldsWithoutPkeysAndDefaults := s.GetDbFieldsAsString(Filters{
+	insertFields := s.GetDbFieldsAsString(Filters{
 		WithInsertableOnly: true,
 		WithInternals:      false,
 	})
@@ -77,16 +84,17 @@ func genQueries(s TableToStructInfo) queriesResults {
 	updateSets := GenUpdateSets(s.GetStructFields(Filters{
 		WithInsertableOnly: true,
 		WithInternals:      false,
+		WithoutPrimaryKeys: true,
 	}), len(s.PrimaryKeys))
 
 	queryTemplatesData := map[string]any{
-		"QSchemaName":         "public",
+		"QSchemaName":         s.DbSchemaName,
 		"QTableName":          s.DbTableName,
-		"QFieldsNoPKeys":      strings.Join(fieldsWithoutPkeysAndDefaults, ",\n"),
+		"QFieldsNoPKeys":      strings.Join(insertFields, ",\n"),
 		"QFieldsWithPKeys":    strings.Join(fieldsWithPkeysAndDefaults, ",\n"),
 		"QWhereClause":        genWhereClauseByPkeys(s),
-		"QOrderClause":        genOrderByClauseByPkeys(s),
-		"QInsertPlaceholders": strings.Join(CreatePlaceholders(len(fieldsWithoutPkeysAndDefaults)), ", "),
+		"QOrderClause":        genOrderBySQLByPkeys(s),
+		"QInsertPlaceholders": strings.Join(CreatePlaceholders(len(insertFields)), ", "),
 		"QUpdateSets":         strings.Join(updateSets, ",\n"),
 	}
 

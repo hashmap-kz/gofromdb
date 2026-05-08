@@ -17,6 +17,7 @@ var filters = map[string]struct{}{
 type Filters struct {
 	WithInsertableOnly bool
 	WithInternals      bool
+	WithoutPrimaryKeys bool
 }
 
 type TableToStructFieldInfo struct {
@@ -27,6 +28,7 @@ type TableToStructFieldInfo struct {
 	DbIsNotNull    bool
 	DbNullifRhs    string
 	DbIsInsertable bool
+	DbIsPrimaryKey bool
 }
 
 type TableToStructInfo struct {
@@ -35,9 +37,12 @@ type TableToStructInfo struct {
 	StructNamePluralRequestPath string
 	PkeysURLPath                string
 	StructComment               string
+	DbSchemaName                string
 	DbTableName                 string
 	Fields                      []TableToStructFieldInfo
 	PrimaryKeys                 []TableToStructFieldInfo
+	HasPrimaryKey               bool
+	HasUpdateFields             bool
 }
 
 func GenStructs(connString string) []TableToStructInfo {
@@ -73,6 +78,9 @@ func (s *TableToStructInfo) GetStructFields(filters Filters) []TableToStructFiel
 		if !filters.WithInternals && isInternalFieldToSkip(f.DbFieldName) {
 			continue
 		}
+		if filters.WithoutPrimaryKeys && f.DbIsPrimaryKey {
+			continue
+		}
 		result = append(result, f)
 	}
 	return result
@@ -89,7 +97,7 @@ func (s *TableToStructInfo) GetDbFieldsAsString(filters Filters) []string {
 func makeOneStruct(relPath string, cols []genpg.ColumnInfo) TableToStructInfo {
 	fields := []TableToStructFieldInfo{}
 
-	_, table := getSchemaTable(relPath)
+	schema, table := getSchemaTable(relPath)
 	for _, c := range cols {
 		if c.GoType == "" {
 			log.Fatalf("cannot find type mapping for pg-type: `%s`, column: `%s`",
@@ -118,18 +126,34 @@ func makeOneStruct(relPath string, cols []genpg.ColumnInfo) TableToStructInfo {
 		primaryKeys = handlePkeys(fields, cols[0].PrimaryKeys)
 	}
 
-	structName := makeName(table)
+	pkNames := map[string]struct{}{}
+	for _, pk := range primaryKeys {
+		pkNames[pk.DbFieldName] = struct{}{}
+	}
+	for i := range fields {
+		_, fields[i].DbIsPrimaryKey = pkNames[fields[i].DbFieldName]
+	}
+	primaryKeys = handlePkeys(fields, cols[0].PrimaryKeys)
 
-	return TableToStructInfo{
+	structName := makeName(table)
+	info := TableToStructInfo{
 		StructName:                  structName,
 		StructNameLowerFirstLetter:  LowerFirstLetter(structName),
 		StructNamePluralRequestPath: makeDnsPathPluralFromDbTable(table),
 		PkeysURLPath:                genUrlPathValuesByPkeys(primaryKeys),
 		StructComment:               structComment,
+		DbSchemaName:                schema,
 		DbTableName:                 table,
 		Fields:                      fields,
 		PrimaryKeys:                 primaryKeys,
+		HasPrimaryKey:               len(primaryKeys) > 0,
 	}
+	info.HasUpdateFields = info.HasPrimaryKey && len(info.GetStructFields(Filters{
+		WithInsertableOnly: true,
+		WithInternals:      false,
+		WithoutPrimaryKeys: true,
+	})) > 0
+	return info
 }
 
 func handlePkeys(fields []TableToStructFieldInfo, keys []string) []TableToStructFieldInfo {

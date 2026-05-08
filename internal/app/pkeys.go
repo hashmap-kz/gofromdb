@@ -53,3 +53,11 @@ func genOrderByClauseByPkeys(s TableToStructInfo) string {
 	}
 	return strings.Join(clauses, ", ")
 }
+
+func genOrderBySQLByPkeys(s TableToStructInfo) string {
+	clause := genOrderByClauseByPkeys(s)
+	if clause == "" {
+		return ""
+	}
+	return "order by " + clause
+}

@@ -2,6 +2,7 @@ package app
 
 import (
 	"fmt"
+	"log"
 	"strings"
 
 	"genpg-v5/internal/tmplts"
@@ -39,10 +40,17 @@ func GenHandler(s TableToStructInfo) GenHandl {
 			WithInsertableOnly: false,
 			WithInternals:      true,
 		}),
-		"DtoFieldsNoPkeysNoDefaults": s.GetStructFields(Filters{
+		"DtoFieldsCreate": s.GetStructFields(Filters{
 			WithInsertableOnly: true,
 			WithInternals:      false,
 		}),
+		"DtoFieldsUpdate": s.GetStructFields(Filters{
+			WithInsertableOnly: true,
+			WithInternals:      false,
+			WithoutPrimaryKeys: true,
+		}),
+		"HasPrimaryKey":   s.HasPrimaryKey,
+		"HasUpdateFields": s.HasUpdateFields,
 	}
 
 	dtosResult := ExecTemplate("handler-dtos", tmplts.HandlerPayloadsTmpl, data, FuncMap)
@@ -64,13 +72,28 @@ func genPathIDSClause(pkeys []TableToStructFieldInfo) string {
 
 	sb := strings.Builder{}
 	for _, f := range pkeys {
-		if f.FieldType == "int" {
-			sb.WriteString(fmt.Sprintf(tmpl, f.FieldName, "httputils.PathValueI32", f.DbFieldName))
-		} else if f.FieldType == "int64" {
-			sb.WriteString(fmt.Sprintf(tmpl, f.FieldName, "httputils.PathValueI32", f.DbFieldName))
-		} else {
-			sb.WriteString(fmt.Sprintf(tmpl, f.FieldName, "httputils.PathValueString", f.DbFieldName))
+		parser, ok := pathValueParser(f.FieldType)
+		if !ok {
+			log.Fatalf("cannot generate handler path parser for primary key column %q with Go type %q", f.DbFieldName, f.FieldType)
 		}
+		sb.WriteString(fmt.Sprintf(tmpl, f.FieldName, parser, f.DbFieldName))
 	}
 	return sb.String()
+}
+
+func pathValueParser(fieldType string) (string, bool) {
+	switch fieldType {
+	case "int", "int32":
+		return "httputils.PathValueI32", true
+	case "int16":
+		return "httputils.PathValueI16", true
+	case "int64":
+		return "httputils.PathValueI64", true
+	case "uint32":
+		return "httputils.PathValueU32", true
+	case "string":
+		return "httputils.PathValueString", true
+	default:
+		return "", false
+	}
 }

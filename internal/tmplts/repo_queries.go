@@ -28,14 +28,14 @@ select
 {{.QFieldsWithPKeys | AddPadding}}
 from {{.QSchemaName}}.{{.QTableName}}
 where {{.QWhereClause}}
-order by {{.QOrderClause}}
+{{.QOrderClause}}
 `
 
 var RepoGetAllQueryTemplate = `
 select
 {{.QFieldsWithPKeys | AddPadding}}
 from {{.QSchemaName}}.{{.QTableName}}
-order by {{.QOrderClause}}
+{{.QOrderClause}}
 `
 
 var RepoCountQueryTemplate = `select count(*) from {{.QSchemaName}}.{{.QTableName}}`
@@ -44,6 +44,6 @@ var RepoGetAllPaginatedQueryTemplate = `
 select
 {{.QFieldsWithPKeys | AddPadding}}
 from {{.QSchemaName}}.{{.QTableName}}
-order by {{.QOrderClause}}
+{{.QOrderClause}}
 offset $1 limit $2
 `
