@@ -102,3 +102,64 @@ func TestMakeDnsPathPluralFromDbTable(t *testing.T) {
 		}
 	}
 }
+
+func TestFormatComment(t *testing.T) {
+	cases := []struct {
+		name string
+		in   string
+		want string
+	}{
+		{
+			name: "empty",
+			in:   "",
+			want: "",
+		},
+		{
+			name: "whitespace only",
+			in:   "   ",
+			want: "",
+		},
+		{
+			name: "single short line",
+			in:   "user identifier",
+			want: "// user identifier",
+		},
+		{
+			name: "trims surrounding whitespace",
+			in:   "  trimmed  ",
+			want: "// trimmed",
+		},
+		{
+			name: "existing newline becomes separate comment line",
+			in:   "first line\nsecond line",
+			want: "// first line\n// second line",
+		},
+		{
+			name: "blank line between paragraphs becomes empty comment",
+			in:   "para one\n\npara two",
+			want: "// para one\n//\n// para two",
+		},
+		{
+			name: "long line is word-wrapped at 80 chars",
+			in:   "This is a rather long description that will definitely exceed the eighty character limit for a single comment line",
+			want: "// This is a rather long description that will definitely exceed the eighty\n// character limit for a single comment line",
+		},
+		{
+			name: "single word longer than limit is kept on its own line",
+			in:   "averylongwordthatexceedsthemaximumwidthlimitofeightycharactersallbyitself_endshere",
+			want: "// averylongwordthatexceedsthemaximumwidthlimitofeightycharactersallbyitself_endshere",
+		},
+		{
+			name: "multiline with long paragraph wraps at 80 chars inclusive",
+			in:   "Short intro.\nThis second paragraph is much longer and should be wrapped because it exceeds the allowed width of eighty characters.",
+			want: "// Short intro.\n// This second paragraph is much longer and should be wrapped because it exceeds\n// the allowed width of eighty characters.",
+		},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			if got := formatComment(c.in); got != c.want {
+				t.Errorf("formatComment(%q)\ngot:  %q\nwant: %q", c.in, got, c.want)
+			}
+		})
+	}
+}

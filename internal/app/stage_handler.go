@@ -2,7 +2,6 @@ package app
 
 import (
 	"fmt"
-	"strings"
 )
 
 type GenHandl struct {
@@ -19,7 +18,7 @@ func GenHandler(s TableToStructInfo) (GenHandl, error) {
 	data := map[string]any{
 		"StructName":                  s.StructName,
 		"StructComment":               s.StructComment,
-		"PackageName":                 strings.ToLower(s.DbTableName),
+		"PackageName":                 s.OutDirName,
 		"PathIDSClause":               pk.PathRead,
 		"PkeysURLPath":                pk.URLPath,
 		"ArgumentsByPkeys":            pk.Args,

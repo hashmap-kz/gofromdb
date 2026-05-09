@@ -55,7 +55,7 @@ func NewRepoTemplateData(s TableToStructInfo) (RepoTemplateData, error) {
 	return RepoTemplateData{
 		StructName:               s.StructName,
 		StructComment:            s.StructComment,
-		PackageName:              strings.ToLower(s.DbTableName),
+		PackageName:              s.OutDirName,
 		StructNameLowerFirst:     s.StructNameLowerFirstLetter,
 		HasPrimaryKey:            s.HasPrimaryKey,
 		HasUpdateFields:          s.HasUpdateFields,
