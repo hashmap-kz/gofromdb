@@ -1,20 +1,34 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"os"
 	"path"
+	"path/filepath"
 
 	"genpg-v5/internal/app"
 	"golang.org/x/tools/imports"
 	"mvdan.cc/gofumpt/format"
 )
 
+const scaffoldDir = "examples/go-project-template-v7"
+
 func main() {
-	connString := "postgres://postgres:postgres@localhost:5432/bookstore"
-	structs := app.GenStructs(connString)
-	outputPath := path.Join("examples", "go-project-template-v7")
+	outputFlag := flag.String("output", "", "output directory")
+	connString := flag.String("conn", "postgres://postgres:postgres@localhost:5432/bookstore", "postgresql connection string")
+	flag.Parse()
+
+	outputPath := scaffoldDir
+	if *outputFlag != "" {
+		outputPath = *outputFlag
+		if err := prepareOutputDir(outputPath); err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	structs := app.GenStructs(*connString)
 
 	writeInterfaces(structs, outputPath)
 	for _, s := range structs {
@@ -22,6 +36,16 @@ func main() {
 		writeServiceFiles(s, outputPath)
 		writeHandlerFiles(s, outputPath)
 	}
+}
+
+func prepareOutputDir(dst string) error {
+	if err := os.MkdirAll(dst, 0o755); err != nil {
+		return err
+	}
+	if err := os.CopyFS(dst, os.DirFS(scaffoldDir)); err != nil {
+		return err
+	}
+	return os.RemoveAll(filepath.Join(dst, "internal/api"))
 }
 
 func writeInterfaces(s []app.TableToStructInfo, outputPath string) {
