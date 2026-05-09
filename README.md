@@ -28,6 +28,8 @@ It helps when:
 - Every new table means another handler, service, repository, DTOs, and CRUD methods.
 - You prefer _plain old SQL_ with predictable performance over hidden magic.
 - You want generated code with a consistent structure, even if you later customize it by hand.
+- You're designing a database and need a backend MVP quickly.
+- You're migrating from another language to Go and want to generate a starter API from your existing database.
 
 An imperfect standard is better than no standard.
 
