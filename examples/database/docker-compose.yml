@@ -7,6 +7,7 @@ services:
       TZ: "Asia/Aqtau"
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: bookstore
     ports:
       - "15432:5432"
     volumes:
