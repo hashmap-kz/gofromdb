@@ -8,7 +8,7 @@ import (
 	"path"
 	"path/filepath"
 
-	"genpg-v5/internal/app"
+	"genpg-v5/internal/core"
 	"genpg-v5/internal/logger"
 
 	"golang.org/x/tools/imports"
@@ -50,7 +50,7 @@ func main() {
 		slog.String("conn", *connString),
 	)
 
-	structs, err := app.GenStructs(*connString)
+	structs, err := core.GenStructs(*connString)
 	if err != nil {
 		slog.Error("failed to introspect database", slog.Any("err", err))
 		os.Exit(1)
@@ -106,8 +106,8 @@ func prepareOutputDir(dst string) error {
 	return os.RemoveAll(filepath.Join(dst, "internal/api"))
 }
 
-func writeInterfaces(s []app.TableToStructInfo, outputPath string) error {
-	layer, err := app.GenInterfaces(s)
+func writeInterfaces(s []core.TableToStructInfo, outputPath string) error {
+	layer, err := core.GenInterfaces(s)
 	if err != nil {
 		return err
 	}
@@ -126,8 +126,8 @@ func writeInterfaces(s []app.TableToStructInfo, outputPath string) error {
 	return writeFile(path.Join(outputPath, "internal/api/handler.go"), layer.HandlerInterface)
 }
 
-func writeRepoFiles(s app.TableToStructInfo, outputPath string) error {
-	layer, err := app.GenRepository(s)
+func writeRepoFiles(s core.TableToStructInfo, outputPath string) error {
+	layer, err := core.GenRepository(s)
 	if err != nil {
 		return err
 	}
@@ -151,8 +151,8 @@ func writeRepoFiles(s app.TableToStructInfo, outputPath string) error {
 	), layer.Repository)
 }
 
-func writeServiceFiles(s app.TableToStructInfo, outputPath string) error {
-	layer, err := app.GenService(s)
+func writeServiceFiles(s core.TableToStructInfo, outputPath string) error {
+	layer, err := core.GenService(s)
 	if err != nil {
 		return err
 	}
@@ -170,8 +170,8 @@ func writeServiceFiles(s app.TableToStructInfo, outputPath string) error {
 		fmt.Sprintf("internal/api/%s/%s/service.go", s.DbSchemaName, s.DbTableName)), layer.Service)
 }
 
-func writeHandlerFiles(s app.TableToStructInfo, outputPath string) error {
-	layer, err := app.GenHandler(s)
+func writeHandlerFiles(s core.TableToStructInfo, outputPath string) error {
+	layer, err := core.GenHandler(s)
 	if err != nil {
 		return err
 	}
