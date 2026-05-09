@@ -34,6 +34,7 @@ type TableToStructInfo struct {
 	StructName                  string
 	StructNameLowerFirstLetter  string
 	StructNamePluralRequestPath string
+	ImportAlias                 string
 	PkeysURLPath                string
 	StructComment               string
 	DbSchemaName                string
@@ -59,8 +60,29 @@ func GenStructs(connString string) ([]TableToStructInfo, error) {
 		structs = append(structs, oneStruct)
 	}
 
+	// Two-pass: qualify StructName only for tables whose name collides across schemas.
+	nameCount := make(map[string]int, len(structs))
+	for _, s := range structs {
+		nameCount[s.StructName]++
+	}
+	for i := range structs {
+		s := &structs[i]
+		if nameCount[s.StructName] > 1 {
+			s.StructName = makeName(s.DbSchemaName) + makeName(s.DbTableName)
+			s.StructNameLowerFirstLetter = LowerFirstLetter(s.StructName)
+			s.StructNamePluralRequestPath = makeDnsPathPluralFromDbTable(s.DbSchemaName + "_" + s.DbTableName)
+			s.ImportAlias = s.DbSchemaName + "_" + s.DbTableName
+		} else {
+			s.ImportAlias = s.DbTableName
+		}
+	}
+
 	sort.Slice(structs, func(i, j int) bool {
-		return structs[i].StructName < structs[j].StructName
+		a, b := structs[i], structs[j]
+		if a.StructName != b.StructName {
+			return a.StructName < b.StructName
+		}
+		return a.DbSchemaName < b.DbSchemaName
 	})
 
 	return structs, nil

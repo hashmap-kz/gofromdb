@@ -5,7 +5,11 @@ import (
 	"context"
 
 {{- range .Structs}}
+{{- if ne .ImportAlias .DbTableName}}
+	{{.ImportAlias}} "go-project-template-v7/internal/api/{{.DbSchemaName}}/{{.DbTableName}}"
+{{- else}}
 	"go-project-template-v7/internal/api/{{.DbSchemaName}}/{{.DbTableName}}"
+{{- end}}
 {{- end }}
 
 	"go-project-template-v7/pkg/storage/postgres"
@@ -15,14 +19,14 @@ import (
 
 type Repositories struct {
 {{- range .Structs}}
-	{{.StructName}} {{.DbTableName}}.Repository
+	{{.StructName}} {{.ImportAlias}}.Repository
 {{- end }}
 }
 
 func NewRepositories(ctx context.Context, db *postgres.Postgres) *Repositories {
 	return &Repositories{
 {{- range .Structs}}
-		{{.StructName}}: {{.DbTableName}}.NewRepository(ctx, db),
+		{{.StructName}}: {{.ImportAlias}}.NewRepository(ctx, db),
 {{- end }}
 	}
 }

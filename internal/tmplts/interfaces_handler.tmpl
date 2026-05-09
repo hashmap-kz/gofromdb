@@ -4,7 +4,11 @@ package api
 import (
 	"net/http"
 {{- range .Structs}}
+{{- if ne .ImportAlias .DbTableName}}
+	{{.ImportAlias}} "go-project-template-v7/internal/api/{{.DbSchemaName}}/{{.DbTableName}}"
+{{- else}}
 	"go-project-template-v7/internal/api/{{.DbSchemaName}}/{{.DbTableName}}"
+{{- end}}
 {{- end }}
 )
 
@@ -21,7 +25,7 @@ func NewHandler(services *Services) *Handler {
 func (h *Handler) Mount(router *http.ServeMux) {
 {{- range .Structs}}
 	// {{.StructName}} routes
-	{{.StructNameLowerFirstLetter}}Handler := {{.DbTableName}}.NewHandler(h.Services.{{.StructName}})
+	{{.StructNameLowerFirstLetter}}Handler := {{.ImportAlias}}.NewHandler(h.Services.{{.StructName}})
 	router.HandleFunc("POST /api/v1/{{.StructNamePluralRequestPath}}"          , {{.StructNameLowerFirstLetter}}Handler.Save)
 {{- if .HasUpdateFields}}
 	router.HandleFunc("PUT /api/v1/{{.StructNamePluralRequestPath}}/{{.PkeysURLPath}}"  , {{.StructNameLowerFirstLetter}}Handler.UpdateByID)

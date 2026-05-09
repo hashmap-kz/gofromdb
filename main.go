@@ -27,7 +27,7 @@ func main() {
 	outputFlag := flag.String("output", "", "output directory")
 	connString := flag.String(
 		"conn",
-		"postgres://postgres:postgres@localhost:5432/bookstore",
+		"postgres://postgres:postgres@localhost:15432/bookstore",
 		"postgresql connection string",
 	)
 	flag.Parse()
