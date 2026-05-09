@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"go-project-template-v5/internal/app"
+	"go-project-template-v7/internal/app"
 )
 
 func main() {

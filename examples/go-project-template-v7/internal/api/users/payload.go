@@ -1,7 +1,7 @@
 package users
 
 import (
-	"go-project-template-v5/pkg/pageable"
+	"go-project-template-v7/pkg/pageable"
 	"time"
 )
 

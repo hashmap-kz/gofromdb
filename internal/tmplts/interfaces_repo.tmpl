@@ -5,10 +5,10 @@ import (
 	"context"
 
 {{- range .Structs}}
-	"go-project-template-v5/internal/api/{{.DbTableName}}"
+	"go-project-template-v7/internal/api/{{.DbTableName}}"
 {{- end }}
 
-	"go-project-template-v5/pkg/storage/postgres"
+	"go-project-template-v7/pkg/storage/postgres"
 )
 
 // Init all repos

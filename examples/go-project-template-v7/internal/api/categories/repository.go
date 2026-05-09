@@ -3,8 +3,8 @@ package categories
 import (
 	"context"
 	"fmt"
-	"go-project-template-v5/pkg/pageable"
-	"go-project-template-v5/pkg/storage/postgres"
+	"go-project-template-v7/pkg/pageable"
+	"go-project-template-v7/pkg/storage/postgres"
 
 	"github.com/jackc/pgx/v5"
 )

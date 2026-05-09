@@ -2,12 +2,12 @@ package api
 
 import (
 	"context"
-	"go-project-template-v5/internal/api/categories"
-	"go-project-template-v5/internal/api/order_items"
-	"go-project-template-v5/internal/api/orders"
-	"go-project-template-v5/internal/api/products"
-	"go-project-template-v5/internal/api/users"
-	"go-project-template-v5/pkg/storage/postgres"
+	"go-project-template-v7/internal/api/categories"
+	"go-project-template-v7/internal/api/order_items"
+	"go-project-template-v7/internal/api/orders"
+	"go-project-template-v7/internal/api/products"
+	"go-project-template-v7/internal/api/users"
+	"go-project-template-v7/pkg/storage/postgres"
 )
 
 // Init all repos

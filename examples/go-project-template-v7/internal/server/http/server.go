@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"go-project-template-v5/config"
+	"go-project-template-v7/config"
 )
 
 type Server struct {

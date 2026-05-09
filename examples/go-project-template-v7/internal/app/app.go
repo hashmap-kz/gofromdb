@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	httpSwagger "github.com/swaggo/http-swagger"
-	"go-project-template-v5/pkg/httputils"
+	"go-project-template-v7/pkg/httputils"
 	"log/slog"
 	"net/http"
 	"os"
@@ -12,15 +12,15 @@ import (
 	"syscall"
 	"time"
 
-	slogLogger "go-project-template-v5/pkg/logger"
+	slogLogger "go-project-template-v7/pkg/logger"
 
-	"go-project-template-v5/internal/server/middlewares"
+	"go-project-template-v7/internal/server/middlewares"
 
-	"go-project-template-v5/internal/api"
+	"go-project-template-v7/internal/api"
 
-	"go-project-template-v5/config"
-	httpserver "go-project-template-v5/internal/server/http"
-	"go-project-template-v5/pkg/storage/postgres"
+	"go-project-template-v7/config"
+	httpserver "go-project-template-v7/internal/server/http"
+	"go-project-template-v7/pkg/storage/postgres"
 )
 
 func Run(configFilePath string) {

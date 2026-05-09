@@ -1,4 +1,4 @@
-module go-project-template-v5
+module go-project-template-v7
 
 go 1.26.0
 

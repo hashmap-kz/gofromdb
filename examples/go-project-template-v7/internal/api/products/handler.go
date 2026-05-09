@@ -2,9 +2,9 @@ package products
 
 import (
 	"fmt"
-	"go-project-template-v5/pkg/httputils"
-	"go-project-template-v5/pkg/pageable"
-	"go-project-template-v5/pkg/validator"
+	"go-project-template-v7/pkg/httputils"
+	"go-project-template-v7/pkg/pageable"
+	"go-project-template-v7/pkg/validator"
 	"net/http"
 )
 
