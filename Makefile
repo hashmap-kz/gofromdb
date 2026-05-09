@@ -1,4 +1,4 @@
-APP_NAME 	 := go-gen-project-structure
+APP_NAME 	 := gofromdb
 OUTPUT   	 := $(APP_NAME)
 INSTALL_DIR  := /usr/local/bin
 

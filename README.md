@@ -1,38 +1,57 @@
-# go-gen-project-structure
+# gofromdb
 
 Point it at a PostgreSQL database. Get a running Go REST API.
 
-The generator connects to your database, reads the schema, and writes a complete Go project - one package per table, with entity structs, repositories, services, HTTP handlers, DTOs, and Swagger annotations. The result compiles and runs immediately.
+[![License](https://img.shields.io/github/license/hashmap-kz/gofromdb)](https://github.com/hashmap-kz/gofromdb/blob/master/LICENSE)
+[![Go Report Card](https://goreportcard.com/badge/github.com/hashmap-kz/gofromdb)](https://goreportcard.com/report/github.com/hashmap-kz/gofromdb)
+[![Go Reference](https://pkg.go.dev/badge/github.com/hashmap-kz/gofromdb.svg)](https://pkg.go.dev/github.com/hashmap-kz/gofromdb)
+[![Workflow Status](https://img.shields.io/github/actions/workflow/status/hashmap-kz/gofromdb/ci.yml?branch=master)](https://github.com/hashmap-kz/gofromdb/actions/workflows/ci.yml?query=branch:master)
+[![GitHub Issues](https://img.shields.io/github/issues/hashmap-kz/gofromdb)](https://github.com/hashmap-kz/gofromdb/issues)
+[![Go Version](https://img.shields.io/github/go-mod/go-version/hashmap-kz/gofromdb)](https://github.com/hashmap-kz/gofromdb/blob/master/go.mod#L3)
+[![Latest Release](https://img.shields.io/github/v/release/hashmap-kz/gofromdb)](https://github.com/hashmap-kz/gofromdb/releases/latest)
+[![Start contributing](https://img.shields.io/github/issues/hashmap-kz/gofromdb/good%20first%20issue?color=7057ff&label=Contribute)](https://github.com/hashmap-kz/gofromdb/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc+label%3A%22good+first+issue%22)
+
+The generator connects to your database, reads the schemas, and writes a complete Go project - 
+with entity structs, repositories, services, HTTP handlers, DTOs, and Swagger annotations. 
+
+**The result compiles and runs immediately.**
 
 ---
 
-## How it works
+## Purpose
 
-1. Connect to your PostgreSQL database
-2. Introspect every table: columns, types, primary keys, foreign keys, comments
-3. Write a full Go project to the output directory, based on a scaffold template
-4. Format all generated code with `goimports` and `gofumpt`
+This tool is for **database-first** Go projects where the database schema is the source of truth.
 
-```
-database schema  -->  go-gen-project-structure  -->  running REST API
-```
+It helps when:
+
+- You are tired of writing the same REST API boilerplate again and again.
+- Every new table means another handler, service, repository, DTOs, and CRUD methods.
+- You prefer _plain old SQL_ with predictable performance over hidden magic.
+- You want generated code with a consistent structure, even if you later customize it by hand.
+
+An imperfect standard is better than no standard.
 
 ---
 
-## Quick start
+## Install
+
+#### Package
 
 ```bash
-# build
-make build
+go install github.com/hashmap-kz/gofromdb@latest
+```
 
-# generate a project from your database
-./bin/go-gen-project-structure \
-  --conn "postgres://postgres:postgres@localhost:5432/mydb" \
-  --output ./my-api
+#### Brew
 
-# run the generated project
-cd my-api
-go run main.go
+```bash
+brew tap hashmap-kz/homebrew-tap
+brew install gofromdb
+```
+
+## Usage
+
+```bash
+gofromdb -conn "postgres://postgres:postgres@localhost:5432/bookstore" -output myapp
 ```
 
 ---
@@ -175,7 +194,7 @@ If `--output` is omitted, the generator overwrites the bundled example under `ex
 ## Build and install
 
 ```bash
-make build      # builds to bin/go-gen-project-structure
+make build      # builds to bin/gofromdb
 make install    # installs to /usr/local/bin
 make test       # runs tests
 ```
