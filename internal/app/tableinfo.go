@@ -142,7 +142,12 @@ func makeOneStruct(relPath string, cols []genpg.ColumnInfo) (TableToStructInfo, 
 	schema, table := getSchemaTable(relPath)
 	for _, c := range cols {
 		if c.GoType == "" {
-			return TableToStructInfo{}, fmt.Errorf("no Go type mapping for pg type %q, column %s.%s", c.AttType2, c.RelPath, c.AttName)
+			return TableToStructInfo{}, fmt.Errorf(
+				"no Go type mapping for pg type %q, column %s.%s",
+				c.AttType2,
+				c.RelPath,
+				c.AttName,
+			)
 		}
 
 		fields = append(fields, TableToStructFieldInfo{

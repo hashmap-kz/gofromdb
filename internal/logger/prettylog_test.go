@@ -29,8 +29,11 @@ func TestPrettyTextHandlerBasicFormatting(t *testing.T) {
 
 	got := buf.String()
 
-	assert.Regexp(t,
-		regexp.MustCompile(`^INFO\s+\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\] application started\s+\n$`),
+	assert.Regexp(
+		t,
+		regexp.MustCompile(
+			`^INFO\s+\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\] application started\s+\n$`,
+		),
 		got,
 	)
 }
@@ -255,8 +258,11 @@ func TestPrettyTextHandlerCustomTimeFormatAndMessageWidth(t *testing.T) {
 
 	got := buf.String()
 
-	assert.Regexp(t,
-		regexp.MustCompile(`^INFO\s+\[\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.*\] msg\s+component=test\n$`),
+	assert.Regexp(
+		t,
+		regexp.MustCompile(
+			`^INFO\s+\[\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.*\] msg\s+component=test\n$`,
+		),
 		got,
 	)
 }

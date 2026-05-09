@@ -10,6 +10,7 @@ import (
 
 	"genpg-v5/internal/app"
 	"genpg-v5/internal/logger"
+
 	"golang.org/x/tools/imports"
 	"mvdan.cc/gofumpt/format"
 )
@@ -24,14 +25,22 @@ func main() {
 	})
 
 	outputFlag := flag.String("output", "", "output directory")
-	connString := flag.String("conn", "postgres://postgres:postgres@localhost:5432/bookstore", "postgresql connection string")
+	connString := flag.String(
+		"conn",
+		"postgres://postgres:postgres@localhost:5432/bookstore",
+		"postgresql connection string",
+	)
 	flag.Parse()
 
 	outputPath := scaffoldDir
 	if *outputFlag != "" {
 		outputPath = *outputFlag
 		if err := prepareOutputDir(outputPath); err != nil {
-			slog.Error("failed to prepare output dir", slog.String("path", outputPath), slog.Any("err", err))
+			slog.Error(
+				"failed to prepare output dir",
+				slog.String("path", outputPath),
+				slog.Any("err", err),
+			)
 			os.Exit(1)
 		}
 	}
@@ -55,15 +64,27 @@ func main() {
 	for _, s := range structs {
 		slog.Debug("generating layers", slog.String("table", s.DbTableName))
 		if err := writeRepoFiles(s, outputPath); err != nil {
-			slog.Error("failed to write repo files", slog.String("table", s.DbTableName), slog.Any("err", err))
+			slog.Error(
+				"failed to write repo files",
+				slog.String("table", s.DbTableName),
+				slog.Any("err", err),
+			)
 			os.Exit(1)
 		}
 		if err := writeServiceFiles(s, outputPath); err != nil {
-			slog.Error("failed to write service files", slog.String("table", s.DbTableName), slog.Any("err", err))
+			slog.Error(
+				"failed to write service files",
+				slog.String("table", s.DbTableName),
+				slog.Any("err", err),
+			)
 			os.Exit(1)
 		}
 		if err := writeHandlerFiles(s, outputPath); err != nil {
-			slog.Error("failed to write handler files", slog.String("table", s.DbTableName), slog.Any("err", err))
+			slog.Error(
+				"failed to write handler files",
+				slog.String("table", s.DbTableName),
+				slog.Any("err", err),
+			)
 			os.Exit(1)
 		}
 	}
@@ -71,7 +92,11 @@ func main() {
 }
 
 func prepareOutputDir(dst string) error {
-	slog.Debug("preparing output dir", slog.String("dst", dst), slog.String("scaffold", scaffoldDir))
+	slog.Debug(
+		"preparing output dir",
+		slog.String("dst", dst),
+		slog.String("scaffold", scaffoldDir),
+	)
 	if err := os.MkdirAll(dst, 0o755); err != nil {
 		return err
 	}
@@ -86,10 +111,16 @@ func writeInterfaces(s []app.TableToStructInfo, outputPath string) error {
 	if err != nil {
 		return err
 	}
-	if err := writeFile(path.Join(outputPath, "internal/api/repository.go"), layer.RepoInterface); err != nil {
+	if err := writeFile(
+		path.Join(outputPath, "internal/api/repository.go"),
+		layer.RepoInterface,
+	); err != nil {
 		return err
 	}
-	if err := writeFile(path.Join(outputPath, "internal/api/service.go"), layer.ServiceInterface); err != nil {
+	if err := writeFile(
+		path.Join(outputPath, "internal/api/service.go"),
+		layer.ServiceInterface,
+	); err != nil {
 		return err
 	}
 	return writeFile(path.Join(outputPath, "internal/api/handler.go"), layer.HandlerInterface)
@@ -100,12 +131,24 @@ func writeRepoFiles(s app.TableToStructInfo, outputPath string) error {
 	if err != nil {
 		return err
 	}
-	if err := writeFile(path.Join(outputPath,
-		fmt.Sprintf("internal/api/%s/%s/entity.go", s.DbSchemaName, s.DbTableName)), layer.Entity); err != nil {
+	if err := writeFile(path.Join(
+		outputPath,
+		fmt.Sprintf(
+			"internal/api/%s/%s/entity.go",
+			s.DbSchemaName,
+			s.DbTableName,
+		),
+	), layer.Entity); err != nil {
 		return err
 	}
-	return writeFile(path.Join(outputPath,
-		fmt.Sprintf("internal/api/%s/%s/repository.go", s.DbSchemaName, s.DbTableName)), layer.Repository)
+	return writeFile(path.Join(
+		outputPath,
+		fmt.Sprintf(
+			"internal/api/%s/%s/repository.go",
+			s.DbSchemaName,
+			s.DbTableName,
+		),
+	), layer.Repository)
 }
 
 func writeServiceFiles(s app.TableToStructInfo, outputPath string) error {
@@ -113,8 +156,14 @@ func writeServiceFiles(s app.TableToStructInfo, outputPath string) error {
 	if err != nil {
 		return err
 	}
-	if err := writeFile(path.Join(outputPath,
-		fmt.Sprintf("internal/api/%s/%s/dto.go", s.DbSchemaName, s.DbTableName)), layer.Dto); err != nil {
+	if err := writeFile(path.Join(
+		outputPath,
+		fmt.Sprintf(
+			"internal/api/%s/%s/dto.go",
+			s.DbSchemaName,
+			s.DbTableName,
+		),
+	), layer.Dto); err != nil {
 		return err
 	}
 	return writeFile(path.Join(outputPath,
@@ -126,8 +175,14 @@ func writeHandlerFiles(s app.TableToStructInfo, outputPath string) error {
 	if err != nil {
 		return err
 	}
-	if err := writeFile(path.Join(outputPath,
-		fmt.Sprintf("internal/api/%s/%s/payload.go", s.DbSchemaName, s.DbTableName)), layer.Payload); err != nil {
+	if err := writeFile(path.Join(
+		outputPath,
+		fmt.Sprintf(
+			"internal/api/%s/%s/payload.go",
+			s.DbSchemaName,
+			s.DbTableName,
+		),
+	), layer.Payload); err != nil {
 		return err
 	}
 	return writeFile(path.Join(outputPath,

@@ -92,7 +92,11 @@ func pkPathRead(fields []TableToStructFieldInfo) (string, error) {
 	for _, f := range fields {
 		parser, ok := pathValueParser(f.FieldType)
 		if !ok {
-			return "", fmt.Errorf("no path parser for primary key %q with Go type %q", f.DbFieldName, f.FieldType)
+			return "", fmt.Errorf(
+				"no path parser for primary key %q with Go type %q",
+				f.DbFieldName,
+				f.FieldType,
+			)
 		}
 		fmt.Fprintf(&sb, tmpl, f.FieldName, parser, f.DbFieldName)
 	}

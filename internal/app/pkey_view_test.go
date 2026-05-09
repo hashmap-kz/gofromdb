@@ -16,7 +16,13 @@ func TestPkURLPath(t *testing.T) {
 	}{
 		{nil, ""},
 		{[]TableToStructFieldInfo{field("id", "ID", "int64")}, "{id}"},
-		{[]TableToStructFieldInfo{field("user_id", "UserID", "int64"), field("role_id", "RoleID", "int32")}, "{user_id}/{role_id}"},
+		{
+			[]TableToStructFieldInfo{
+				field("user_id", "UserID", "int64"),
+				field("role_id", "RoleID", "int32"),
+			},
+			"{user_id}/{role_id}",
+		},
 	}
 	for _, c := range cases {
 		if got := pkURLPath(c.fields); got != c.want {
@@ -32,7 +38,13 @@ func TestPkParams(t *testing.T) {
 	}{
 		{nil, ""},
 		{[]TableToStructFieldInfo{field("id", "ID", "int64")}, "pkID int64"},
-		{[]TableToStructFieldInfo{field("user_id", "UserID", "int64"), field("role_id", "RoleID", "int32")}, "pkUserID int64, pkRoleID int32"},
+		{
+			[]TableToStructFieldInfo{
+				field("user_id", "UserID", "int64"),
+				field("role_id", "RoleID", "int32"),
+			},
+			"pkUserID int64, pkRoleID int32",
+		},
 	}
 	for _, c := range cases {
 		if got := pkParams(c.fields); got != c.want {
@@ -48,7 +60,13 @@ func TestPkArgs(t *testing.T) {
 	}{
 		{nil, ""},
 		{[]TableToStructFieldInfo{field("id", "ID", "int64")}, "pkID"},
-		{[]TableToStructFieldInfo{field("user_id", "UserID", "int64"), field("role_id", "RoleID", "int32")}, "pkUserID, pkRoleID"},
+		{
+			[]TableToStructFieldInfo{
+				field("user_id", "UserID", "int64"),
+				field("role_id", "RoleID", "int32"),
+			},
+			"pkUserID, pkRoleID",
+		},
 	}
 	for _, c := range cases {
 		if got := pkArgs(c.fields); got != c.want {
@@ -64,7 +82,13 @@ func TestPkWhereClause(t *testing.T) {
 	}{
 		{nil, ""},
 		{[]TableToStructFieldInfo{field("id", "ID", "int64")}, "id = $1"},
-		{[]TableToStructFieldInfo{field("user_id", "UserID", "int64"), field("role_id", "RoleID", "int32")}, "user_id = $1 and role_id = $2"},
+		{
+			[]TableToStructFieldInfo{
+				field("user_id", "UserID", "int64"),
+				field("role_id", "RoleID", "int32"),
+			},
+			"user_id = $1 and role_id = $2",
+		},
 	}
 	for _, c := range cases {
 		if got := pkWhereClause(c.fields); got != c.want {
@@ -80,7 +104,13 @@ func TestPkOrderClause(t *testing.T) {
 	}{
 		{nil, ""},
 		{[]TableToStructFieldInfo{field("id", "ID", "int64")}, "id"},
-		{[]TableToStructFieldInfo{field("user_id", "UserID", "int64"), field("role_id", "RoleID", "int32")}, "user_id, role_id"},
+		{
+			[]TableToStructFieldInfo{
+				field("user_id", "UserID", "int64"),
+				field("role_id", "RoleID", "int32"),
+			},
+			"user_id, role_id",
+		},
 	}
 	for _, c := range cases {
 		if got := pkOrderClause(c.fields); got != c.want {
