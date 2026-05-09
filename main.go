@@ -3,14 +3,12 @@ package main
 import (
 	"flag"
 	"fmt"
+	"genpg-v5/internal/core"
+	"genpg-v5/internal/logger"
 	"log/slog"
 	"os"
 	"path"
 	"path/filepath"
-	"runtime"
-
-	"genpg-v5/internal/core"
-	"genpg-v5/internal/logger"
 
 	"golang.org/x/sync/errgroup"
 	"golang.org/x/tools/imports"
@@ -32,6 +30,7 @@ func main() {
 		"postgres://postgres:postgres@localhost:15432/bookstore",
 		"postgresql connection string",
 	)
+	workers := flag.Int("workers", 2, "concurrency")
 	flag.Parse()
 
 	outputPath := scaffoldDir
@@ -63,8 +62,15 @@ func main() {
 		slog.Error("failed to write interfaces", slog.Any("err", err))
 		os.Exit(1)
 	}
+
+	// process tables
+	w := *workers
+	if w <= 0 || w > len(structs) {
+		w = 2
+	}
+
 	g := new(errgroup.Group)
-	g.SetLimit(runtime.NumCPU())
+	g.SetLimit(w)
 	for _, s := range structs {
 		g.Go(func() error {
 			slog.Debug("generating layers", slog.String("table", s.DbTableName))
