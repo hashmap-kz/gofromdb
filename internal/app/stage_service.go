@@ -1,14 +1,20 @@
 package app
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 type GenSvc struct {
 	Dto     string
 	Service string
 }
 
-func GenService(s TableToStructInfo) GenSvc {
-	pk := NewPrimaryKeyView(s.PrimaryKeys)
+func GenService(s TableToStructInfo) (GenSvc, error) {
+	pk, err := NewPrimaryKeyView(s.PrimaryKeys)
+	if err != nil {
+		return GenSvc{}, err
+	}
 
 	data := map[string]any{
 		"StructName":        s.StructName,
@@ -22,8 +28,25 @@ func GenService(s TableToStructInfo) GenSvc {
 		"HasUpdateFields":   s.HasUpdateFields,
 	}
 
-	return GenSvc{
-		Dto:     PrintFormatted(ExecTemplate("dto", data, FuncMap)),
-		Service: PrintFormatted(ExecTemplate("service", data, FuncMap)),
+	exec := func(name string) (string, error) {
+		out, err := ExecTemplate(name, data, FuncMap)
+		if err != nil {
+			return "", fmt.Errorf("service %s: %w", name, err)
+		}
+		return PrintFormatted(out), nil
 	}
+
+	dto, err := exec("dto")
+	if err != nil {
+		return GenSvc{}, err
+	}
+	svc, err := exec("service")
+	if err != nil {
+		return GenSvc{}, err
+	}
+
+	return GenSvc{
+		Dto:     dto,
+		Service: svc,
+	}, nil
 }

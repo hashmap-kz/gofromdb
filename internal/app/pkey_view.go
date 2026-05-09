@@ -2,7 +2,6 @@ package app
 
 import (
 	"fmt"
-	"log"
 	"strings"
 )
 
@@ -18,7 +17,7 @@ type PrimaryKeyView struct {
 	PathRead    string
 }
 
-func NewPrimaryKeyView(fields []TableToStructFieldInfo) PrimaryKeyView {
+func NewPrimaryKeyView(fields []TableToStructFieldInfo) (PrimaryKeyView, error) {
 	pk := PrimaryKeyView{Fields: fields}
 	pk.Params = pkParams(fields)
 	pk.Args = pkArgs(fields)
@@ -26,8 +25,12 @@ func NewPrimaryKeyView(fields []TableToStructFieldInfo) PrimaryKeyView {
 	pk.OrderClause = pkOrderClause(fields)
 	pk.OrderSQL = pkOrderSQL(pk.OrderClause)
 	pk.URLPath = pkURLPath(fields)
-	pk.PathRead = pkPathRead(fields)
-	return pk
+	pathRead, err := pkPathRead(fields)
+	if err != nil {
+		return PrimaryKeyView{}, err
+	}
+	pk.PathRead = pathRead
+	return pk, nil
 }
 
 func pkURLPath(fields []TableToStructFieldInfo) string {
@@ -77,7 +80,7 @@ func pkOrderSQL(orderClause string) string {
 	return "order by " + orderClause
 }
 
-func pkPathRead(fields []TableToStructFieldInfo) string {
+func pkPathRead(fields []TableToStructFieldInfo) (string, error) {
 	tmpl := `
 	pk%s, err := %s(r, "%s")
 	if err != nil {
@@ -89,11 +92,11 @@ func pkPathRead(fields []TableToStructFieldInfo) string {
 	for _, f := range fields {
 		parser, ok := pathValueParser(f.FieldType)
 		if !ok {
-			log.Fatalf("cannot generate handler path parser for primary key column %q with Go type %q", f.DbFieldName, f.FieldType)
+			return "", fmt.Errorf("no path parser for primary key %q with Go type %q", f.DbFieldName, f.FieldType)
 		}
-		sb.WriteString(fmt.Sprintf(tmpl, f.FieldName, parser, f.DbFieldName))
+		fmt.Fprintf(&sb, tmpl, f.FieldName, parser, f.DbFieldName)
 	}
-	return sb.String()
+	return sb.String(), nil
 }
 
 func pathValueParser(fieldType string) (string, bool) {

@@ -2,7 +2,6 @@ package app
 
 import (
 	"fmt"
-	"log"
 	"sort"
 
 	"genpg-v5/internal/genpg"
@@ -45,13 +44,18 @@ type TableToStructInfo struct {
 	HasUpdateFields             bool
 }
 
-func GenStructs(connString string) []TableToStructInfo {
-	dbInfo := genpg.GetDBInfo(connString)
+func GenStructs(connString string) ([]TableToStructInfo, error) {
+	dbInfo, err := genpg.GetDBInfo(connString)
+	if err != nil {
+		return nil, fmt.Errorf("get db info: %w", err)
+	}
 	var structs []TableToStructInfo
 
 	for t := range dbInfo {
-		columnInfos := dbInfo[t]
-		oneStruct := makeOneStruct(t, columnInfos)
+		oneStruct, err := makeOneStruct(t, dbInfo[t])
+		if err != nil {
+			return nil, fmt.Errorf("make struct for %s: %w", t, err)
+		}
 		structs = append(structs, oneStruct)
 	}
 
@@ -59,7 +63,7 @@ func GenStructs(connString string) []TableToStructInfo {
 		return structs[i].StructName < structs[j].StructName
 	})
 
-	return structs
+	return structs, nil
 }
 
 func isInternalFieldToSkip(name string) bool {
@@ -132,16 +136,13 @@ func dbFieldNames(fields []TableToStructFieldInfo) []string {
 	return result
 }
 
-func makeOneStruct(relPath string, cols []genpg.ColumnInfo) TableToStructInfo {
+func makeOneStruct(relPath string, cols []genpg.ColumnInfo) (TableToStructInfo, error) {
 	fields := []TableToStructFieldInfo{}
 
 	schema, table := getSchemaTable(relPath)
 	for _, c := range cols {
 		if c.GoType == "" {
-			log.Fatalf("cannot find type mapping for pg-type: `%s`, column: `%s`",
-				c.AttType2,
-				fmt.Sprintf("%s.%s", c.RelPath, c.AttName),
-			)
+			return TableToStructInfo{}, fmt.Errorf("no Go type mapping for pg type %q, column %s.%s", c.AttType2, c.RelPath, c.AttName)
 		}
 
 		fields = append(fields, TableToStructFieldInfo{
@@ -155,8 +156,6 @@ func makeOneStruct(relPath string, cols []genpg.ColumnInfo) TableToStructInfo {
 		})
 	}
 
-	// TODO: simplify by doing 2 queries? first one to get all tables, and the second one to get all columns?
-	// perhaps, but later
 	structComment := ""
 	primaryKeys := []TableToStructFieldInfo{}
 	if len(cols) > 0 {
@@ -173,12 +172,17 @@ func makeOneStruct(relPath string, cols []genpg.ColumnInfo) TableToStructInfo {
 	}
 	primaryKeys = handlePkeys(fields, cols[0].PrimaryKeys)
 
+	pkView, err := NewPrimaryKeyView(primaryKeys)
+	if err != nil {
+		return TableToStructInfo{}, fmt.Errorf("primary key view for %s: %w", table, err)
+	}
+
 	structName := makeName(table)
 	info := TableToStructInfo{
 		StructName:                  structName,
 		StructNameLowerFirstLetter:  LowerFirstLetter(structName),
 		StructNamePluralRequestPath: makeDnsPathPluralFromDbTable(table),
-		PkeysURLPath:                NewPrimaryKeyView(primaryKeys).URLPath,
+		PkeysURLPath:                pkView.URLPath,
 		StructComment:               structComment,
 		DbSchemaName:                schema,
 		DbTableName:                 table,
@@ -187,7 +191,7 @@ func makeOneStruct(relPath string, cols []genpg.ColumnInfo) TableToStructInfo {
 		HasPrimaryKey:               len(primaryKeys) > 0,
 	}
 	info.HasUpdateFields = info.HasPrimaryKey && len(info.UpdateFields()) > 0
-	return info
+	return info, nil
 }
 
 func handlePkeys(fields []TableToStructFieldInfo, keys []string) []TableToStructFieldInfo {

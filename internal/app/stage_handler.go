@@ -1,14 +1,20 @@
 package app
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 type GenHandl struct {
 	Payload string
 	Handler string
 }
 
-func GenHandler(s TableToStructInfo) GenHandl {
-	pk := NewPrimaryKeyView(s.PrimaryKeys)
+func GenHandler(s TableToStructInfo) (GenHandl, error) {
+	pk, err := NewPrimaryKeyView(s.PrimaryKeys)
+	if err != nil {
+		return GenHandl{}, err
+	}
 
 	data := map[string]any{
 		"StructName":                  s.StructName,
@@ -31,8 +37,25 @@ func GenHandler(s TableToStructInfo) GenHandl {
 		"HasUpdateFields":             s.HasUpdateFields,
 	}
 
-	return GenHandl{
-		Payload: PrintFormatted(ExecTemplate("payload", data, FuncMap)),
-		Handler: PrintFormatted(ExecTemplate("handler", data, FuncMap)),
+	exec := func(name string) (string, error) {
+		out, err := ExecTemplate(name, data, FuncMap)
+		if err != nil {
+			return "", fmt.Errorf("handler %s: %w", name, err)
+		}
+		return PrintFormatted(out), nil
 	}
+
+	payload, err := exec("payload")
+	if err != nil {
+		return GenHandl{}, err
+	}
+	handler, err := exec("handler")
+	if err != nil {
+		return GenHandl{}, err
+	}
+
+	return GenHandl{
+		Payload: payload,
+		Handler: handler,
+	}, nil
 }

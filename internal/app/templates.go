@@ -2,24 +2,26 @@ package app
 
 import (
 	"bytes"
-	"log"
+	"fmt"
+	"log/slog"
 	"text/template"
 
 	"genpg-v5/internal/tmplts"
 )
 
-func ExecTemplate(name string, data any, funcMap map[string]any) string {
+func ExecTemplate(name string, data any, funcMap map[string]any) (string, error) {
+	slog.Debug("exec template", slog.String("name", name))
 	content, err := tmplts.FS.ReadFile(name + ".tmpl")
 	if err != nil {
-		log.Fatalf("ExecTemplate: read %s: %v", name, err)
+		return "", fmt.Errorf("read template %s: %w", name, err)
 	}
-	var result bytes.Buffer
 	tmpl, err := template.New(name).Funcs(funcMap).Parse(string(content))
 	if err != nil {
-		log.Fatalf("ExecTemplate: parse %s: %v", name, err)
+		return "", fmt.Errorf("parse template %s: %w", name, err)
 	}
+	var result bytes.Buffer
 	if err = tmpl.Execute(&result, data); err != nil {
-		log.Fatalf("ExecTemplate: execute %s: %v", name, err)
+		return "", fmt.Errorf("execute template %s: %w", name, err)
 	}
-	return result.String()
+	return result.String(), nil
 }

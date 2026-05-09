@@ -128,7 +128,10 @@ func TestPathValueParser(t *testing.T) {
 
 func TestPkPathRead_ContainsFieldName(t *testing.T) {
 	fields := []TableToStructFieldInfo{field("user_id", "UserID", "int64")}
-	got := pkPathRead(fields)
+	got, err := pkPathRead(fields)
+	if err != nil {
+		t.Fatal(err)
+	}
 	if !strings.Contains(got, "pkUserID") {
 		t.Errorf("pkPathRead output missing pkUserID: %s", got)
 	}
@@ -145,7 +148,10 @@ func TestPkPathRead_Composite(t *testing.T) {
 		field("user_id", "UserID", "int64"),
 		field("code", "Code", "string"),
 	}
-	got := pkPathRead(fields)
+	got, err := pkPathRead(fields)
+	if err != nil {
+		t.Fatal(err)
+	}
 	if !strings.Contains(got, "pkUserID") || !strings.Contains(got, "pkCode") {
 		t.Errorf("pkPathRead composite missing expected vars: %s", got)
 	}
@@ -153,7 +159,10 @@ func TestPkPathRead_Composite(t *testing.T) {
 
 func TestNewPrimaryKeyView(t *testing.T) {
 	fields := []TableToStructFieldInfo{field("id", "ID", "int64")}
-	pk := NewPrimaryKeyView(fields)
+	pk, err := NewPrimaryKeyView(fields)
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	if pk.URLPath != "{id}" {
 		t.Errorf("URLPath = %q, want %q", pk.URLPath, "{id}")
@@ -176,7 +185,10 @@ func TestNewPrimaryKeyView(t *testing.T) {
 }
 
 func TestNewPrimaryKeyView_Empty(t *testing.T) {
-	pk := NewPrimaryKeyView(nil)
+	pk, err := NewPrimaryKeyView(nil)
+	if err != nil {
+		t.Fatal(err)
+	}
 	if pk.URLPath != "" || pk.WhereClause != "" || pk.Params != "" || pk.Args != "" {
 		t.Errorf("NewPrimaryKeyView(nil) should produce empty strings: %+v", pk)
 	}

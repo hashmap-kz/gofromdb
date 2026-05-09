@@ -1,6 +1,9 @@
 package app
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 type RepoTemplateData struct {
 	StructName           string
@@ -39,9 +42,15 @@ type RepoQueries struct {
 	GetAllPaginated string
 }
 
-func NewRepoTemplateData(s TableToStructInfo) RepoTemplateData {
-	pk := NewPrimaryKeyView(s.PrimaryKeys)
-	queries := NewRepoQueries(s, pk)
+func NewRepoTemplateData(s TableToStructInfo) (RepoTemplateData, error) {
+	pk, err := NewPrimaryKeyView(s.PrimaryKeys)
+	if err != nil {
+		return RepoTemplateData{}, err
+	}
+	queries, err := NewRepoQueries(s, pk)
+	if err != nil {
+		return RepoTemplateData{}, err
+	}
 
 	return RepoTemplateData{
 		StructName:               s.StructName,
@@ -63,10 +72,10 @@ func NewRepoTemplateData(s TableToStructInfo) RepoTemplateData {
 		DtoFieldsCreate:          s.InsertFields(),
 		DtoFieldsUpdate:          s.UpdateFields(),
 		DtoFieldsFull:            s.FullFields(),
-	}
+	}, nil
 }
 
-func NewRepoQueries(s TableToStructInfo, pk PrimaryKeyView) RepoQueries {
+func NewRepoQueries(s TableToStructInfo, pk PrimaryKeyView) (RepoQueries, error) {
 	insertFields := s.InsertDBFields()
 	fieldsWithPkeysAndDefaults := s.ScanDBFields()
 	updateSets := GenUpdateSets(s.UpdateFields(), len(s.PrimaryKeys))
@@ -82,13 +91,50 @@ func NewRepoQueries(s TableToStructInfo, pk PrimaryKeyView) RepoQueries {
 		"QUpdateSets":         strings.Join(updateSets, ",\n"),
 	}
 
-	return RepoQueries{
-		Save:            ExecTemplate("query_save", queryTemplatesData, FuncMap),
-		UpdateByID:      ExecTemplate("query_update", queryTemplatesData, FuncMap),
-		DeleteByID:      ExecTemplate("query_delete", queryTemplatesData, FuncMap),
-		GetByID:         ExecTemplate("query_get_by_id", queryTemplatesData, FuncMap),
-		GetAll:          ExecTemplate("query_get_all", queryTemplatesData, FuncMap),
-		Count:           ExecTemplate("query_count", queryTemplatesData, FuncMap),
-		GetAllPaginated: ExecTemplate("query_get_all_paginated", queryTemplatesData, FuncMap),
+	exec := func(name string) (string, error) {
+		s, err := ExecTemplate(name, queryTemplatesData, FuncMap)
+		if err != nil {
+			return "", fmt.Errorf("repo query %s: %w", name, err)
+		}
+		return s, nil
 	}
+
+	save, err := exec("query_save")
+	if err != nil {
+		return RepoQueries{}, err
+	}
+	update, err := exec("query_update")
+	if err != nil {
+		return RepoQueries{}, err
+	}
+	del, err := exec("query_delete")
+	if err != nil {
+		return RepoQueries{}, err
+	}
+	getByID, err := exec("query_get_by_id")
+	if err != nil {
+		return RepoQueries{}, err
+	}
+	getAll, err := exec("query_get_all")
+	if err != nil {
+		return RepoQueries{}, err
+	}
+	count, err := exec("query_count")
+	if err != nil {
+		return RepoQueries{}, err
+	}
+	getAllPaginated, err := exec("query_get_all_paginated")
+	if err != nil {
+		return RepoQueries{}, err
+	}
+
+	return RepoQueries{
+		Save:            save,
+		UpdateByID:      update,
+		DeleteByID:      del,
+		GetByID:         getByID,
+		GetAll:          getAll,
+		Count:           count,
+		GetAllPaginated: getAllPaginated,
+	}, nil
 }
