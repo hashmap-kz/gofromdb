@@ -5,7 +5,6 @@ import (
 	"errors"
 	httpSwagger "github.com/swaggo/http-swagger"
 	"go-project-template-v5/pkg/httputils"
-	"log"
 	"log/slog"
 	"net/http"
 	"os"
@@ -25,9 +24,8 @@ import (
 )
 
 func Run(configFilePath string) {
-	ctx := context.TODO()
-
-	log.Printf("Starting api server. Config-path: %s\n", configFilePath)
+	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer stop()
 
 	// load config
 	config.LoadConfigFromFile(configFilePath)
@@ -40,9 +38,9 @@ func Run(configFilePath string) {
 	// init pgxpool
 	pg, err := postgres.New(logger, cfg.Postgres.URL, postgres.MaxPoolSize(cfg.Postgres.PoolMax))
 	if err != nil {
-		logger.Error("Postgresql init error", slog.String("err", err.Error()))
+		logger.Error("pg init error", slog.String("err", err.Error()))
 	} else {
-		logger.Info("Postgres connected")
+		logger.Info("pg connected")
 	}
 	defer pg.Close()
 
@@ -69,7 +67,7 @@ func Run(configFilePath string) {
 		}
 	}()
 
-	logger.Info("Server started")
+	logger.Info("server started", slog.String("port", cfg.Server.Port))
 
 	// Graceful Shutdown
 	quit := make(chan os.Signal, 1)
@@ -84,6 +82,8 @@ func Run(configFilePath string) {
 
 	if err := srv.Stop(ctx); err != nil {
 		logger.Error("failed to stop server", slog.String("err", err.Error()))
+	} else {
+		logger.Info("application stopped gracefully")
 	}
 }
 

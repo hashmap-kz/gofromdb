@@ -15,536 +15,6 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/v1/buy-items": {
-            "get": {
-                "description": "Retrieves a list without pagination.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "buy-items"
-                ],
-                "summary": "Get all",
-                "responses": {
-                    "200": {
-                        "description": "List of all items",
-                        "schema": {
-                            "$ref": "#/definitions/v1.buyItemResponseList"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request (Service failure)",
-                        "schema": {
-                            "$ref": "#/definitions/httputils.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error (Data processing failure)",
-                        "schema": {
-                            "$ref": "#/definitions/httputils.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Create new item handler",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "buy-items"
-                ],
-                "summary": "Create new item",
-                "parameters": [
-                    {
-                        "description": "Create input",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/v1.buyItemCreateRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/v1.buyItemResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request (Invalid request payload)",
-                        "schema": {
-                            "$ref": "#/definitions/httputils.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/httputils.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/buy-items/pageable": {
-            "get": {
-                "description": "Retrieves a paginated list using pagination parameters.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "buy-items"
-                ],
-                "summary": "Get paginated list",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Page number (default: 1)",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Number of items per page (default: 10)",
-                        "name": "size",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Sort order, e.g., 'name,asc'",
-                        "name": "sort",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Paginated list of BuyItem",
-                        "schema": {
-                            "$ref": "#/definitions/v1.buyItemResponseList"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request (Invalid pagination parameters or service failure)",
-                        "schema": {
-                            "$ref": "#/definitions/httputils.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error (Data processing failure)",
-                        "schema": {
-                            "$ref": "#/definitions/httputils.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/buy-items/{id}": {
-            "get": {
-                "description": "Retrieves the details based on the provided ID in the request path.",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "buy-items"
-                ],
-                "summary": "Get item by ID",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Item ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Single item",
-                        "schema": {
-                            "$ref": "#/definitions/v1.buyItemResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request (Invalid ID format)",
-                        "schema": {
-                            "$ref": "#/definitions/httputils.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error (Deletion failed)",
-                        "schema": {
-                            "$ref": "#/definitions/httputils.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "description": "Updates an item by its ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "buy-items"
-                ],
-                "summary": "Update existing item",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Item ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Update input",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/v1.buyItemUpdateRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/v1.buyItemResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/httputils.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/httputils.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Deletes an item by its ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "buy-items"
-                ],
-                "summary": "Delete existing item",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "BuyItem ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No Content (Successfully deleted)"
-                    },
-                    "400": {
-                        "description": "Bad Request (Invalid ID format)",
-                        "schema": {
-                            "$ref": "#/definitions/httputils.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error (Deletion failed)",
-                        "schema": {
-                            "$ref": "#/definitions/httputils.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/buys": {
-            "get": {
-                "description": "Retrieves a list without pagination.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "buys"
-                ],
-                "summary": "Get all",
-                "responses": {
-                    "200": {
-                        "description": "List of all items",
-                        "schema": {
-                            "$ref": "#/definitions/v1.buyResponseList"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request (Service failure)",
-                        "schema": {
-                            "$ref": "#/definitions/httputils.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error (Data processing failure)",
-                        "schema": {
-                            "$ref": "#/definitions/httputils.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Create new item handler",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "buys"
-                ],
-                "summary": "Create new item",
-                "parameters": [
-                    {
-                        "description": "Create input",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/v1.buyCreateRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/v1.buyResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request (Invalid request payload)",
-                        "schema": {
-                            "$ref": "#/definitions/httputils.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/httputils.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/buys/pageable": {
-            "get": {
-                "description": "Retrieves a paginated list using pagination parameters.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "buys"
-                ],
-                "summary": "Get paginated list",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Page number (default: 1)",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Number of items per page (default: 10)",
-                        "name": "size",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Sort order, e.g., 'name,asc'",
-                        "name": "sort",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Paginated list of Buy",
-                        "schema": {
-                            "$ref": "#/definitions/v1.buyResponseList"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request (Invalid pagination parameters or service failure)",
-                        "schema": {
-                            "$ref": "#/definitions/httputils.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error (Data processing failure)",
-                        "schema": {
-                            "$ref": "#/definitions/httputils.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/buys/{id}": {
-            "get": {
-                "description": "Retrieves the details based on the provided ID in the request path.",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "buys"
-                ],
-                "summary": "Get item by ID",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Item ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Single item",
-                        "schema": {
-                            "$ref": "#/definitions/v1.buyResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request (Invalid ID format)",
-                        "schema": {
-                            "$ref": "#/definitions/httputils.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error (Deletion failed)",
-                        "schema": {
-                            "$ref": "#/definitions/httputils.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "description": "Updates an item by its ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "buys"
-                ],
-                "summary": "Update existing item",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Item ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Update input",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/v1.buyUpdateRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/v1.buyResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/httputils.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/httputils.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Deletes an item by its ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "buys"
-                ],
-                "summary": "Delete existing item",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Buy ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No Content (Successfully deleted)"
-                    },
-                    "400": {
-                        "description": "Bad Request (Invalid ID format)",
-                        "schema": {
-                            "$ref": "#/definitions/httputils.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error (Deletion failed)",
-                        "schema": {
-                            "$ref": "#/definitions/httputils.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/api/v1/categories": {
             "get": {
                 "description": "Retrieves a list without pagination.",
@@ -562,7 +32,7 @@ const docTemplate = `{
                     "200": {
                         "description": "List of all items",
                         "schema": {
-                            "$ref": "#/definitions/v1.categoryResponseList"
+                            "$ref": "#/definitions/categories.categoriesResponseList"
                         }
                     },
                     "400": {
@@ -598,7 +68,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/v1.categoryCreateRequest"
+                            "$ref": "#/definitions/categories.categoriesCreateRequest"
                         }
                     }
                 ],
@@ -606,7 +76,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/v1.categoryResponse"
+                            "$ref": "#/definitions/categories.categoriesResponse"
                         }
                     },
                     "400": {
@@ -659,9 +129,9 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Paginated list of Category",
+                        "description": "Paginated list of Categories",
                         "schema": {
-                            "$ref": "#/definitions/v1.categoryResponseList"
+                            "$ref": "#/definitions/categories.categoriesResponseList"
                         }
                     },
                     "400": {
@@ -679,7 +149,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/categories/{id}": {
+        "/api/v1/categories/{record_id}": {
             "get": {
                 "description": "Retrieves the details based on the provided ID in the request path.",
                 "produces": [
@@ -702,7 +172,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Single item",
                         "schema": {
-                            "$ref": "#/definitions/v1.categoryResponse"
+                            "$ref": "#/definitions/categories.categoriesResponse"
                         }
                     },
                     "400": {
@@ -745,7 +215,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/v1.categoryUpdateRequest"
+                            "$ref": "#/definitions/categories.categoriesUpdateRequest"
                         }
                     }
                 ],
@@ -753,7 +223,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/v1.categoryResponse"
+                            "$ref": "#/definitions/categories.categoriesResponse"
                         }
                     },
                     "400": {
@@ -785,7 +255,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Category ID",
+                        "description": "Categories ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -810,7 +280,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/clients": {
+        "/api/v1/order-items": {
             "get": {
                 "description": "Retrieves a list without pagination.",
                 "consumes": [
@@ -820,14 +290,14 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "clients"
+                    "order-items"
                 ],
                 "summary": "Get all",
                 "responses": {
                     "200": {
                         "description": "List of all items",
                         "schema": {
-                            "$ref": "#/definitions/v1.clientResponseList"
+                            "$ref": "#/definitions/order_items.orderItemsResponseList"
                         }
                     },
                     "400": {
@@ -853,7 +323,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "clients"
+                    "order-items"
                 ],
                 "summary": "Create new item",
                 "parameters": [
@@ -863,7 +333,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/v1.clientCreateRequest"
+                            "$ref": "#/definitions/order_items.orderItemsCreateRequest"
                         }
                     }
                 ],
@@ -871,7 +341,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/v1.clientResponse"
+                            "$ref": "#/definitions/order_items.orderItemsResponse"
                         }
                     },
                     "400": {
@@ -889,7 +359,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/clients/pageable": {
+        "/api/v1/order-items/pageable": {
             "get": {
                 "description": "Retrieves a paginated list using pagination parameters.",
                 "consumes": [
@@ -899,7 +369,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "clients"
+                    "order-items"
                 ],
                 "summary": "Get paginated list",
                 "parameters": [
@@ -924,9 +394,9 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Paginated list of Client",
+                        "description": "Paginated list of OrderItems",
                         "schema": {
-                            "$ref": "#/definitions/v1.clientResponseList"
+                            "$ref": "#/definitions/order_items.orderItemsResponseList"
                         }
                     },
                     "400": {
@@ -944,14 +414,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/clients/{id}": {
+        "/api/v1/order-items/{record_id}": {
             "get": {
                 "description": "Retrieves the details based on the provided ID in the request path.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "clients"
+                    "order-items"
                 ],
                 "summary": "Get item by ID",
                 "parameters": [
@@ -967,7 +437,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Single item",
                         "schema": {
-                            "$ref": "#/definitions/v1.clientResponse"
+                            "$ref": "#/definitions/order_items.orderItemsResponse"
                         }
                     },
                     "400": {
@@ -993,7 +463,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "clients"
+                    "order-items"
                 ],
                 "summary": "Update existing item",
                 "parameters": [
@@ -1010,7 +480,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/v1.clientUpdateRequest"
+                            "$ref": "#/definitions/order_items.orderItemsUpdateRequest"
                         }
                     }
                 ],
@@ -1018,7 +488,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/v1.clientResponse"
+                            "$ref": "#/definitions/order_items.orderItemsResponse"
                         }
                     },
                     "400": {
@@ -1044,13 +514,278 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "clients"
+                    "order-items"
                 ],
                 "summary": "Delete existing item",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Client ID",
+                        "description": "OrderItems ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content (Successfully deleted)"
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid ID format)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error (Deletion failed)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/orders": {
+            "get": {
+                "description": "Retrieves a list without pagination.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "orders"
+                ],
+                "summary": "Get all",
+                "responses": {
+                    "200": {
+                        "description": "List of all items",
+                        "schema": {
+                            "$ref": "#/definitions/orders.ordersResponseList"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (Service failure)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error (Data processing failure)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create new item handler",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "orders"
+                ],
+                "summary": "Create new item",
+                "parameters": [
+                    {
+                        "description": "Create input",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/orders.ordersCreateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/orders.ordersResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid request payload)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/orders/pageable": {
+            "get": {
+                "description": "Retrieves a paginated list using pagination parameters.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "orders"
+                ],
+                "summary": "Get paginated list",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page number (default: 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Number of items per page (default: 10)",
+                        "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort order, e.g., 'name,asc'",
+                        "name": "sort",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated list of Orders",
+                        "schema": {
+                            "$ref": "#/definitions/orders.ordersResponseList"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid pagination parameters or service failure)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error (Data processing failure)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/orders/{record_id}": {
+            "get": {
+                "description": "Retrieves the details based on the provided ID in the request path.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "orders"
+                ],
+                "summary": "Get item by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Single item",
+                        "schema": {
+                            "$ref": "#/definitions/orders.ordersResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid ID format)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error (Deletion failed)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Updates an item by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "orders"
+                ],
+                "summary": "Update existing item",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update input",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/orders.ordersUpdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/orders.ordersResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Deletes an item by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "orders"
+                ],
+                "summary": "Delete existing item",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Orders ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -1092,7 +827,7 @@ const docTemplate = `{
                     "200": {
                         "description": "List of all items",
                         "schema": {
-                            "$ref": "#/definitions/v1.productResponseList"
+                            "$ref": "#/definitions/products.productsResponseList"
                         }
                     },
                     "400": {
@@ -1128,7 +863,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/v1.productCreateRequest"
+                            "$ref": "#/definitions/products.productsCreateRequest"
                         }
                     }
                 ],
@@ -1136,7 +871,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/v1.productResponse"
+                            "$ref": "#/definitions/products.productsResponse"
                         }
                     },
                     "400": {
@@ -1189,9 +924,9 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Paginated list of Product",
+                        "description": "Paginated list of Products",
                         "schema": {
-                            "$ref": "#/definitions/v1.productResponseList"
+                            "$ref": "#/definitions/products.productsResponseList"
                         }
                     },
                     "400": {
@@ -1209,7 +944,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/products/{id}": {
+        "/api/v1/products/{record_id}": {
             "get": {
                 "description": "Retrieves the details based on the provided ID in the request path.",
                 "produces": [
@@ -1232,7 +967,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Single item",
                         "schema": {
-                            "$ref": "#/definitions/v1.productResponse"
+                            "$ref": "#/definitions/products.productsResponse"
                         }
                     },
                     "400": {
@@ -1275,7 +1010,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/v1.productUpdateRequest"
+                            "$ref": "#/definitions/products.productsUpdateRequest"
                         }
                     }
                 ],
@@ -1283,7 +1018,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/v1.productResponse"
+                            "$ref": "#/definitions/products.productsResponse"
                         }
                     },
                     "400": {
@@ -1315,7 +1050,272 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Product ID",
+                        "description": "Products ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content (Successfully deleted)"
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid ID format)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error (Deletion failed)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/users": {
+            "get": {
+                "description": "Retrieves a list without pagination.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get all",
+                "responses": {
+                    "200": {
+                        "description": "List of all items",
+                        "schema": {
+                            "$ref": "#/definitions/users.usersResponseList"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (Service failure)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error (Data processing failure)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create new item handler",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Create new item",
+                "parameters": [
+                    {
+                        "description": "Create input",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/users.usersCreateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/users.usersResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid request payload)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/users/pageable": {
+            "get": {
+                "description": "Retrieves a paginated list using pagination parameters.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get paginated list",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page number (default: 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Number of items per page (default: 10)",
+                        "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort order, e.g., 'name,asc'",
+                        "name": "sort",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated list of Users",
+                        "schema": {
+                            "$ref": "#/definitions/users.usersResponseList"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid pagination parameters or service failure)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error (Data processing failure)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/users/{record_id}": {
+            "get": {
+                "description": "Retrieves the details based on the provided ID in the request path.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get item by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Single item",
+                        "schema": {
+                            "$ref": "#/definitions/users.usersResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid ID format)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error (Deletion failed)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Updates an item by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Update existing item",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update input",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/users.usersUpdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/users.usersResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Deletes an item by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Delete existing item",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Users ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -1342,6 +1342,109 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "categories.categoriesCreateRequest": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "description": "Name of the category.",
+                    "type": "string"
+                },
+                "parent_id": {
+                    "description": "Reference to the parent category. NULL if it is a root category.",
+                    "type": "integer"
+                },
+                "valid_period": {
+                    "description": "Validity period of this category naming.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/pgtype.Range-time_Time"
+                        }
+                    ]
+                }
+            }
+        },
+        "categories.categoriesResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "description": "Internal field, creation TS",
+                    "type": "string"
+                },
+                "guid": {
+                    "description": "Internal field, UUID of the row",
+                    "type": "string"
+                },
+                "is_current": {
+                    "description": "Whether this category is the last actual.",
+                    "type": "boolean"
+                },
+                "name": {
+                    "description": "Name of the category.",
+                    "type": "string"
+                },
+                "parent_id": {
+                    "description": "Reference to the parent category. NULL if it is a root category.",
+                    "type": "integer"
+                },
+                "record_id": {
+                    "description": "Primary key.",
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "description": "Internal field, last updated TS",
+                    "type": "string"
+                },
+                "valid_period": {
+                    "description": "Validity period of this category naming.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/pgtype.Range-time_Time"
+                        }
+                    ]
+                }
+            }
+        },
+        "categories.categoriesResponseList": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "description": "Payload",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/categories.categoriesResponse"
+                    }
+                },
+                "page": {
+                    "description": "Page information (if present)",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/pageable.Page"
+                        }
+                    ]
+                }
+            }
+        },
+        "categories.categoriesUpdateRequest": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "description": "Name of the category.",
+                    "type": "string"
+                },
+                "parent_id": {
+                    "description": "Reference to the parent category. NULL if it is a root category.",
+                    "type": "integer"
+                },
+                "valid_period": {
+                    "description": "Validity period of this category naming.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/pgtype.Range-time_Time"
+                        }
+                    ]
+                }
+            }
+        },
         "httputils.ErrorDetail": {
             "type": "object",
             "properties": {
@@ -1367,6 +1470,180 @@ const docTemplate = `{
                 }
             }
         },
+        "order_items.orderItemsCreateRequest": {
+            "type": "object",
+            "properties": {
+                "order_id": {
+                    "description": "Foreign key referencing the associated order.",
+                    "type": "integer"
+                },
+                "price": {
+                    "description": "Price per unit of the product at the time of ordering.",
+                    "type": "string"
+                },
+                "product_id": {
+                    "description": "Foreign key referencing the product.",
+                    "type": "integer"
+                },
+                "quantity": {
+                    "description": "Number of units of the product.",
+                    "type": "string"
+                }
+            }
+        },
+        "order_items.orderItemsResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "description": "Internal field, creation TS",
+                    "type": "string"
+                },
+                "guid": {
+                    "description": "Internal field, UUID of the row",
+                    "type": "string"
+                },
+                "order_id": {
+                    "description": "Foreign key referencing the associated order.",
+                    "type": "integer"
+                },
+                "price": {
+                    "description": "Price per unit of the product at the time of ordering.",
+                    "type": "string"
+                },
+                "product_id": {
+                    "description": "Foreign key referencing the product.",
+                    "type": "integer"
+                },
+                "quantity": {
+                    "description": "Number of units of the product.",
+                    "type": "string"
+                },
+                "record_id": {
+                    "description": "Primary key.",
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "description": "Internal field, last updated TS",
+                    "type": "string"
+                }
+            }
+        },
+        "order_items.orderItemsResponseList": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "description": "Payload",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/order_items.orderItemsResponse"
+                    }
+                },
+                "page": {
+                    "description": "Page information (if present)",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/pageable.Page"
+                        }
+                    ]
+                }
+            }
+        },
+        "order_items.orderItemsUpdateRequest": {
+            "type": "object",
+            "properties": {
+                "order_id": {
+                    "description": "Foreign key referencing the associated order.",
+                    "type": "integer"
+                },
+                "price": {
+                    "description": "Price per unit of the product at the time of ordering.",
+                    "type": "string"
+                },
+                "product_id": {
+                    "description": "Foreign key referencing the product.",
+                    "type": "integer"
+                },
+                "quantity": {
+                    "description": "Number of units of the product.",
+                    "type": "string"
+                }
+            }
+        },
+        "orders.ordersCreateRequest": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "description": "Optional description or additional details of the order.",
+                    "type": "string"
+                },
+                "user_id": {
+                    "description": "Foreign key referencing the user who made the order.",
+                    "type": "integer"
+                }
+            }
+        },
+        "orders.ordersResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "description": "Internal field, creation TS",
+                    "type": "string"
+                },
+                "description": {
+                    "description": "Optional description or additional details of the order.",
+                    "type": "string"
+                },
+                "guid": {
+                    "description": "Internal field, UUID of the row",
+                    "type": "string"
+                },
+                "record_id": {
+                    "description": "Primary key.",
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "description": "Internal field, last updated TS",
+                    "type": "string"
+                },
+                "user_id": {
+                    "description": "Foreign key referencing the user who made the order.",
+                    "type": "integer"
+                }
+            }
+        },
+        "orders.ordersResponseList": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "description": "Payload",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/orders.ordersResponse"
+                    }
+                },
+                "page": {
+                    "description": "Page information (if present)",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/pageable.Page"
+                        }
+                    ]
+                }
+            }
+        },
+        "orders.ordersUpdateRequest": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "description": "Optional description or additional details of the order.",
+                    "type": "string"
+                },
+                "user_id": {
+                    "description": "Foreign key referencing the user who made the order.",
+                    "type": "integer"
+                }
+            }
+        },
         "pageable.Page": {
             "type": "object",
             "properties": {
@@ -1388,319 +1665,42 @@ const docTemplate = `{
                 }
             }
         },
-        "v1.buyCreateRequest": {
+        "pgtype.BoundType": {
+            "type": "integer",
+            "enum": [
+                105,
+                101,
+                85,
+                69
+            ],
+            "x-enum-varnames": [
+                "Inclusive",
+                "Exclusive",
+                "Unbounded",
+                "Empty"
+            ]
+        },
+        "pgtype.Range-time_Time": {
             "type": "object",
             "properties": {
-                "client_id": {
-                    "description": "Foreign key referencing the client who made the purchase.",
-                    "type": "integer"
-                },
-                "description": {
-                    "description": "Optional description or additional details of the purchase.",
+                "lower": {
                     "type": "string"
+                },
+                "lowerType": {
+                    "$ref": "#/definitions/pgtype.BoundType"
+                },
+                "upper": {
+                    "type": "string"
+                },
+                "upperType": {
+                    "$ref": "#/definitions/pgtype.BoundType"
+                },
+                "valid": {
+                    "type": "boolean"
                 }
             }
         },
-        "v1.buyItemCreateRequest": {
-            "type": "object",
-            "properties": {
-                "buy_id": {
-                    "description": "Foreign key referencing the associated purchase.",
-                    "type": "integer"
-                },
-                "price": {
-                    "description": "Price per unit of the product at the time of purchase.",
-                    "type": "string"
-                },
-                "product_id": {
-                    "description": "Foreign key referencing the purchased product.",
-                    "type": "integer"
-                },
-                "quantity": {
-                    "description": "Number of units of the product in the purchase.",
-                    "type": "integer"
-                }
-            }
-        },
-        "v1.buyItemResponse": {
-            "type": "object",
-            "properties": {
-                "buy_id": {
-                    "description": "Foreign key referencing the associated purchase.",
-                    "type": "integer"
-                },
-                "created_at": {
-                    "description": "Internal field, creation TS",
-                    "type": "string"
-                },
-                "guid": {
-                    "description": "Internal field, UUID of the row",
-                    "type": "string"
-                },
-                "price": {
-                    "description": "Price per unit of the product at the time of purchase.",
-                    "type": "string"
-                },
-                "product_id": {
-                    "description": "Foreign key referencing the purchased product.",
-                    "type": "integer"
-                },
-                "quantity": {
-                    "description": "Number of units of the product in the purchase.",
-                    "type": "integer"
-                },
-                "record_id": {
-                    "description": "Primary key for the buy_item table.",
-                    "type": "integer"
-                },
-                "updated_at": {
-                    "description": "Internal field, last updated TS",
-                    "type": "string"
-                }
-            }
-        },
-        "v1.buyItemResponseList": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "description": "Payload",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/v1.buyItemResponse"
-                    }
-                },
-                "page": {
-                    "description": "Page information (if present)",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/pageable.Page"
-                        }
-                    ]
-                }
-            }
-        },
-        "v1.buyItemUpdateRequest": {
-            "type": "object",
-            "properties": {
-                "buy_id": {
-                    "description": "Foreign key referencing the associated purchase.",
-                    "type": "integer"
-                },
-                "price": {
-                    "description": "Price per unit of the product at the time of purchase.",
-                    "type": "string"
-                },
-                "product_id": {
-                    "description": "Foreign key referencing the purchased product.",
-                    "type": "integer"
-                },
-                "quantity": {
-                    "description": "Number of units of the product in the purchase.",
-                    "type": "integer"
-                }
-            }
-        },
-        "v1.buyResponse": {
-            "type": "object",
-            "properties": {
-                "client_id": {
-                    "description": "Foreign key referencing the client who made the purchase.",
-                    "type": "integer"
-                },
-                "created_at": {
-                    "description": "Internal field, creation TS",
-                    "type": "string"
-                },
-                "description": {
-                    "description": "Optional description or additional details of the purchase.",
-                    "type": "string"
-                },
-                "guid": {
-                    "description": "Internal field, UUID of the row",
-                    "type": "string"
-                },
-                "record_id": {
-                    "description": "Primary key for the buy table.",
-                    "type": "integer"
-                },
-                "updated_at": {
-                    "description": "Internal field, last updated TS",
-                    "type": "string"
-                }
-            }
-        },
-        "v1.buyResponseList": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "description": "Payload",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/v1.buyResponse"
-                    }
-                },
-                "page": {
-                    "description": "Page information (if present)",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/pageable.Page"
-                        }
-                    ]
-                }
-            }
-        },
-        "v1.buyUpdateRequest": {
-            "type": "object",
-            "properties": {
-                "client_id": {
-                    "description": "Foreign key referencing the client who made the purchase.",
-                    "type": "integer"
-                },
-                "description": {
-                    "description": "Optional description or additional details of the purchase.",
-                    "type": "string"
-                }
-            }
-        },
-        "v1.categoryCreateRequest": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "description": "Name of the category.",
-                    "type": "string"
-                },
-                "parent_id": {
-                    "description": "Reference to the parent category. NULL if it is a root category.",
-                    "type": "integer"
-                }
-            }
-        },
-        "v1.categoryResponse": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "description": "Internal field, creation TS",
-                    "type": "string"
-                },
-                "guid": {
-                    "description": "Internal field, UUID of the row",
-                    "type": "string"
-                },
-                "name": {
-                    "description": "Name of the category.",
-                    "type": "string"
-                },
-                "parent_id": {
-                    "description": "Reference to the parent category. NULL if it is a root category.",
-                    "type": "integer"
-                },
-                "record_id": {
-                    "description": "Primary key for the category table.",
-                    "type": "integer"
-                },
-                "updated_at": {
-                    "description": "Internal field, last updated TS",
-                    "type": "string"
-                }
-            }
-        },
-        "v1.categoryResponseList": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "description": "Payload",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/v1.categoryResponse"
-                    }
-                },
-                "page": {
-                    "description": "Page information (if present)",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/pageable.Page"
-                        }
-                    ]
-                }
-            }
-        },
-        "v1.categoryUpdateRequest": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "description": "Name of the category.",
-                    "type": "string"
-                },
-                "parent_id": {
-                    "description": "Reference to the parent category. NULL if it is a root category.",
-                    "type": "integer"
-                }
-            }
-        },
-        "v1.clientCreateRequest": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "description": "Unique email address of the client.",
-                    "type": "string"
-                }
-            }
-        },
-        "v1.clientResponse": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "description": "Internal field, creation TS",
-                    "type": "string"
-                },
-                "email": {
-                    "description": "Unique email address of the client.",
-                    "type": "string"
-                },
-                "guid": {
-                    "description": "Internal field, UUID of the row",
-                    "type": "string"
-                },
-                "record_id": {
-                    "description": "Primary key for the client table.",
-                    "type": "integer"
-                },
-                "updated_at": {
-                    "description": "Internal field, last updated TS",
-                    "type": "string"
-                }
-            }
-        },
-        "v1.clientResponseList": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "description": "Payload",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/v1.clientResponse"
-                    }
-                },
-                "page": {
-                    "description": "Page information (if present)",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/pageable.Page"
-                        }
-                    ]
-                }
-            }
-        },
-        "v1.clientUpdateRequest": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "description": "Unique email address of the client.",
-                    "type": "string"
-                }
-            }
-        },
-        "v1.productCreateRequest": {
+        "products.productsCreateRequest": {
             "type": "object",
             "properties": {
                 "category_id": {
@@ -1717,7 +1717,7 @@ const docTemplate = `{
                 }
             }
         },
-        "v1.productResponse": {
+        "products.productsResponse": {
             "type": "object",
             "properties": {
                 "category_id": {
@@ -1741,7 +1741,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "record_id": {
-                    "description": "Primary key for the product table.",
+                    "description": "Primary key.",
                     "type": "integer"
                 },
                 "updated_at": {
@@ -1750,14 +1750,14 @@ const docTemplate = `{
                 }
             }
         },
-        "v1.productResponseList": {
+        "products.productsResponseList": {
             "type": "object",
             "properties": {
                 "data": {
                     "description": "Payload",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/v1.productResponse"
+                        "$ref": "#/definitions/products.productsResponse"
                     }
                 },
                 "page": {
@@ -1770,7 +1770,7 @@ const docTemplate = `{
                 }
             }
         },
-        "v1.productUpdateRequest": {
+        "products.productsUpdateRequest": {
             "type": "object",
             "properties": {
                 "category_id": {
@@ -1783,6 +1783,69 @@ const docTemplate = `{
                 },
                 "name": {
                     "description": "Name of the product.",
+                    "type": "string"
+                }
+            }
+        },
+        "users.usersCreateRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "description": "Unique email address of the user.",
+                    "type": "string"
+                }
+            }
+        },
+        "users.usersResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "description": "Internal field, creation TS",
+                    "type": "string"
+                },
+                "email": {
+                    "description": "Unique email address of the user.",
+                    "type": "string"
+                },
+                "guid": {
+                    "description": "Internal field, UUID of the row",
+                    "type": "string"
+                },
+                "record_id": {
+                    "description": "Primary key for the users table.",
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "description": "Internal field, last updated TS",
+                    "type": "string"
+                }
+            }
+        },
+        "users.usersResponseList": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "description": "Payload",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/users.usersResponse"
+                    }
+                },
+                "page": {
+                    "description": "Page information (if present)",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/pageable.Page"
+                        }
+                    ]
+                }
+            }
+        },
+        "users.usersUpdateRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "description": "Unique email address of the user.",
                     "type": "string"
                 }
             }
