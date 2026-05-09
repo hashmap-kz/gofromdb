@@ -13,19 +13,7 @@ import (
 func main() {
 	connString := "postgres://postgres:postgres@localhost:5432/bookstore"
 	structs := app.GenStructs(connString)
-	outputPath := path.Join("examples", "go-project-template-v5")
-
-	// Paths example:
-	//
-	// internal/api/client/entity/postgres/client_entity_pg.go
-	// internal/api/client/repository/client_repository.go
-	// internal/api/client/repository/impl/client_repository_pg.go
-	//
-	// internal/api/client/dto/client_dto.go
-	// internal/api/client/service/client_service.go
-	// internal/api/client/service/impl/client_service_impl.go
-	//
-	// internal/api/client/handler/v1/client_payload.go
+	outputPath := path.Join("examples", "go-project-template-v7")
 
 	writeInterfaces(structs, outputPath)
 	for _, s := range structs {
@@ -54,72 +42,22 @@ func writeInterfaces(s []app.TableToStructInfo, outputPath string) {
 	writeFile(path.Join(outputPath, "internal/api/handler.go"), layer.HandlerInterface)
 }
 
-func writeHandlerFiles(s app.TableToStructInfo, outputPath string) {
-	layer := app.GenHandler(s)
-
-	// models
-	modelsPath := path.Join(outputPath, fmt.Sprintf("internal/api/%s/handler/v1/%s_payload.go",
-		s.DbTableName,
-		s.DbTableName),
-	)
-	writeFile(modelsPath, layer.HandlerDtos)
-
-	// impl
-	implPath := path.Join(outputPath, fmt.Sprintf("internal/api/%s/handler/v1/%s_handler.go",
-		s.DbTableName,
-		s.DbTableName),
-	)
-	writeFile(implPath, layer.HandlerImpl)
+func writeRepoFiles(s app.TableToStructInfo, outputPath string) {
+	layer := app.GenRepository(s)
+	writeFile(path.Join(outputPath, fmt.Sprintf("internal/api/%s/entity.go", s.DbTableName)), layer.Entity)
+	writeFile(path.Join(outputPath, fmt.Sprintf("internal/api/%s/repository.go", s.DbTableName)), layer.Repository)
 }
 
 func writeServiceFiles(s app.TableToStructInfo, outputPath string) {
 	layer := app.GenService(s)
-
-	// models
-	modelsPath := path.Join(outputPath, fmt.Sprintf("internal/api/%s/dto/%s_dto.go",
-		s.DbTableName,
-		s.DbTableName),
-	)
-	writeFile(modelsPath, layer.ServiceDtos)
-
-	// interface
-	interfacePath := path.Join(outputPath, fmt.Sprintf("internal/api/%s/service/%s_service.go",
-		s.DbTableName,
-		s.DbTableName),
-	)
-	writeFile(interfacePath, layer.ServiceInterface)
-
-	// interface impl
-	implPath := path.Join(outputPath, fmt.Sprintf("internal/api/%s/service/impl/%s_service_impl.go",
-		s.DbTableName,
-		s.DbTableName),
-	)
-	writeFile(implPath, layer.ServiceImpl)
+	writeFile(path.Join(outputPath, fmt.Sprintf("internal/api/%s/dto.go", s.DbTableName)), layer.Dto)
+	writeFile(path.Join(outputPath, fmt.Sprintf("internal/api/%s/service.go", s.DbTableName)), layer.Service)
 }
 
-func writeRepoFiles(s app.TableToStructInfo, outputPath string) {
-	layer := app.GenRepository(s)
-
-	// models
-	modelsPath := path.Join(outputPath, fmt.Sprintf("internal/api/%s/entity/postgres/%s_entity_pg.go",
-		s.DbTableName,
-		s.DbTableName),
-	)
-	writeFile(modelsPath, layer.RepoEntity)
-
-	// interface
-	interfacePath := path.Join(outputPath, fmt.Sprintf("internal/api/%s/repository/%s_repository.go",
-		s.DbTableName,
-		s.DbTableName),
-	)
-	writeFile(interfacePath, layer.RepoInterface)
-
-	// interface impl
-	implPath := path.Join(outputPath, fmt.Sprintf("internal/api/%s/repository/impl/%s_repository_pg.go",
-		s.DbTableName,
-		s.DbTableName),
-	)
-	writeFile(implPath, layer.RepoImpl)
+func writeHandlerFiles(s app.TableToStructInfo, outputPath string) {
+	layer := app.GenHandler(s)
+	writeFile(path.Join(outputPath, fmt.Sprintf("internal/api/%s/payload.go", s.DbTableName)), layer.Payload)
+	writeFile(path.Join(outputPath, fmt.Sprintf("internal/api/%s/handler.go", s.DbTableName)), layer.Handler)
 }
 
 func writeFile(entityPath, content string) {

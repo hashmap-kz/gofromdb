@@ -1,8 +1,8 @@
 package app
 
 type GenInterf struct {
-	ServiceInterface string
 	RepoInterface    string
+	ServiceInterface string
 	HandlerInterface string
 }
 
@@ -12,8 +12,8 @@ func GenInterfaces(structs []TableToStructInfo) GenInterf {
 	}
 
 	return GenInterf{
-		ServiceInterface: PrintFormatted(ExecTemplate("interfaces_service", data, FuncMap)),
 		RepoInterface:    PrintFormatted(ExecTemplate("interfaces_repo", data, FuncMap)),
+		ServiceInterface: PrintFormatted(ExecTemplate("interfaces_service", data, FuncMap)),
 		HandlerInterface: PrintFormatted(ExecTemplate("interfaces_handler", data, FuncMap)),
 	}
 }

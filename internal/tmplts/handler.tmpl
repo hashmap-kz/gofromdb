@@ -1,5 +1,5 @@
 
-package v1
+package {{.PackageName}}
 
 import (
 	"fmt"
@@ -7,19 +7,16 @@ import (
 
 	"go-project-template-v5/pkg/pageable"
 
-	"go-project-template-v5/internal/api/{{.PackageName}}/dto"
-	"go-project-template-v5/internal/api/{{.PackageName}}/service"
-
 	"go-project-template-v5/pkg/httputils"
 	"go-project-template-v5/pkg/validator"
 )
 
-type {{.ImplName}} struct {
-	{{.ServiceVarName}} service.{{.ServiceInterfaceName}}
+type Handler struct {
+	{{.ServiceVarName}} Service
 }
 
-func New{{.ImplName}}({{.ServiceVarName}} service.{{.ServiceInterfaceName}}) *{{.ImplName}} {
-	return &{{.ImplName}}{
+func NewHandler({{.ServiceVarName}} Service) *Handler {
+	return &Handler{
 		{{.ServiceVarName}}: {{.ServiceVarName}},
 	}
 }
@@ -36,7 +33,7 @@ func New{{.ImplName}}({{.ServiceVarName}} service.{{.ServiceInterfaceName}}) *{{
 // @Failure 400 {object} httputils.ErrorResponse "Bad Request (Invalid request payload)"
 // @Failure 500 {object} httputils.ErrorResponse "Internal Server Error"
 // @Router /api/v1/{{.StructNamePluralRequestPath}} [post]
-func (h *{{.ImplName}}) Save(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) Save(w http.ResponseWriter, r *http.Request) {
 	// read RequestBody
 	req := &{{.CreateRequestName}}{}
 	if err := httputils.ReadJSON(r, &req); err != nil {
@@ -89,7 +86,7 @@ func (h *{{.ImplName}}) Save(w http.ResponseWriter, r *http.Request) {
 // @Failure 400 {object} httputils.ErrorResponse "Bad Request"
 // @Failure 500 {object} httputils.ErrorResponse "Internal Server Error"
 // @Router /api/v1/{{.StructNamePluralRequestPath}}/{{.PkeysURLPath}} [put]
-func (h *{{.ImplName}}) UpdateByID(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) UpdateByID(w http.ResponseWriter, r *http.Request) {
 	{{.PathIDSClause}}
 
 	req := &{{.UpdateRequestName}}{}
@@ -142,7 +139,7 @@ func (h *{{.ImplName}}) UpdateByID(w http.ResponseWriter, r *http.Request) {
 // @Failure 400 {object} httputils.ErrorResponse "Bad Request (Invalid ID format)"
 // @Failure 500 {object} httputils.ErrorResponse "Internal Server Error (Deletion failed)"
 // @Router /api/v1/{{.StructNamePluralRequestPath}}/{{.PkeysURLPath}} [delete]
-func (h *{{.ImplName}}) DeleteByID(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) DeleteByID(w http.ResponseWriter, r *http.Request) {
 	{{.PathIDSClause}}
 
 	err = h.{{.ServiceVarName}}.DeleteByID(r.Context(), {{.ArgumentsByPkeys}})
@@ -166,7 +163,7 @@ func (h *{{.ImplName}}) DeleteByID(w http.ResponseWriter, r *http.Request) {
 // @Failure 400 {object} httputils.ErrorResponse "Bad Request (Invalid ID format)"
 // @Failure 500 {object} httputils.ErrorResponse "Internal Server Error (Deletion failed)"
 // @Router /api/v1/{{.StructNamePluralRequestPath}}/{{.PkeysURLPath}} [get]
-func (h *{{.ImplName}}) FindByID(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) FindByID(w http.ResponseWriter, r *http.Request) {
 	{{.PathIDSClause}}
 
 	resp, err := h.{{.ServiceVarName}}.FindByID(r.Context(), {{.ArgumentsByPkeys}})
@@ -197,7 +194,7 @@ func (h *{{.ImplName}}) FindByID(w http.ResponseWriter, r *http.Request) {
 // @Failure 400 {object} httputils.ErrorResponse "Bad Request (Service failure)"
 // @Failure 500 {object} httputils.ErrorResponse "Internal Server Error (Data processing failure)"
 // @Router /api/v1/{{.StructNamePluralRequestPath}} [get]
-func (h *{{.ImplName}}) FindAll(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) FindAll(w http.ResponseWriter, r *http.Request) {
 	// call service
 	resp, err := h.{{.ServiceVarName}}.FindAll(r.Context())
 	if err != nil {
@@ -232,7 +229,7 @@ func (h *{{.ImplName}}) FindAll(w http.ResponseWriter, r *http.Request) {
 // @Failure 400 {object} httputils.ErrorResponse "Bad Request (Invalid pagination parameters or service failure)"
 // @Failure 500 {object} httputils.ErrorResponse "Internal Server Error (Data processing failure)"
 // @Router /api/v1/{{.StructNamePluralRequestPath}}/pageable [get]
-func (h *{{.ImplName}}) FindAllPageable(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) FindAllPageable(w http.ResponseWriter, r *http.Request) {
 	pq, err := pageable.GetPaginationFromCtx(r)
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
@@ -262,29 +259,32 @@ func (h *{{.ImplName}}) FindAllPageable(w http.ResponseWriter, r *http.Request) 
 
 // mappers
 
-func mapCreateRequestToCreateInputDto(inputRequest *{{.CreateRequestName}}) (*dto.{{.DtoCreateName}}, error) {
+func mapCreateRequestToCreateInputDto(inputRequest *{{.CreateRequestName}}) (*CreateDto, error) {
 	if inputRequest == nil {
-		return nil, fmt.Errorf("unexpected nil input for mapping between {{.CreateRequestName}}->{{.DtoCreateName}}")
+		return nil, fmt.Errorf("unexpected nil input for mapping between {{.CreateRequestName}}->CreateDto")
 	}
-	return &dto.{{.DtoCreateName}}{
+	return &CreateDto{
 {{- range .DtoFieldsCreate}}
 		{{.FieldName}}: inputRequest.{{.FieldName}},
 {{- end}}
 	}, nil
 }
 
-func mapUpdateRequestToUpdateInputDto(inputRequest *{{.UpdateRequestName}}) (*dto.{{.DtoUpdateName}}, error) {
+{{- if .HasUpdateFields}}
+func mapUpdateRequestToUpdateInputDto(inputRequest *{{.UpdateRequestName}}) (*UpdateDto, error) {
 	if inputRequest == nil {
-		return nil, fmt.Errorf("unexpected nil input for mapping between {{.UpdateRequestName}}->{{.DtoUpdateName}}")
+		return nil, fmt.Errorf("unexpected nil input for mapping between {{.UpdateRequestName}}->UpdateDto")
 	}
-	return &dto.{{.DtoUpdateName}}{
+	return &UpdateDto{
 {{- range .DtoFieldsUpdate}}
 		{{.FieldName}}: inputRequest.{{.FieldName}},
 {{- end}}
 	}, nil
 }
 
-func mapDtosToPayloads(inputDtos []dto.{{.DtoName}}) ([]{{.ResponseName}}, error) {
+{{- end}}
+
+func mapDtosToPayloads(inputDtos []Dto) ([]{{.ResponseName}}, error) {
 	outputResponses := make([]{{.ResponseName}}, 0, len(inputDtos))
 	for i := range inputDtos { // Iterate using index to avoid copying (gocritic:rangeValCopy)
 		toPayload, err := mapDtoToPayload(&inputDtos[i])
@@ -296,9 +296,9 @@ func mapDtosToPayloads(inputDtos []dto.{{.DtoName}}) ([]{{.ResponseName}}, error
 	return outputResponses, nil
 }
 
-func mapDtoToPayload(inputDto *dto.{{.DtoName}}) ({{.ResponseName}}, error) {
+func mapDtoToPayload(inputDto *Dto) ({{.ResponseName}}, error) {
 	if inputDto == nil {
-		return {{.ResponseName}}{}, fmt.Errorf("unexpected nil input for mapping between {{.DtoName}}->{{.ResponseName}}")
+		return {{.ResponseName}}{}, fmt.Errorf("unexpected nil input for mapping between Dto->{{.ResponseName}}")
 	}
 	return {{.ResponseName}}{
 {{- range .DtoFieldsFull}}

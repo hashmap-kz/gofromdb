@@ -4,8 +4,7 @@ package api
 import (
 	"context"
 {{- range .Structs}}
-	{{.StructNameLowerFirstLetter}}Serv "go-project-template-v5/internal/api/{{.DbTableName}}/service"
-	{{.StructNameLowerFirstLetter}}Impl "go-project-template-v5/internal/api/{{.DbTableName}}/service/impl"
+	"go-project-template-v5/internal/api/{{.DbTableName}}"
 {{- end }}
 )
 
@@ -13,7 +12,7 @@ import (
 
 type Services struct {
 {{- range .Structs}}
-	{{.StructName}}Service {{.StructNameLowerFirstLetter}}Serv.{{.StructName}}Service
+	{{.StructName}} {{.DbTableName}}.Service
 {{- end }}
 }
 
@@ -25,7 +24,7 @@ type Deps struct {
 func NewServices(ctx context.Context, deps Deps) *Services {
 	return &Services{
 {{- range .Structs}}
-		{{.StructName}}Service: {{.StructNameLowerFirstLetter}}Impl.New{{.StructName}}Service(ctx, deps.Repos.{{.StructName}}Repository),
+		{{.StructName}}: {{.DbTableName}}.NewService(ctx, deps.Repos.{{.StructName}}Repository),
 {{- end }}
 	}
 }

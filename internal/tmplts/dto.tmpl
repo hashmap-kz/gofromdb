@@ -1,20 +1,20 @@
 
-package dto
+package {{.PackageName}}
 import "time"
 
-type {{.DtoName}} struct {
+type Dto struct {
 {{- range .DtoFieldsFull}}
 	{{.FieldName}} {{.FieldType}}
 {{- end}}
 }
 
-type {{.DtoCreateName}} struct {
+type CreateDto struct {
 {{- range .DtoFieldsCreate}}
 	{{.FieldName}} {{.FieldType}}
 {{- end}}
 }
 
-type {{.DtoUpdateName}} struct {
+type UpdateDto struct {
 {{- range .DtoFieldsUpdate}}
 	{{.FieldName}} {{.FieldType}}
 {{- end}}

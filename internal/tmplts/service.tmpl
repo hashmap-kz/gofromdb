@@ -1,0 +1,162 @@
+
+package {{.PackageName}}
+
+import (
+	"context"
+	"fmt"
+
+	"go-project-template-v5/pkg/pageable"
+)
+
+type Service interface {
+	Save(ctx context.Context, input *CreateDto) (*Dto, error)
+{{- if .HasUpdateFields}}
+	UpdateByID(ctx context.Context, input *UpdateDto, {{.ParametersByPkeys}}) (*Dto, error)
+{{- end}}
+{{- if .HasPrimaryKey}}
+	DeleteByID(ctx context.Context, {{.ParametersByPkeys}}) error
+	FindByID(ctx context.Context, {{.ParametersByPkeys}}) (*Dto, error)
+{{- end}}
+	FindAll(ctx context.Context) ([]Dto, error)
+	FindAllPageable(ctx context.Context, pq *pageable.PaginationQuery) ([]Dto, pageable.Page, error)
+}
+
+type svc struct {
+	repository Repository
+}
+
+var _ Service = &svc{}
+
+func NewService(_ context.Context, repository Repository) Service {
+	return &svc{
+		repository: repository,
+	}
+}
+
+func (s *svc) Save(ctx context.Context, input *CreateDto) (*Dto, error) {
+	entityToCreate, err := fromCreateDtoToEntity(input)
+	if err != nil {
+		return nil, err
+	}
+	save, err := s.repository.Save(ctx, entityToCreate)
+	if err != nil {
+		return nil, err
+	}
+	toDto, err := fromEntityToDto(save)
+	if err != nil {
+		return nil, err
+	}
+	return &toDto, err
+}
+
+{{- if .HasUpdateFields}}
+func (s *svc) UpdateByID(ctx context.Context, input *UpdateDto, {{.ParametersByPkeys}}) (*Dto, error) {
+	entityToUpdate, err := fromUpdateDtoToEntity(input)
+	if err != nil {
+		return nil, err
+	}
+	updatedResult, err := s.repository.UpdateByID(ctx, entityToUpdate, {{.ArgumentsByPkeys}})
+	if err != nil {
+		return nil, err
+	}
+	toDto, err := fromEntityToDto(updatedResult)
+	if err != nil {
+		return nil, err
+	}
+	return &toDto, err
+}
+
+{{- end}}
+
+{{- if .HasPrimaryKey}}
+func (s *svc) DeleteByID(ctx context.Context, {{.ParametersByPkeys}}) error {
+	return s.repository.DeleteByID(ctx, {{.ArgumentsByPkeys}})
+}
+
+func (s *svc) FindByID(ctx context.Context, {{.ParametersByPkeys}}) (*Dto, error) {
+	entityByID, err := s.repository.FindByID(ctx, {{.ArgumentsByPkeys}})
+	if err != nil {
+		return nil, err
+	}
+	toDto, err := fromEntityToDto(entityByID)
+	if err != nil {
+		return nil, err
+	}
+	return &toDto, err
+}
+
+{{- end}}
+
+func (s *svc) FindAll(ctx context.Context) ([]Dto, error) {
+	entities, err := s.repository.FindAll(ctx)
+	if err != nil {
+		return nil, err
+	}
+	toDtos, err := fromEntitiesToDtos(entities)
+	if err != nil {
+		return nil, err
+	}
+	return toDtos, nil
+}
+
+func (s *svc) FindAllPageable(ctx context.Context, pq *pageable.PaginationQuery) ([]Dto, pageable.Page, error) {
+	entities, page, err := s.repository.FindAllPageable(ctx, pq)
+	if err != nil {
+		return nil, pageable.Page{}, err
+	}
+	toDtos, err := fromEntitiesToDtos(entities)
+	if err != nil {
+		return nil, pageable.Page{}, err
+	}
+	return toDtos, page, nil
+}
+
+// mappers
+
+func fromCreateDtoToEntity(input *CreateDto) (*{{.StructName}}, error) {
+	if input == nil {
+		return nil, fmt.Errorf("convert CreateDto->{{.StructName}}: input dto cannot be nil")
+	}
+	return &{{.StructName}}{
+{{- range .DtoFieldsCreate}}
+		{{.FieldName}}: input.{{.FieldName}},
+{{- end}}
+	}, nil
+}
+
+{{- if .HasUpdateFields}}
+func fromUpdateDtoToEntity(input *UpdateDto) (*{{.StructName}}, error) {
+	if input == nil {
+		return nil, fmt.Errorf("convert UpdateDto->{{.StructName}}: input dto cannot be nil")
+	}
+	return &{{.StructName}}{
+{{- range .DtoFieldsUpdate}}
+		{{.FieldName}}: input.{{.FieldName}},
+{{- end}}
+	}, nil
+}
+
+{{- end}}
+
+func fromEntitiesToDtos(inputEntities []{{.StructName}}) ([]Dto, error) {
+	outputDtos := make([]Dto, 0, len(inputEntities))
+	for i := range inputEntities { // Iterate using index to avoid copying (gocritic:rangeValCopy)
+		toDto, err := fromEntityToDto(&inputEntities[i])
+		if err != nil {
+			return nil, err
+		}
+		outputDtos = append(outputDtos, toDto)
+	}
+	return outputDtos, nil
+}
+
+func fromEntityToDto(inputEntity *{{.StructName}}) (Dto, error) {
+	if inputEntity == nil {
+		return Dto{}, fmt.Errorf("unexpected nil input for mapping between {{.StructName}}->Dto")
+	}
+	return Dto{
+{{- range .DtoFieldsFull}}
+		{{.FieldName}}: inputEntity.{{.FieldName}},
+{{- end}}
+	}, nil
+}

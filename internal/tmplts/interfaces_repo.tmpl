@@ -5,8 +5,7 @@ import (
 	"context"
 
 {{- range .Structs}}
-	{{.StructNameLowerFirstLetter}}Repo "go-project-template-v5/internal/api/{{.DbTableName}}/repository"
-	{{.StructNameLowerFirstLetter}}Impl "go-project-template-v5/internal/api/{{.DbTableName}}/repository/impl"
+	"go-project-template-v5/internal/api/{{.DbTableName}}"
 {{- end }}
 
 	"go-project-template-v5/pkg/storage/postgres"
@@ -16,14 +15,14 @@ import (
 
 type Repositories struct {
 {{- range .Structs}}
-	{{.StructName}}Repository {{.StructNameLowerFirstLetter}}Repo.{{.StructName}}Repository
+	{{.StructName}}Repository {{.DbTableName}}.Repository
 {{- end }}
 }
 
 func NewRepositories(ctx context.Context, db *postgres.Postgres) *Repositories {
 	return &Repositories{
 {{- range .Structs}}
-		{{.StructName}}Repository: {{.StructNameLowerFirstLetter}}Impl.New{{.StructName}}Repository(ctx, db),
+		{{.StructName}}Repository: {{.DbTableName}}.NewRepository(ctx, db),
 {{- end }}
 	}
 }

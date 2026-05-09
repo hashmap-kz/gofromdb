@@ -6,8 +6,6 @@ type RepoTemplateData struct {
 	StructName           string
 	StructComment        string
 	PackageName          string
-	InterfaceName        string
-	ImplName             string
 	StructNameLowerFirst string
 
 	HasPrimaryKey   bool
@@ -49,8 +47,6 @@ func NewRepoTemplateData(s TableToStructInfo) RepoTemplateData {
 		StructName:               s.StructName,
 		StructComment:            s.StructComment,
 		PackageName:              strings.ToLower(s.DbTableName),
-		InterfaceName:            s.StructName + "Repository",
-		ImplName:                 LowerFirstLetter(s.StructName) + "Repository",
 		StructNameLowerFirst:     s.StructNameLowerFirstLetter,
 		HasPrimaryKey:            s.HasPrimaryKey,
 		HasUpdateFields:          s.HasUpdateFields,

@@ -1,13 +1,9 @@
 
-package impl
+package {{.PackageName}}
 
 import (
 	"context"
 	"fmt"
-
-	dbModel "go-project-template-v5/internal/api/{{.PackageName}}/entity/postgres"
-
-	"go-project-template-v5/internal/api/{{.PackageName}}/repository"
 
 	"go-project-template-v5/pkg/pageable"
 
@@ -16,20 +12,33 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-type {{.ImplName}} struct {
+type Repository interface {
+	Save(ctx context.Context, inputEntity *{{.StructName}}) (*{{.StructName}}, error)
+{{- if .HasUpdateFields}}
+	UpdateByID(ctx context.Context, inputEntity *{{.StructName}}, {{.ParametersByPkeys}}) (*{{.StructName}}, error)
+{{- end}}
+{{- if .HasPrimaryKey}}
+	DeleteByID(ctx context.Context, {{.ParametersByPkeys}}) error
+	FindByID(ctx context.Context, {{.ParametersByPkeys}}) (*{{.StructName}}, error)
+{{- end}}
+	FindAll(ctx context.Context) ([]{{.StructName}}, error)
+	FindAllPageable(ctx context.Context, pq *pageable.PaginationQuery) ([]{{.StructName}}, pageable.Page, error)
+}
+
+type repo struct {
 	db *postgres.Postgres
 }
 
-var _ repository.{{.InterfaceName}} = &{{.ImplName}}{}
+var _ Repository = &repo{}
 
-func New{{.InterfaceName}}(_ context.Context, db *postgres.Postgres) repository.{{.InterfaceName}} {
-	return &{{.ImplName}}{
+func NewRepository(_ context.Context, db *postgres.Postgres) Repository {
+	return &repo{
 		db: db,
 	}
 }
 
-func (r *{{.ImplName}}) Save(ctx context.Context, inputEntity *dbModel.{{.StructName}}) (*dbModel.{{.StructName}}, error) {
-	tag := "{{.ImplName}}.Save"
+func (r *repo) Save(ctx context.Context, inputEntity *{{.StructName}}) (*{{.StructName}}, error) {
+	tag := "repository.Save"
 
 	query := `{{.RepoSaveQuery | AddPadding2}}`
 
@@ -47,8 +56,8 @@ func (r *{{.ImplName}}) Save(ctx context.Context, inputEntity *dbModel.{{.Struct
 }
 
 {{- if .HasUpdateFields}}
-func (r *{{.ImplName}}) UpdateByID(ctx context.Context, inputEntity *dbModel.{{.StructName}}, {{.ParametersByPkeys}}) (*dbModel.{{.StructName}}, error) {
-	tag := "{{.ImplName}}.UpdateByID"
+func (r *repo) UpdateByID(ctx context.Context, inputEntity *{{.StructName}}, {{.ParametersByPkeys}}) (*{{.StructName}}, error) {
+	tag := "repository.UpdateByID"
 
 	query := `{{.RepoUpdateQuery | AddPadding2}}`
 
@@ -69,8 +78,8 @@ func (r *{{.ImplName}}) UpdateByID(ctx context.Context, inputEntity *dbModel.{{.
 {{- end}}
 
 {{- if .HasPrimaryKey}}
-func (r *{{.ImplName}}) DeleteByID(ctx context.Context, {{.ParametersByPkeys}}) error {
-	tag := "{{.ImplName}}.DeleteByID"
+func (r *repo) DeleteByID(ctx context.Context, {{.ParametersByPkeys}}) error {
+	tag := "repository.DeleteByID"
 
 	query := `{{.RepoDeleteQuery | AddPadding2}}`
 
@@ -81,8 +90,8 @@ func (r *{{.ImplName}}) DeleteByID(ctx context.Context, {{.ParametersByPkeys}}) 
 	return nil
 }
 
-func (r *{{.ImplName}}) FindByID(ctx context.Context, {{.ParametersByPkeys}}) (*dbModel.{{.StructName}}, error) {
-	tag := "{{.ImplName}}.FindByID"
+func (r *repo) FindByID(ctx context.Context, {{.ParametersByPkeys}}) (*{{.StructName}}, error) {
+	tag := "repository.FindByID"
 
 	query := `{{.RepoGetByIdQuery | AddPadding2}}`
 
@@ -97,8 +106,8 @@ func (r *{{.ImplName}}) FindByID(ctx context.Context, {{.ParametersByPkeys}}) (*
 
 {{- end}}
 
-func (r *{{.ImplName}}) FindAll(ctx context.Context) ([]dbModel.{{.StructName}}, error) {
-	tag := "{{.ImplName}}.FindAll"
+func (r *repo) FindAll(ctx context.Context) ([]{{.StructName}}, error) {
+	tag := "repository.FindAll"
 
 	query := `{{.RepoGetAllQuery | AddPadding2}}`
 
@@ -108,7 +117,7 @@ func (r *{{.ImplName}}) FindAll(ctx context.Context) ([]dbModel.{{.StructName}},
 	}
 	defer rows.Close()
 
-	var scannedEntities []dbModel.{{.StructName}}
+	var scannedEntities []{{.StructName}}
 	for rows.Next() {
 		scannedEntity, err := scanFullRow(rows)
 		if err != nil {
@@ -123,8 +132,8 @@ func (r *{{.ImplName}}) FindAll(ctx context.Context) ([]dbModel.{{.StructName}},
 	return scannedEntities, nil
 }
 
-func (r *{{.ImplName}}) FindAllPageable(ctx context.Context, pq *pageable.PaginationQuery) ([]dbModel.{{.StructName}}, pageable.Page, error) {
-	tag := "{{.ImplName}}.FindAllPageable"
+func (r *repo) FindAllPageable(ctx context.Context, pq *pageable.PaginationQuery) ([]{{.StructName}}, pageable.Page, error) {
+	tag := "repository.FindAllPageable"
 
 	// retrieve total count
 	queryCnt := `{{.RepoCountQuery}}`
@@ -150,7 +159,7 @@ func (r *{{.ImplName}}) FindAllPageable(ctx context.Context, pq *pageable.Pagina
 	}
 	defer rows.Close()
 
-	var scannedEntities []dbModel.{{.StructName}}
+	var scannedEntities []{{.StructName}}
 	for rows.Next() {
 		scannedEntity, err := scanFullRow(rows)
 		if err != nil {
@@ -170,8 +179,8 @@ func (r *{{.ImplName}}) FindAllPageable(ctx context.Context, pq *pageable.Pagina
 // scanFullRow is expected to scan all columns from a table.
 // For simplicity, most methods scan the entire row of the table into the result entity.
 // You should adapt methods as needed (e.g., if business logic requires returning only an ID after an UPDATE).
-func scanFullRow(row pgx.Row) (*dbModel.{{.StructName}}, error) {
-	var scannedEntity dbModel.{{.StructName}}
+func scanFullRow(row pgx.Row) (*{{.StructName}}, error) {
+	var scannedEntity {{.StructName}}
 	err := row.Scan(
 {{- range .DtoFieldsFull}}
 		&scannedEntity.{{.FieldName}},

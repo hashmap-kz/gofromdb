@@ -1,17 +1,15 @@
 package app
 
 type GenRepo struct {
-	RepoEntity    string
-	RepoInterface string
-	RepoImpl      string
+	Entity     string
+	Repository string
 }
 
 func GenRepository(s TableToStructInfo) GenRepo {
 	data := NewRepoTemplateData(s)
 
 	return GenRepo{
-		RepoEntity:    PrintFormatted(ExecTemplate("repo_entity", data, FuncMap)),
-		RepoInterface: PrintFormatted(ExecTemplate("repo_interface", data, FuncMap)),
-		RepoImpl:      PrintFormatted(ExecTemplate("repo_impl", data, FuncMap)),
+		Entity:     PrintFormatted(ExecTemplate("entity", data, FuncMap)),
+		Repository: PrintFormatted(ExecTemplate("repository", data, FuncMap)),
 	}
 }
