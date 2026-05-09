@@ -16,7 +16,3 @@
 4. Path parsing must match actual PK Go types.
 5. Type mapping needs a stricter tested subset or pgtype-heavy mapping.
 6. Schema/table/column identifiers should be quoted (only pg-keywords).
-
-Usage:
-go run . -conn postgres://... -out ./my-service -module github.com/acme/my-service
-
