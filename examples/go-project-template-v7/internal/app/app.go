@@ -28,15 +28,14 @@ func Run(configFilePath string) {
 	defer stop()
 
 	// load config
-	config.LoadConfigFromFile(configFilePath)
-	cfg := config.Cfg()
+	cfg := config.FromFile(configFilePath)
 
 	// init logger
 	logger := slogLogger.InitLogger(cfg.Logger.Format, cfg.Logger.Level)
 	slog.SetDefault(logger)
 
 	// init pgxpool
-	pg, err := postgres.New(logger, cfg.Postgres.URL, postgres.MaxPoolSize(cfg.Postgres.PoolMax))
+	pg, err := postgres.New(logger, cfg.Postgres.ConnStr, postgres.MaxPoolSize(cfg.Postgres.PoolMax))
 	if err != nil {
 		logger.Error("pg init error", slog.String("err", err.Error()))
 	} else {
@@ -57,6 +56,7 @@ func Run(configFilePath string) {
 	middlewareChain := middlewares.MiddlewareChain(
 		// TODO: other middlewares here (oauth2, etc...)
 		middlewares.LoggingMiddleware,
+		middlewares.CorsMiddleware,
 		// middlewares.AuthorizeMiddleware,
 	)
 	srv := httpserver.NewServer(middlewareChain(defaultRoutes))

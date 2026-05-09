@@ -14,34 +14,28 @@ var (
 )
 
 type Config struct {
-	Server   ServerConfig
-	Postgres PostgresConfig
-	Logger   LoggerConfig
+	Server   ServerConfig   `json:"server"`
+	Postgres PostgresConfig `json:"postgres"`
+	Logger   LoggerConfig   `json:"logger"`
 }
 
 type ServerConfig struct {
-	Port         string
-	ReadTimeout  string // time.Duration
-	WriteTimeout string // time.Duration
+	Port         string `json:"port,omitempty"`
+	ReadTimeout  string `json:"read_timeout,omitempty"`  // time.Duration
+	WriteTimeout string `json:"write_timeout,omitempty"` // time.Duration
 }
 
 type LoggerConfig struct {
-	Format string
-	Level  string
+	Format string `json:"format,omitempty"`
+	Level  string `json:"level,omitempty"`
 }
 
 type PostgresConfig struct {
-	URL     string
-	PoolMax int
+	ConnStr string `json:"conn_str,omitempty"`
+	PoolMax int    `json:"pool_max,omitempty"`
 }
 
-type RedisConfig struct {
-	Addr     string
-	Database int
-	TTL      string // time.Duration
-}
-
-func LoadConfigFromFile(filename string) *Config {
+func FromFile(filename string) *Config {
 	once.Do(func() {
 		content, err := os.ReadFile(filename)
 		if err != nil {
