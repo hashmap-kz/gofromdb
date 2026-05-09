@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"os/exec"
 	"path"
 
 	"genpg-v5/internal/app"
+	"golang.org/x/tools/imports"
+	"mvdan.cc/gofumpt/format"
 )
 
 func main() {
@@ -20,18 +21,6 @@ func main() {
 		writeRepoFiles(s, outputPath)
 		writeServiceFiles(s, outputPath)
 		writeHandlerFiles(s, outputPath)
-	}
-
-	// cleanup imports, format output
-	execCleanupCmd("goimports", "-w", ".")
-	execCleanupCmd("gofumpt", "-w", ".")
-}
-
-func execCleanupCmd(name string, arg ...string) {
-	cmd := exec.Command(name, arg...)
-	_, err := cmd.CombinedOutput()
-	if err != nil {
-		log.Fatal(err)
 	}
 }
 
@@ -61,12 +50,18 @@ func writeHandlerFiles(s app.TableToStructInfo, outputPath string) {
 }
 
 func writeFile(entityPath, content string) {
-	err := os.MkdirAll(path.Dir(entityPath), 0o755)
+	if err := os.MkdirAll(path.Dir(entityPath), 0o755); err != nil {
+		log.Fatal(err)
+	}
+	src, err := imports.Process(entityPath, []byte(content), nil)
 	if err != nil {
 		log.Fatal(err)
 	}
-	err = os.WriteFile(entityPath, []byte(content), 0o644)
+	src, err = format.Source(src, format.Options{})
 	if err != nil {
+		log.Fatal(err)
+	}
+	if err = os.WriteFile(entityPath, src, 0o644); err != nil {
 		log.Fatal(err)
 	}
 }
