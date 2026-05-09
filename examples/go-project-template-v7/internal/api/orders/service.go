@@ -1,4 +1,4 @@
-package users
+package orders
 
 import (
 	"context"
@@ -102,25 +102,27 @@ func (s *svc) FindAllPageable(ctx context.Context, pq *pageable.PaginationQuery)
 
 // mappers
 
-func fromCreateDtoToEntity(input *CreateDto) (*Users, error) {
+func fromCreateDtoToEntity(input *CreateDto) (*Orders, error) {
 	if input == nil {
-		return nil, fmt.Errorf("convert CreateDto->Users: input dto cannot be nil")
+		return nil, fmt.Errorf("convert CreateDto->Orders: input dto cannot be nil")
 	}
-	return &Users{
-		Email: input.Email,
+	return &Orders{
+		UserID:      input.UserID,
+		Description: input.Description,
 	}, nil
 }
 
-func fromUpdateDtoToEntity(input *UpdateDto) (*Users, error) {
+func fromUpdateDtoToEntity(input *UpdateDto) (*Orders, error) {
 	if input == nil {
-		return nil, fmt.Errorf("convert UpdateDto->Users: input dto cannot be nil")
+		return nil, fmt.Errorf("convert UpdateDto->Orders: input dto cannot be nil")
 	}
-	return &Users{
-		Email: input.Email,
+	return &Orders{
+		UserID:      input.UserID,
+		Description: input.Description,
 	}, nil
 }
 
-func fromEntitiesToDtos(inputEntities []Users) ([]Dto, error) {
+func fromEntitiesToDtos(inputEntities []Orders) ([]Dto, error) {
 	outputDtos := make([]Dto, 0, len(inputEntities))
 	for i := range inputEntities { // Iterate using index to avoid copying (gocritic:rangeValCopy)
 		toDto, err := fromEntityToDto(&inputEntities[i])
@@ -132,15 +134,16 @@ func fromEntitiesToDtos(inputEntities []Users) ([]Dto, error) {
 	return outputDtos, nil
 }
 
-func fromEntityToDto(inputEntity *Users) (Dto, error) {
+func fromEntityToDto(inputEntity *Orders) (Dto, error) {
 	if inputEntity == nil {
-		return Dto{}, fmt.Errorf("unexpected nil input for mapping between Users->Dto")
+		return Dto{}, fmt.Errorf("unexpected nil input for mapping between Orders->Dto")
 	}
 	return Dto{
-		RecordID:  inputEntity.RecordID,
-		Email:     inputEntity.Email,
-		CreatedAt: inputEntity.CreatedAt,
-		UpdatedAt: inputEntity.UpdatedAt,
-		GUID:      inputEntity.GUID,
+		RecordID:    inputEntity.RecordID,
+		UserID:      inputEntity.UserID,
+		Description: inputEntity.Description,
+		CreatedAt:   inputEntity.CreatedAt,
+		UpdatedAt:   inputEntity.UpdatedAt,
+		GUID:        inputEntity.GUID,
 	}, nil
 }

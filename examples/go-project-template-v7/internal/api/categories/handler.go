@@ -11,12 +11,12 @@ import (
 )
 
 type Handler struct {
-	categoriesService Service
+	svc Service
 }
 
-func NewHandler(categoriesService Service) *Handler {
+func NewHandler(svc Service) *Handler {
 	return &Handler{
-		categoriesService: categoriesService,
+		svc: svc,
 	}
 }
 
@@ -54,7 +54,7 @@ func (h *Handler) Save(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// call service
-	resp, err := h.categoriesService.Save(r.Context(), createInput)
+	resp, err := h.svc.Save(r.Context(), createInput)
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
 		return
@@ -109,7 +109,7 @@ func (h *Handler) UpdateByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// call service
-	resp, err := h.categoriesService.UpdateByID(r.Context(), updateInput, pkRecordID)
+	resp, err := h.svc.UpdateByID(r.Context(), updateInput, pkRecordID)
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
 		return
@@ -145,7 +145,7 @@ func (h *Handler) DeleteByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.categoriesService.DeleteByID(r.Context(), pkRecordID)
+	err = h.svc.DeleteByID(r.Context(), pkRecordID)
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
 		return
@@ -173,7 +173,7 @@ func (h *Handler) FindByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp, err := h.categoriesService.FindByID(r.Context(), pkRecordID)
+	resp, err := h.svc.FindByID(r.Context(), pkRecordID)
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
 		return
@@ -201,7 +201,7 @@ func (h *Handler) FindByID(w http.ResponseWriter, r *http.Request) {
 // @Router /api/v1/categories [get]
 func (h *Handler) FindAll(w http.ResponseWriter, r *http.Request) {
 	// call service
-	resp, err := h.categoriesService.FindAll(r.Context())
+	resp, err := h.svc.FindAll(r.Context())
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
 		return
@@ -242,7 +242,7 @@ func (h *Handler) FindAllPageable(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// call service
-	resp, page, err := h.categoriesService.FindAllPageable(r.Context(), pq)
+	resp, page, err := h.svc.FindAllPageable(r.Context(), pq)
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
 		return

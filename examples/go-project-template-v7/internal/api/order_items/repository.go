@@ -1,4 +1,4 @@
-package categories
+package order_items
 
 import (
 	"context"
@@ -12,12 +12,12 @@ import (
 )
 
 type Repository interface {
-	Save(ctx context.Context, inputEntity *Categories) (*Categories, error)
-	UpdateByID(ctx context.Context, inputEntity *Categories, pkRecordID int) (*Categories, error)
+	Save(ctx context.Context, inputEntity *OrderItems) (*OrderItems, error)
+	UpdateByID(ctx context.Context, inputEntity *OrderItems, pkRecordID int) (*OrderItems, error)
 	DeleteByID(ctx context.Context, pkRecordID int) error
-	FindByID(ctx context.Context, pkRecordID int) (*Categories, error)
-	FindAll(ctx context.Context) ([]Categories, error)
-	FindAllPageable(ctx context.Context, pq *pageable.PaginationQuery) ([]Categories, pageable.Page, error)
+	FindByID(ctx context.Context, pkRecordID int) (*OrderItems, error)
+	FindAll(ctx context.Context) ([]OrderItems, error)
+	FindAllPageable(ctx context.Context, pq *pageable.PaginationQuery) ([]OrderItems, pageable.Page, error)
 }
 
 type repo struct {
@@ -32,31 +32,33 @@ func NewRepository(_ context.Context, db *postgres.Postgres) Repository {
 	}
 }
 
-func (r *repo) Save(ctx context.Context, inputEntity *Categories) (*Categories, error) {
+func (r *repo) Save(ctx context.Context, inputEntity *OrderItems) (*OrderItems, error) {
 	tag := "repository.Save"
 
 	query := `		
-		insert into public.categories (
-			name,
-			parent_id,
-			valid_period
+		insert into public.order_items (
+			order_id,
+			product_id,
+			quantity,
+			price
 		)
-		values ($1, $2, $3)
+		values ($1, $2, $3, $4)
 		returning
 			record_id,
-			name,
-			parent_id,
-			valid_period,
-			is_current,
+			order_id,
+			product_id,
+			quantity,
+			price,
 			created_at,
 			updated_at,
 			guid
 		`
 
 	row := r.db.Pool.QueryRow(ctx, query,
-		inputEntity.Name,
-		inputEntity.ParentID,
-		inputEntity.ValidPeriod,
+		inputEntity.OrderID,
+		inputEntity.ProductID,
+		inputEntity.Quantity,
+		inputEntity.Price,
 	)
 
 	scannedEntity, err := scanFullRow(row)
@@ -66,22 +68,23 @@ func (r *repo) Save(ctx context.Context, inputEntity *Categories) (*Categories, 
 	return scannedEntity, nil
 }
 
-func (r *repo) UpdateByID(ctx context.Context, inputEntity *Categories, pkRecordID int) (*Categories, error) {
+func (r *repo) UpdateByID(ctx context.Context, inputEntity *OrderItems, pkRecordID int) (*OrderItems, error) {
 	tag := "repository.UpdateByID"
 
 	query := `		
-		update public.categories
+		update public.order_items
 		set
-			name         = coalesce(nullif($2, ''), name),
-			parent_id    = coalesce(nullif($3, 0::int4), parent_id),
-			valid_period = coalesce(nullif($4, 'empty'::daterange), valid_period)
+			order_id   = coalesce(nullif($2, 0::int4), order_id),
+			product_id = coalesce(nullif($3, 0::int4), product_id),
+			quantity   = coalesce(nullif($4, 0::numeric), quantity),
+			price      = coalesce(nullif($5, 0::numeric), price)
 		where record_id = $1
 		returning
 			record_id,
-			name,
-			parent_id,
-			valid_period,
-			is_current,
+			order_id,
+			product_id,
+			quantity,
+			price,
 			created_at,
 			updated_at,
 			guid
@@ -89,9 +92,10 @@ func (r *repo) UpdateByID(ctx context.Context, inputEntity *Categories, pkRecord
 
 	row := r.db.Pool.QueryRow(ctx, query,
 		pkRecordID,
-		inputEntity.Name,
-		inputEntity.ParentID,
-		inputEntity.ValidPeriod,
+		inputEntity.OrderID,
+		inputEntity.ProductID,
+		inputEntity.Quantity,
+		inputEntity.Price,
 	)
 
 	scannedEntity, err := scanFullRow(row)
@@ -105,7 +109,7 @@ func (r *repo) DeleteByID(ctx context.Context, pkRecordID int) error {
 	tag := "repository.DeleteByID"
 
 	query := `		
-		delete from only public.categories
+		delete from only public.order_items
 		where record_id = $1
 		`
 
@@ -116,20 +120,20 @@ func (r *repo) DeleteByID(ctx context.Context, pkRecordID int) error {
 	return nil
 }
 
-func (r *repo) FindByID(ctx context.Context, pkRecordID int) (*Categories, error) {
+func (r *repo) FindByID(ctx context.Context, pkRecordID int) (*OrderItems, error) {
 	tag := "repository.FindByID"
 
 	query := `		
 		select
 			record_id,
-			name,
-			parent_id,
-			valid_period,
-			is_current,
+			order_id,
+			product_id,
+			quantity,
+			price,
 			created_at,
 			updated_at,
 			guid
-		from public.categories
+		from public.order_items
 		where record_id = $1
 		order by record_id
 		`
@@ -143,20 +147,20 @@ func (r *repo) FindByID(ctx context.Context, pkRecordID int) (*Categories, error
 	return scannedEntity, nil
 }
 
-func (r *repo) FindAll(ctx context.Context) ([]Categories, error) {
+func (r *repo) FindAll(ctx context.Context) ([]OrderItems, error) {
 	tag := "repository.FindAll"
 
 	query := `		
 		select
 			record_id,
-			name,
-			parent_id,
-			valid_period,
-			is_current,
+			order_id,
+			product_id,
+			quantity,
+			price,
 			created_at,
 			updated_at,
 			guid
-		from public.categories
+		from public.order_items
 		order by record_id
 		`
 
@@ -166,7 +170,7 @@ func (r *repo) FindAll(ctx context.Context) ([]Categories, error) {
 	}
 	defer rows.Close()
 
-	var scannedEntities []Categories
+	var scannedEntities []OrderItems
 	for rows.Next() {
 		scannedEntity, err := scanFullRow(rows)
 		if err != nil {
@@ -181,11 +185,11 @@ func (r *repo) FindAll(ctx context.Context) ([]Categories, error) {
 	return scannedEntities, nil
 }
 
-func (r *repo) FindAllPageable(ctx context.Context, pq *pageable.PaginationQuery) ([]Categories, pageable.Page, error) {
+func (r *repo) FindAllPageable(ctx context.Context, pq *pageable.PaginationQuery) ([]OrderItems, pageable.Page, error) {
 	tag := "repository.FindAllPageable"
 
 	// retrieve total count
-	queryCnt := `select count(*) from public.categories`
+	queryCnt := `select count(*) from public.order_items`
 	var totalCount int
 	if err := r.db.Pool.QueryRow(ctx, queryCnt).Scan(&totalCount); err != nil {
 		return nil, pageable.Page{}, err
@@ -203,14 +207,14 @@ func (r *repo) FindAllPageable(ctx context.Context, pq *pageable.PaginationQuery
 	query := `		
 		select
 			record_id,
-			name,
-			parent_id,
-			valid_period,
-			is_current,
+			order_id,
+			product_id,
+			quantity,
+			price,
 			created_at,
 			updated_at,
 			guid
-		from public.categories
+		from public.order_items
 		order by record_id
 		offset $1 limit $2
 		`
@@ -221,7 +225,7 @@ func (r *repo) FindAllPageable(ctx context.Context, pq *pageable.PaginationQuery
 	}
 	defer rows.Close()
 
-	var scannedEntities []Categories
+	var scannedEntities []OrderItems
 	for rows.Next() {
 		scannedEntity, err := scanFullRow(rows)
 		if err != nil {
@@ -241,14 +245,14 @@ func (r *repo) FindAllPageable(ctx context.Context, pq *pageable.PaginationQuery
 // scanFullRow is expected to scan all columns from a table.
 // For simplicity, most methods scan the entire row of the table into the result entity.
 // You should adapt methods as needed (e.g., if business logic requires returning only an ID after an UPDATE).
-func scanFullRow(row pgx.Row) (*Categories, error) {
-	var scannedEntity Categories
+func scanFullRow(row pgx.Row) (*OrderItems, error) {
+	var scannedEntity OrderItems
 	err := row.Scan(
 		&scannedEntity.RecordID,
-		&scannedEntity.Name,
-		&scannedEntity.ParentID,
-		&scannedEntity.ValidPeriod,
-		&scannedEntity.IsCurrent,
+		&scannedEntity.OrderID,
+		&scannedEntity.ProductID,
+		&scannedEntity.Quantity,
+		&scannedEntity.Price,
 		&scannedEntity.CreatedAt,
 		&scannedEntity.UpdatedAt,
 		&scannedEntity.GUID,

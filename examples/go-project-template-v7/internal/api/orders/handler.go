@@ -1,4 +1,4 @@
-package users
+package orders
 
 import (
 	"fmt"
@@ -24,17 +24,17 @@ func NewHandler(svc Service) *Handler {
 //
 // @Summary Create new item
 // @Description Create new item handler
-// @Tags users
+// @Tags orders
 // @Accept json
 // @Produce json
-// @Param request body usersCreateRequest true "Create input"
-// @Success 201 {object} usersResponse
+// @Param request body ordersCreateRequest true "Create input"
+// @Success 201 {object} ordersResponse
 // @Failure 400 {object} httputils.ErrorResponse "Bad Request (Invalid request payload)"
 // @Failure 500 {object} httputils.ErrorResponse "Internal Server Error"
-// @Router /api/v1/users [post]
+// @Router /api/v1/orders [post]
 func (h *Handler) Save(w http.ResponseWriter, r *http.Request) {
 	// read RequestBody
-	req := &usersCreateRequest{}
+	req := &ordersCreateRequest{}
 	if err := httputils.ReadJSON(r, &req); err != nil {
 		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
 		return
@@ -75,15 +75,15 @@ func (h *Handler) Save(w http.ResponseWriter, r *http.Request) {
 //
 // @Summary Update existing item
 // @Description Updates an item by its ID
-// @Tags users
+// @Tags orders
 // @Accept json
 // @Produce json
 // @Param id path int true "Item ID"
-// @Param request body usersUpdateRequest true "Update input"
-// @Success 201 {object} usersResponse
+// @Param request body ordersUpdateRequest true "Update input"
+// @Success 201 {object} ordersResponse
 // @Failure 400 {object} httputils.ErrorResponse "Bad Request"
 // @Failure 500 {object} httputils.ErrorResponse "Internal Server Error"
-// @Router /api/v1/users/{record_id} [put]
+// @Router /api/v1/orders/{record_id} [put]
 func (h *Handler) UpdateByID(w http.ResponseWriter, r *http.Request) {
 	pkRecordID, err := httputils.PathValueI32(r, "record_id")
 	if err != nil {
@@ -91,7 +91,7 @@ func (h *Handler) UpdateByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	req := &usersUpdateRequest{}
+	req := &ordersUpdateRequest{}
 	if err := httputils.ReadJSON(r, &req); err != nil {
 		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
 		return
@@ -130,14 +130,14 @@ func (h *Handler) UpdateByID(w http.ResponseWriter, r *http.Request) {
 //
 // @Summary Delete existing item
 // @Description Deletes an item by its ID
-// @Tags users
+// @Tags orders
 // @Accept json
 // @Produce json
-// @Param id path int true "Users ID"
+// @Param id path int true "Orders ID"
 // @Success 204 "No Content (Successfully deleted)"
 // @Failure 400 {object} httputils.ErrorResponse "Bad Request (Invalid ID format)"
 // @Failure 500 {object} httputils.ErrorResponse "Internal Server Error (Deletion failed)"
-// @Router /api/v1/users/{record_id} [delete]
+// @Router /api/v1/orders/{record_id} [delete]
 func (h *Handler) DeleteByID(w http.ResponseWriter, r *http.Request) {
 	pkRecordID, err := httputils.PathValueI32(r, "record_id")
 	if err != nil {
@@ -159,13 +159,13 @@ func (h *Handler) DeleteByID(w http.ResponseWriter, r *http.Request) {
 //
 // @Summary Get item by ID
 // @Description Retrieves the details based on the provided ID in the request path.
-// @Tags users
+// @Tags orders
 // @Produce json
 // @Param id path int true "Item ID"
-// @Success 200 {object} usersResponse "Single item"
+// @Success 200 {object} ordersResponse "Single item"
 // @Failure 400 {object} httputils.ErrorResponse "Bad Request (Invalid ID format)"
 // @Failure 500 {object} httputils.ErrorResponse "Internal Server Error (Deletion failed)"
-// @Router /api/v1/users/{record_id} [get]
+// @Router /api/v1/orders/{record_id} [get]
 func (h *Handler) FindByID(w http.ResponseWriter, r *http.Request) {
 	pkRecordID, err := httputils.PathValueI32(r, "record_id")
 	if err != nil {
@@ -192,13 +192,13 @@ func (h *Handler) FindByID(w http.ResponseWriter, r *http.Request) {
 //
 // @Summary Get all
 // @Description Retrieves a list without pagination.
-// @Tags users
+// @Tags orders
 // @Accept json
 // @Produce  json
-// @Success 200 {object} usersResponseList "List of all items"
+// @Success 200 {object} ordersResponseList "List of all items"
 // @Failure 400 {object} httputils.ErrorResponse "Bad Request (Service failure)"
 // @Failure 500 {object} httputils.ErrorResponse "Internal Server Error (Data processing failure)"
-// @Router /api/v1/users [get]
+// @Router /api/v1/orders [get]
 func (h *Handler) FindAll(w http.ResponseWriter, r *http.Request) {
 	// call service
 	resp, err := h.svc.FindAll(r.Context())
@@ -215,7 +215,7 @@ func (h *Handler) FindAll(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 200 OK
-	httputils.WriteJSON(w, http.StatusOK, usersResponseList{
+	httputils.WriteJSON(w, http.StatusOK, ordersResponseList{
 		Data: dtosToPayloads,
 	})
 }
@@ -224,16 +224,16 @@ func (h *Handler) FindAll(w http.ResponseWriter, r *http.Request) {
 //
 // @Summary Get paginated list
 // @Description Retrieves a paginated list using pagination parameters.
-// @Tags users
+// @Tags orders
 // @Accept json
 // @Produce json
 // @Param page query int false "Page number (default: 1)"
 // @Param size query int false "Number of items per page (default: 10)"
 // @Param sort query string false "Sort order, e.g., 'name,asc'"
-// @Success 200 {object} usersResponseList "Paginated list of Users"
+// @Success 200 {object} ordersResponseList "Paginated list of Orders"
 // @Failure 400 {object} httputils.ErrorResponse "Bad Request (Invalid pagination parameters or service failure)"
 // @Failure 500 {object} httputils.ErrorResponse "Internal Server Error (Data processing failure)"
-// @Router /api/v1/users/pageable [get]
+// @Router /api/v1/orders/pageable [get]
 func (h *Handler) FindAllPageable(w http.ResponseWriter, r *http.Request) {
 	pq, err := pageable.GetPaginationFromCtx(r)
 	if err != nil {
@@ -256,7 +256,7 @@ func (h *Handler) FindAllPageable(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 200 OK
-	httputils.WriteJSON(w, http.StatusOK, usersResponseList{
+	httputils.WriteJSON(w, http.StatusOK, ordersResponseList{
 		Data: dtosToPayloads,
 		Page: &page,
 	})
@@ -264,26 +264,28 @@ func (h *Handler) FindAllPageable(w http.ResponseWriter, r *http.Request) {
 
 // mappers
 
-func mapCreateRequestToCreateInputDto(inputRequest *usersCreateRequest) (*CreateDto, error) {
+func mapCreateRequestToCreateInputDto(inputRequest *ordersCreateRequest) (*CreateDto, error) {
 	if inputRequest == nil {
-		return nil, fmt.Errorf("unexpected nil input for mapping between usersCreateRequest->CreateDto")
+		return nil, fmt.Errorf("unexpected nil input for mapping between ordersCreateRequest->CreateDto")
 	}
 	return &CreateDto{
-		Email: inputRequest.Email,
+		UserID:      inputRequest.UserID,
+		Description: inputRequest.Description,
 	}, nil
 }
 
-func mapUpdateRequestToUpdateInputDto(inputRequest *usersUpdateRequest) (*UpdateDto, error) {
+func mapUpdateRequestToUpdateInputDto(inputRequest *ordersUpdateRequest) (*UpdateDto, error) {
 	if inputRequest == nil {
-		return nil, fmt.Errorf("unexpected nil input for mapping between usersUpdateRequest->UpdateDto")
+		return nil, fmt.Errorf("unexpected nil input for mapping between ordersUpdateRequest->UpdateDto")
 	}
 	return &UpdateDto{
-		Email: inputRequest.Email,
+		UserID:      inputRequest.UserID,
+		Description: inputRequest.Description,
 	}, nil
 }
 
-func mapDtosToPayloads(inputDtos []Dto) ([]usersResponse, error) {
-	outputResponses := make([]usersResponse, 0, len(inputDtos))
+func mapDtosToPayloads(inputDtos []Dto) ([]ordersResponse, error) {
+	outputResponses := make([]ordersResponse, 0, len(inputDtos))
 	for i := range inputDtos { // Iterate using index to avoid copying (gocritic:rangeValCopy)
 		toPayload, err := mapDtoToPayload(&inputDtos[i])
 		if err != nil {
@@ -294,15 +296,16 @@ func mapDtosToPayloads(inputDtos []Dto) ([]usersResponse, error) {
 	return outputResponses, nil
 }
 
-func mapDtoToPayload(inputDto *Dto) (usersResponse, error) {
+func mapDtoToPayload(inputDto *Dto) (ordersResponse, error) {
 	if inputDto == nil {
-		return usersResponse{}, fmt.Errorf("unexpected nil input for mapping between Dto->usersResponse")
+		return ordersResponse{}, fmt.Errorf("unexpected nil input for mapping between Dto->ordersResponse")
 	}
-	return usersResponse{
-		RecordID:  inputDto.RecordID,
-		Email:     inputDto.Email,
-		CreatedAt: inputDto.CreatedAt,
-		UpdatedAt: inputDto.UpdatedAt,
-		GUID:      inputDto.GUID,
+	return ordersResponse{
+		RecordID:    inputDto.RecordID,
+		UserID:      inputDto.UserID,
+		Description: inputDto.Description,
+		CreatedAt:   inputDto.CreatedAt,
+		UpdatedAt:   inputDto.UpdatedAt,
+		GUID:        inputDto.GUID,
 	}, nil
 }

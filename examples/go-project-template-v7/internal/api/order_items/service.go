@@ -1,4 +1,4 @@
-package users
+package order_items
 
 import (
 	"context"
@@ -102,25 +102,31 @@ func (s *svc) FindAllPageable(ctx context.Context, pq *pageable.PaginationQuery)
 
 // mappers
 
-func fromCreateDtoToEntity(input *CreateDto) (*Users, error) {
+func fromCreateDtoToEntity(input *CreateDto) (*OrderItems, error) {
 	if input == nil {
-		return nil, fmt.Errorf("convert CreateDto->Users: input dto cannot be nil")
+		return nil, fmt.Errorf("convert CreateDto->OrderItems: input dto cannot be nil")
 	}
-	return &Users{
-		Email: input.Email,
+	return &OrderItems{
+		OrderID:   input.OrderID,
+		ProductID: input.ProductID,
+		Quantity:  input.Quantity,
+		Price:     input.Price,
 	}, nil
 }
 
-func fromUpdateDtoToEntity(input *UpdateDto) (*Users, error) {
+func fromUpdateDtoToEntity(input *UpdateDto) (*OrderItems, error) {
 	if input == nil {
-		return nil, fmt.Errorf("convert UpdateDto->Users: input dto cannot be nil")
+		return nil, fmt.Errorf("convert UpdateDto->OrderItems: input dto cannot be nil")
 	}
-	return &Users{
-		Email: input.Email,
+	return &OrderItems{
+		OrderID:   input.OrderID,
+		ProductID: input.ProductID,
+		Quantity:  input.Quantity,
+		Price:     input.Price,
 	}, nil
 }
 
-func fromEntitiesToDtos(inputEntities []Users) ([]Dto, error) {
+func fromEntitiesToDtos(inputEntities []OrderItems) ([]Dto, error) {
 	outputDtos := make([]Dto, 0, len(inputEntities))
 	for i := range inputEntities { // Iterate using index to avoid copying (gocritic:rangeValCopy)
 		toDto, err := fromEntityToDto(&inputEntities[i])
@@ -132,13 +138,16 @@ func fromEntitiesToDtos(inputEntities []Users) ([]Dto, error) {
 	return outputDtos, nil
 }
 
-func fromEntityToDto(inputEntity *Users) (Dto, error) {
+func fromEntityToDto(inputEntity *OrderItems) (Dto, error) {
 	if inputEntity == nil {
-		return Dto{}, fmt.Errorf("unexpected nil input for mapping between Users->Dto")
+		return Dto{}, fmt.Errorf("unexpected nil input for mapping between OrderItems->Dto")
 	}
 	return Dto{
 		RecordID:  inputEntity.RecordID,
-		Email:     inputEntity.Email,
+		OrderID:   inputEntity.OrderID,
+		ProductID: inputEntity.ProductID,
+		Quantity:  inputEntity.Quantity,
+		Price:     inputEntity.Price,
 		CreatedAt: inputEntity.CreatedAt,
 		UpdatedAt: inputEntity.UpdatedAt,
 		GUID:      inputEntity.GUID,
