@@ -13,7 +13,7 @@ do
 $$
     declare
         v_start_date     date := '2025-01-01'; -- starting date for partitions
-        v_end_date       date := '2026-01-01'; -- ending date (exclusive)
+        v_end_date       date := '2027-01-01'; -- ending date (exclusive)
         v_current_date   date;
         v_partition_name text;
         v_sql_text       text;
