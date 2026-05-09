@@ -18,7 +18,7 @@ func GenInterfaces(structs []TableToStructInfo) (GenInterf, error) {
 		if err != nil {
 			return "", fmt.Errorf("interface %s: %w", name, err)
 		}
-		return PrintFormatted(s), nil
+		return s, nil
 	}
 
 	repoIface, err := exec("interfaces_repo")

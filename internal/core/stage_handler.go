@@ -42,7 +42,7 @@ func GenHandler(s TableToStructInfo) (GenHandl, error) {
 		if err != nil {
 			return "", fmt.Errorf("handler %s: %w", name, err)
 		}
-		return PrintFormatted(out), nil
+		return out, nil
 	}
 
 	payload, err := exec("payload")

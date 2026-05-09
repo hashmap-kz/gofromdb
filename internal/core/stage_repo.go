@@ -18,7 +18,7 @@ func GenRepository(s TableToStructInfo) (GenRepo, error) {
 		if err != nil {
 			return "", fmt.Errorf("repo %s: %w", name, err)
 		}
-		return PrintFormatted(out), nil
+		return out, nil
 	}
 
 	entity, err := exec("entity")

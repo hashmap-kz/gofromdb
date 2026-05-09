@@ -7,10 +7,12 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"runtime"
 
 	"genpg-v5/internal/core"
 	"genpg-v5/internal/logger"
 
+	"golang.org/x/sync/errgroup"
 	"golang.org/x/tools/imports"
 	"mvdan.cc/gofumpt/format"
 )
@@ -61,32 +63,26 @@ func main() {
 		slog.Error("failed to write interfaces", slog.Any("err", err))
 		os.Exit(1)
 	}
+	g := new(errgroup.Group)
+	g.SetLimit(runtime.NumCPU())
 	for _, s := range structs {
-		slog.Debug("generating layers", slog.String("table", s.DbTableName))
-		if err := writeRepoFiles(s, outputPath); err != nil {
-			slog.Error(
-				"failed to write repo files",
-				slog.String("table", s.DbTableName),
-				slog.Any("err", err),
-			)
-			os.Exit(1)
-		}
-		if err := writeServiceFiles(s, outputPath); err != nil {
-			slog.Error(
-				"failed to write service files",
-				slog.String("table", s.DbTableName),
-				slog.Any("err", err),
-			)
-			os.Exit(1)
-		}
-		if err := writeHandlerFiles(s, outputPath); err != nil {
-			slog.Error(
-				"failed to write handler files",
-				slog.String("table", s.DbTableName),
-				slog.Any("err", err),
-			)
-			os.Exit(1)
-		}
+		g.Go(func() error {
+			slog.Debug("generating layers", slog.String("table", s.DbTableName))
+			if err := writeRepoFiles(s, outputPath); err != nil {
+				return fmt.Errorf("%s.%s repo: %w", s.DbSchemaName, s.DbTableName, err)
+			}
+			if err := writeServiceFiles(s, outputPath); err != nil {
+				return fmt.Errorf("%s.%s service: %w", s.DbSchemaName, s.DbTableName, err)
+			}
+			if err := writeHandlerFiles(s, outputPath); err != nil {
+				return fmt.Errorf("%s.%s handler: %w", s.DbSchemaName, s.DbTableName, err)
+			}
+			return nil
+		})
+	}
+	if err := g.Wait(); err != nil {
+		slog.Error("failed to generate files", slog.Any("err", err))
+		os.Exit(1)
 	}
 	slog.Info("done", slog.String("output", outputPath))
 }

@@ -33,7 +33,7 @@ func GenService(s TableToStructInfo) (GenSvc, error) {
 		if err != nil {
 			return "", fmt.Errorf("service %s: %w", name, err)
 		}
-		return PrintFormatted(out), nil
+		return out, nil
 	}
 
 	dto, err := exec("dto")
