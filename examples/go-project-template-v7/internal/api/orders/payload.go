@@ -1,9 +1,8 @@
 package orders
 
 import (
-	"time"
-
 	"go-project-template-v5/pkg/pageable"
+	"time"
 )
 
 // ordersCreateRequest represents purchases made by users.

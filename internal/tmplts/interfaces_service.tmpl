@@ -24,7 +24,7 @@ type Deps struct {
 func NewServices(ctx context.Context, deps Deps) *Services {
 	return &Services{
 {{- range .Structs}}
-		{{.StructName}}: {{.DbTableName}}.NewService(ctx, deps.Repos.{{.StructName}}Repository),
+		{{.StructName}}: {{.DbTableName}}.NewService(ctx, deps.Repos.{{.StructName}}),
 {{- end }}
 	}
 }

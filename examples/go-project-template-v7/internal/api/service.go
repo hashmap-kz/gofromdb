@@ -2,7 +2,6 @@ package api
 
 import (
 	"context"
-
 	"go-project-template-v5/internal/api/categories"
 	"go-project-template-v5/internal/api/order_items"
 	"go-project-template-v5/internal/api/orders"
@@ -27,10 +26,10 @@ type Deps struct {
 
 func NewServices(ctx context.Context, deps Deps) *Services {
 	return &Services{
-		Categories: categories.NewService(ctx, deps.Repos.CategoriesRepository),
-		OrderItems: order_items.NewService(ctx, deps.Repos.OrderItemsRepository),
-		Orders:     orders.NewService(ctx, deps.Repos.OrdersRepository),
-		Products:   products.NewService(ctx, deps.Repos.ProductsRepository),
-		Users:      users.NewService(ctx, deps.Repos.UsersRepository),
+		Categories: categories.NewService(ctx, deps.Repos.Categories),
+		OrderItems: order_items.NewService(ctx, deps.Repos.OrderItems),
+		Orders:     orders.NewService(ctx, deps.Repos.Orders),
+		Products:   products.NewService(ctx, deps.Repos.Products),
+		Users:      users.NewService(ctx, deps.Repos.Users),
 	}
 }

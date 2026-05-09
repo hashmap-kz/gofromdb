@@ -1,13 +1,12 @@
 package api
 
 import (
-	"net/http"
-
 	"go-project-template-v5/internal/api/categories"
 	"go-project-template-v5/internal/api/order_items"
 	"go-project-template-v5/internal/api/orders"
 	"go-project-template-v5/internal/api/products"
 	"go-project-template-v5/internal/api/users"
+	"net/http"
 )
 
 type Handler struct {

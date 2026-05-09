@@ -1,9 +1,8 @@
 package products
 
 import (
-	"time"
-
 	"go-project-template-v5/pkg/pageable"
+	"time"
 )
 
 // productsCreateRequest stores products with a reference to their category.

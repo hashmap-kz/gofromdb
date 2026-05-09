@@ -3,9 +3,7 @@ package products
 import (
 	"context"
 	"fmt"
-
 	"go-project-template-v5/pkg/pageable"
-
 	"go-project-template-v5/pkg/storage/postgres"
 
 	"github.com/jackc/pgx/v5"
@@ -52,7 +50,8 @@ func (r *repo) Save(ctx context.Context, inputEntity *Products) (*Products, erro
 			guid
 		`
 
-	row := r.db.Pool.QueryRow(ctx, query,
+	row := r.db.Pool.QueryRow(
+		ctx, query,
 		inputEntity.CategoryID,
 		inputEntity.Name,
 		inputEntity.Description,
@@ -85,7 +84,8 @@ func (r *repo) UpdateByID(ctx context.Context, inputEntity *Products, pkRecordID
 			guid
 		`
 
-	row := r.db.Pool.QueryRow(ctx, query,
+	row := r.db.Pool.QueryRow(
+		ctx, query,
 		pkRecordID,
 		inputEntity.CategoryID,
 		inputEntity.Name,

@@ -1,9 +1,8 @@
 package order_items
 
 import (
-	"time"
-
 	"go-project-template-v5/pkg/pageable"
+	"time"
 )
 
 // orderItemsCreateRequest represents items in a sales, including quantity and price.

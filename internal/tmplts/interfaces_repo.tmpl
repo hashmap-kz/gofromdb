@@ -15,14 +15,14 @@ import (
 
 type Repositories struct {
 {{- range .Structs}}
-	{{.StructName}}Repository {{.DbTableName}}.Repository
+	{{.StructName}} {{.DbTableName}}.Repository
 {{- end }}
 }
 
 func NewRepositories(ctx context.Context, db *postgres.Postgres) *Repositories {
 	return &Repositories{
 {{- range .Structs}}
-		{{.StructName}}Repository: {{.DbTableName}}.NewRepository(ctx, db),
+		{{.StructName}}: {{.DbTableName}}.NewRepository(ctx, db),
 {{- end }}
 	}
 }

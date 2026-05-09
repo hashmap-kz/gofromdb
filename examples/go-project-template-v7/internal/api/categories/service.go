@@ -3,7 +3,6 @@ package categories
 import (
 	"context"
 	"fmt"
-
 	"go-project-template-v5/pkg/pageable"
 )
 

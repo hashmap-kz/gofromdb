@@ -3,9 +3,7 @@ package order_items
 import (
 	"context"
 	"fmt"
-
 	"go-project-template-v5/pkg/pageable"
-
 	"go-project-template-v5/pkg/storage/postgres"
 
 	"github.com/jackc/pgx/v5"
@@ -54,7 +52,8 @@ func (r *repo) Save(ctx context.Context, inputEntity *OrderItems) (*OrderItems, 
 			guid
 		`
 
-	row := r.db.Pool.QueryRow(ctx, query,
+	row := r.db.Pool.QueryRow(
+		ctx, query,
 		inputEntity.OrderID,
 		inputEntity.ProductID,
 		inputEntity.Quantity,
@@ -90,7 +89,8 @@ func (r *repo) UpdateByID(ctx context.Context, inputEntity *OrderItems, pkRecord
 			guid
 		`
 
-	row := r.db.Pool.QueryRow(ctx, query,
+	row := r.db.Pool.QueryRow(
+		ctx, query,
 		pkRecordID,
 		inputEntity.OrderID,
 		inputEntity.ProductID,

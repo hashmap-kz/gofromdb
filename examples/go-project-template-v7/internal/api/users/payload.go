@@ -1,9 +1,8 @@
 package users
 
 import (
-	"time"
-
 	"go-project-template-v5/pkg/pageable"
+	"time"
 )
 
 // usersCreateRequest stores users information, identified by a unique email.

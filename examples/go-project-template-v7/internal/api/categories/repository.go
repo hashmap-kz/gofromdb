@@ -3,9 +3,7 @@ package categories
 import (
 	"context"
 	"fmt"
-
 	"go-project-template-v5/pkg/pageable"
-
 	"go-project-template-v5/pkg/storage/postgres"
 
 	"github.com/jackc/pgx/v5"
@@ -53,7 +51,8 @@ func (r *repo) Save(ctx context.Context, inputEntity *Categories) (*Categories, 
 			guid
 		`
 
-	row := r.db.Pool.QueryRow(ctx, query,
+	row := r.db.Pool.QueryRow(
+		ctx, query,
 		inputEntity.Name,
 		inputEntity.ParentID,
 		inputEntity.ValidPeriod,
@@ -87,7 +86,8 @@ func (r *repo) UpdateByID(ctx context.Context, inputEntity *Categories, pkRecord
 			guid
 		`
 
-	row := r.db.Pool.QueryRow(ctx, query,
+	row := r.db.Pool.QueryRow(
+		ctx, query,
 		pkRecordID,
 		inputEntity.Name,
 		inputEntity.ParentID,
