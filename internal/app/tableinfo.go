@@ -151,7 +151,7 @@ func makeOneStruct(relPath string, cols []genpg.ColumnInfo) (TableToStructInfo, 
 		}
 
 		fields = append(fields, TableToStructFieldInfo{
-			FieldComment:   c.ColDesc,
+			FieldComment:   formatComment(c.ColDesc),
 			FieldName:      makeName(c.AttName),
 			FieldType:      c.GoType,
 			DbFieldName:    c.AttName,
@@ -164,7 +164,7 @@ func makeOneStruct(relPath string, cols []genpg.ColumnInfo) (TableToStructInfo, 
 	structComment := ""
 	primaryKeys := []TableToStructFieldInfo{}
 	if len(cols) > 0 {
-		structComment = cols[0].TabDesc
+		structComment = formatComment(cols[0].TabDesc)
 		primaryKeys = handlePkeys(fields, cols[0].PrimaryKeys)
 	}
 
