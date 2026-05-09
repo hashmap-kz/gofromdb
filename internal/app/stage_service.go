@@ -2,6 +2,7 @@ package app
 
 import (
 	"fmt"
+	"strings"
 )
 
 type GenSvc struct {
@@ -17,7 +18,7 @@ func GenService(s TableToStructInfo) (GenSvc, error) {
 
 	data := map[string]any{
 		"StructName":        s.StructName,
-		"PackageName":       s.OutDirName,
+		"PackageName":       strings.ToLower(s.DbTableName),
 		"ParametersByPkeys": pk.Params,
 		"ArgumentsByPkeys":  pk.Args,
 		"DtoFieldsFull":     s.FullFields(),

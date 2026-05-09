@@ -50,13 +50,6 @@ func getSchemaTable(relPath string) (string, string) {
 	return r[0], r[1]
 }
 
-func makeStructAndDirNames(schema, table string) (structName, outDirName string) {
-	if schema == "public" {
-		return makeName(table), table
-	}
-	return makeName(schema) + makeName(table), schema + "_" + table
-}
-
 // Function to add padding (tabs) to each line
 func addPadding(input string) string {
 	lines := strings.Split(input, "\n")
@@ -88,41 +81,4 @@ func makeDnsPathPluralFromDbTable(input string) string {
 	tail = append(tail, last)
 	result := strings.Join(tail, "-")
 	return result
-}
-
-// formatComment wraps a DB column description into valid Go comment lines.
-// Existing newlines create new comment lines; long lines are word-wrapped at 80 chars.
-func formatComment(comment string) string {
-	const maxWidth = 80 // total width of "// <text>", not counting indentation
-
-	comment = strings.TrimSpace(comment)
-	if comment == "" {
-		return ""
-	}
-
-	var out []string
-	seq := strings.SplitSeq(comment, "\n")
-
-	for para := range seq {
-		para = strings.TrimSpace(para)
-		if para == "" {
-			out = append(out, "//")
-			continue
-		}
-		line := "//"
-		for word := range strings.FieldsSeq(para) {
-			candidate := line + " " + word
-			if line == "//" {
-				candidate = "// " + word
-			}
-			if len(candidate) > maxWidth && line != "//" {
-				out = append(out, line)
-				line = "// " + word
-			} else {
-				line = candidate
-			}
-		}
-		out = append(out, line)
-	}
-	return strings.Join(out, "\n")
 }

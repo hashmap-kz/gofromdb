@@ -38,7 +38,6 @@ type TableToStructInfo struct {
 	StructComment               string
 	DbSchemaName                string
 	DbTableName                 string
-	OutDirName                  string // schema_table for non-public schemas, table otherwise
 	Fields                      []TableToStructFieldInfo
 	PrimaryKeys                 []TableToStructFieldInfo
 	HasPrimaryKey               bool
@@ -147,7 +146,7 @@ func makeOneStruct(relPath string, cols []genpg.ColumnInfo) (TableToStructInfo, 
 		}
 
 		fields = append(fields, TableToStructFieldInfo{
-			FieldComment:   formatComment(c.ColDesc),
+			FieldComment:   c.ColDesc,
 			FieldName:      makeName(c.AttName),
 			FieldType:      c.GoType,
 			DbFieldName:    c.AttName,
@@ -160,7 +159,7 @@ func makeOneStruct(relPath string, cols []genpg.ColumnInfo) (TableToStructInfo, 
 	structComment := ""
 	primaryKeys := []TableToStructFieldInfo{}
 	if len(cols) > 0 {
-		structComment = formatComment(cols[0].TabDesc)
+		structComment = cols[0].TabDesc
 		primaryKeys = handlePkeys(fields, cols[0].PrimaryKeys)
 	}
 
@@ -178,7 +177,7 @@ func makeOneStruct(relPath string, cols []genpg.ColumnInfo) (TableToStructInfo, 
 		return TableToStructInfo{}, fmt.Errorf("primary key view for %s: %w", table, err)
 	}
 
-	structName, outDirName := makeStructAndDirNames(schema, table)
+	structName := makeName(table)
 	info := TableToStructInfo{
 		StructName:                  structName,
 		StructNameLowerFirstLetter:  LowerFirstLetter(structName),
@@ -187,7 +186,6 @@ func makeOneStruct(relPath string, cols []genpg.ColumnInfo) (TableToStructInfo, 
 		StructComment:               structComment,
 		DbSchemaName:                schema,
 		DbTableName:                 table,
-		OutDirName:                  outDirName,
 		Fields:                      fields,
 		PrimaryKeys:                 primaryKeys,
 		HasPrimaryKey:               len(primaryKeys) > 0,

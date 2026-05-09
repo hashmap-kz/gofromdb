@@ -7,13 +7,12 @@ import (
 )
 
 {{- if .StructComment}}
-// {{.CreateRequestName}}
-{{.StructComment}}
+// {{.CreateRequestName}} {{.StructComment | ToLower}}
 {{- end}}
 type {{.CreateRequestName}} struct {
 {{- range .DtoFieldsCreate}}
 	{{- if .FieldComment}}
-	{{.FieldComment}}
+	// {{.FieldComment}}
 	{{- end}}
 	{{.FieldName}} {{.FieldType}} `json:"{{.DbFieldName}}"`
 	{{- if .FieldComment}}
@@ -23,13 +22,12 @@ type {{.CreateRequestName}} struct {
 }
 
 {{- if .StructComment}}
-// {{.UpdateRequestName}}
-{{.StructComment}}
+// {{.UpdateRequestName}} {{.StructComment | ToLower}}
 {{- end}}
 type {{.UpdateRequestName}} struct {
 {{- range .DtoFieldsUpdate}}
 	{{- if .FieldComment}}
-	{{.FieldComment}}
+	// {{.FieldComment}}
 	{{- end}}
 	{{.FieldName}} {{.FieldType}} `json:"{{.DbFieldName}}"`
 	{{- if .FieldComment}}
@@ -39,13 +37,12 @@ type {{.UpdateRequestName}} struct {
 }
 
 {{- if .StructComment}}
-// {{.ResponseName}}
-{{.StructComment}}
+// {{.ResponseName}} {{.StructComment | ToLower}}
 {{- end}}
 type {{.ResponseName}} struct {
 {{- range .DtoFieldsFull}}
 	{{- if .FieldComment}}
-	{{.FieldComment}}
+	// {{.FieldComment}}
 	{{- end}}
 	{{.FieldName}} {{.FieldType}} `json:"{{.DbFieldName}}"`
 	{{- if .FieldComment}}

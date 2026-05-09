@@ -100,10 +100,10 @@ func writeRepoFiles(s app.TableToStructInfo, outputPath string) error {
 	if err != nil {
 		return err
 	}
-	if err := writeFile(path.Join(outputPath, fmt.Sprintf("internal/api/%s/entity.go", s.OutDirName)), layer.Entity); err != nil {
+	if err := writeFile(path.Join(outputPath, fmt.Sprintf("internal/api/%s/entity.go", s.DbTableName)), layer.Entity); err != nil {
 		return err
 	}
-	return writeFile(path.Join(outputPath, fmt.Sprintf("internal/api/%s/repository.go", s.OutDirName)), layer.Repository)
+	return writeFile(path.Join(outputPath, fmt.Sprintf("internal/api/%s/repository.go", s.DbTableName)), layer.Repository)
 }
 
 func writeServiceFiles(s app.TableToStructInfo, outputPath string) error {
@@ -111,10 +111,10 @@ func writeServiceFiles(s app.TableToStructInfo, outputPath string) error {
 	if err != nil {
 		return err
 	}
-	if err := writeFile(path.Join(outputPath, fmt.Sprintf("internal/api/%s/dto.go", s.OutDirName)), layer.Dto); err != nil {
+	if err := writeFile(path.Join(outputPath, fmt.Sprintf("internal/api/%s/dto.go", s.DbTableName)), layer.Dto); err != nil {
 		return err
 	}
-	return writeFile(path.Join(outputPath, fmt.Sprintf("internal/api/%s/service.go", s.OutDirName)), layer.Service)
+	return writeFile(path.Join(outputPath, fmt.Sprintf("internal/api/%s/service.go", s.DbTableName)), layer.Service)
 }
 
 func writeHandlerFiles(s app.TableToStructInfo, outputPath string) error {
@@ -122,10 +122,10 @@ func writeHandlerFiles(s app.TableToStructInfo, outputPath string) error {
 	if err != nil {
 		return err
 	}
-	if err := writeFile(path.Join(outputPath, fmt.Sprintf("internal/api/%s/payload.go", s.OutDirName)), layer.Payload); err != nil {
+	if err := writeFile(path.Join(outputPath, fmt.Sprintf("internal/api/%s/payload.go", s.DbTableName)), layer.Payload); err != nil {
 		return err
 	}
-	return writeFile(path.Join(outputPath, fmt.Sprintf("internal/api/%s/handler.go", s.OutDirName)), layer.Handler)
+	return writeFile(path.Join(outputPath, fmt.Sprintf("internal/api/%s/handler.go", s.DbTableName)), layer.Handler)
 }
 
 func writeFile(entityPath, content string) error {
