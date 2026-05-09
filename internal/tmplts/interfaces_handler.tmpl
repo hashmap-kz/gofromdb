@@ -4,7 +4,7 @@ package api
 import (
 	"net/http"
 {{- range .Structs}}
-	"go-project-template-v7/internal/api/{{.DbTableName}}"
+	"go-project-template-v7/internal/api/{{.DbSchemaName}}/{{.DbTableName}}"
 {{- end }}
 )
 
