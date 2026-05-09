@@ -22,14 +22,14 @@ type Service interface {
 }
 
 type svc struct {
-	repository Repository
+	repo Repository
 }
 
 var _ Service = &svc{}
 
-func NewService(_ context.Context, repository Repository) Service {
+func NewService(_ context.Context, repo Repository) Service {
 	return &svc{
-		repository: repository,
+		repo: repo,
 	}
 }
 
@@ -38,7 +38,7 @@ func (s *svc) Save(ctx context.Context, input *CreateDto) (*Dto, error) {
 	if err != nil {
 		return nil, err
 	}
-	save, err := s.repository.Save(ctx, entityToCreate)
+	save, err := s.repo.Save(ctx, entityToCreate)
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +55,7 @@ func (s *svc) UpdateByID(ctx context.Context, input *UpdateDto, {{.ParametersByP
 	if err != nil {
 		return nil, err
 	}
-	updatedResult, err := s.repository.UpdateByID(ctx, entityToUpdate, {{.ArgumentsByPkeys}})
+	updatedResult, err := s.repo.UpdateByID(ctx, entityToUpdate, {{.ArgumentsByPkeys}})
 	if err != nil {
 		return nil, err
 	}
@@ -70,11 +70,11 @@ func (s *svc) UpdateByID(ctx context.Context, input *UpdateDto, {{.ParametersByP
 
 {{- if .HasPrimaryKey}}
 func (s *svc) DeleteByID(ctx context.Context, {{.ParametersByPkeys}}) error {
-	return s.repository.DeleteByID(ctx, {{.ArgumentsByPkeys}})
+	return s.repo.DeleteByID(ctx, {{.ArgumentsByPkeys}})
 }
 
 func (s *svc) FindByID(ctx context.Context, {{.ParametersByPkeys}}) (*Dto, error) {
-	entityByID, err := s.repository.FindByID(ctx, {{.ArgumentsByPkeys}})
+	entityByID, err := s.repo.FindByID(ctx, {{.ArgumentsByPkeys}})
 	if err != nil {
 		return nil, err
 	}
@@ -88,7 +88,7 @@ func (s *svc) FindByID(ctx context.Context, {{.ParametersByPkeys}}) (*Dto, error
 {{- end}}
 
 func (s *svc) FindAll(ctx context.Context) ([]Dto, error) {
-	entities, err := s.repository.FindAll(ctx)
+	entities, err := s.repo.FindAll(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -100,7 +100,7 @@ func (s *svc) FindAll(ctx context.Context) ([]Dto, error) {
 }
 
 func (s *svc) FindAllPageable(ctx context.Context, pq *pageable.PaginationQuery) ([]Dto, pageable.Page, error) {
-	entities, page, err := s.repository.FindAllPageable(ctx, pq)
+	entities, page, err := s.repo.FindAllPageable(ctx, pq)
 	if err != nil {
 		return nil, pageable.Page{}, err
 	}
