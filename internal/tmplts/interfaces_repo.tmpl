@@ -1,0 +1,32 @@
+
+package api
+
+import (
+	"context"
+
+{{- range .Structs}}
+{{- if ne .ImportAlias .DbTableName}}
+	{{.ImportAlias}} "go-project-template-v7/internal/api/{{.DbSchemaName}}/{{.DbTableName}}"
+{{- else}}
+	"go-project-template-v7/internal/api/{{.DbSchemaName}}/{{.DbTableName}}"
+{{- end}}
+{{- end }}
+
+	"go-project-template-v7/pkg/storage/postgres"
+)
+
+// Init all repos
+
+type Repositories struct {
+{{- range .Structs}}
+	{{.StructName}} {{.ImportAlias}}.Repository
+{{- end }}
+}
+
+func NewRepositories(ctx context.Context, db *postgres.Postgres) *Repositories {
+	return &Repositories{
+{{- range .Structs}}
+		{{.StructName}}: {{.ImportAlias}}.NewRepository(ctx, db),
+{{- end }}
+	}
+}

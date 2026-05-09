@@ -1,0 +1,64 @@
+
+package {{.PackageName}}
+
+import (
+	"go-project-template-v7/pkg/pageable"
+	"time"
+)
+
+{{- if .StructComment}}
+// {{.CreateRequestName}}
+{{.StructComment}}
+{{- end}}
+type {{.CreateRequestName}} struct {
+{{- range .DtoFieldsCreate}}
+	{{- if .FieldComment}}
+	{{.FieldComment}}
+	{{- end}}
+	{{.FieldName}} {{.FieldType}} `json:"{{.DbFieldName}}"`
+	{{- if .FieldComment}}
+		{{print "\n"}}
+	{{- end}}
+{{- end}}
+}
+
+{{- if .StructComment}}
+// {{.UpdateRequestName}}
+{{.StructComment}}
+{{- end}}
+type {{.UpdateRequestName}} struct {
+{{- range .DtoFieldsUpdate}}
+	{{- if .FieldComment}}
+	{{.FieldComment}}
+	{{- end}}
+	{{.FieldName}} {{.FieldType}} `json:"{{.DbFieldName}}"`
+	{{- if .FieldComment}}
+		{{print "\n"}}
+	{{- end}}
+{{- end}}
+}
+
+{{- if .StructComment}}
+// {{.ResponseName}}
+{{.StructComment}}
+{{- end}}
+type {{.ResponseName}} struct {
+{{- range .DtoFieldsFull}}
+	{{- if .FieldComment}}
+	{{.FieldComment}}
+	{{- end}}
+	{{.FieldName}} {{.FieldType}} `json:"{{.DbFieldName}}"`
+	{{- if .FieldComment}}
+		{{print "\n"}}
+	{{- end}}
+{{- end}}
+}
+
+// {{.ResponseListName}} response list
+type {{.ResponseListName}} struct {
+	// Page information (if present)
+	Page *pageable.Page `json:"page,omitempty"`
+
+	// Payload
+	Data []{{.ResponseName}} `json:"data"`
+}

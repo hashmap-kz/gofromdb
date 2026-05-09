@@ -1,0 +1,14 @@
+server:
+  port: 5000
+  read_timeout: 10s
+  write_timeout: 10s
+
+logger:
+  # console/json
+  format: console
+  # debug info warn error
+  level: debug
+
+postgres:
+  conn_str: "postgresql://postgres:postgres@localhost:5432/bookstore?sslmode=disable"
+  pool_max: 10

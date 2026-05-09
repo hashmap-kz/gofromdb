@@ -32,23 +32,24 @@ with ti as (select (select format('%I.%I', cls.relnamespace::regnamespace, cls.r
                    from pg_namespace n
                    where n.nspname !~* '^pg_'
                      and n.nspname <> 'information_schema')
-              and c.relkind = 'r'),
+              and c.relkind = 'r'
+              -- exclude partitioned tables
+              and not exists (select 1
+                              from pg_inherits inh
+                              where inh.inhrelid = c.oid)),
 
-     pk as (select (select format('%I.%I', pkcn.connamespace::regnamespace, cls.relname)
-                    from pg_class cls
-                    where cls.oid = c.oid) as relpath,
-                   array_agg(a.attname)    as primary_keys
+     pk as (select format('%I.%I', n.nspname, c.relname) as relpath,
+				   -- preserve pkeys order	
+                   array_agg(a.attname order by k.ord)   as primary_keys
             from pg_constraint pkcn
                      join pg_class c on pkcn.conrelid = c.oid
-                     join pg_attribute a on a.attnum = any (pkcn.conkey) and
-                                            a.attrelid = c.oid
-            where pkcn.connamespace in
-                  (select n.oid
-                   from pg_namespace n
-                   where n.nspname !~* '^pg_'
-                     and n.nspname <> 'information_schema')
+                     join pg_namespace n on n.oid = c.relnamespace
+                     join unnest(pkcn.conkey) with ordinality as k(attnum, ord) on true
+                     join pg_attribute a on a.attnum = k.attnum and a.attrelid = c.oid
+            where n.nspname !~* '^pg_'
+              and n.nspname <> 'information_schema'
               and pkcn.contype = 'p'
-            group by relpath),
+            group by n.nspname, c.relname),
 
      fk as (select cn.oid                                      as conoid,
                    (select format('%I.%I', cls.relnamespace::regnamespace, cls.relname)
@@ -147,8 +148,16 @@ with ti as (select (select format('%I.%I', cls.relnamespace::regnamespace, cls.r
               ('_int8', '[]int64', $t$'{}'::int8[]$t$),
               ('_numeric', '[]string', $t$'{}'::numeric[]$t$),
               ('_text', '[]string', $t$'{}'::text[]$t$),
+              ('_bpchar', '[]string', $t$'{}'::bpchar[]$t$),
               ('_uuid', '[]string', $t$'{}'::uuid[]$t$),
               ('_varchar', '[]string', $t$'{}'::varchar[]$t$),
+              ('_timestamp', '[]time.Time', $t$'{}'::timestamp[]$t$),
+              ('_timestamptz', '[]time.Time', $t$'{}'::timestamptz[]$t$),
+              ('_time', '[]string', $t$'{}'::time[]$t$),
+              ('_timetz', '[]string', $t$'{}'::timetz[]$t$),
+              ('_json', '[]string', $t$'{}'::json[]$t$),
+              ('_jsonb', '[]string', $t$'{}'::jsonb[]$t$),
+              ('_bytea', '[][]byte', $t$'{}'::bytea[]$t$),
               -- Bytea
               ('bytea', '[]byte', (select byt from zeroes)),
               -- Serial Types
@@ -207,7 +216,15 @@ with ti as (select (select format('%I.%I', cls.relnamespace::regnamespace, cls.r
               ('regtype', 'string', (select str from zeroes)),
               ('tsquery', 'string', (select str from zeroes)),
               ('tsvector', 'string', (select str from zeroes)),
-              ('xml', 'string', (select str from zeroes)))
+              ('xml', 'string', (select str from zeroes)),
+              ('inet', 'string', (select str from zeroes)),
+              ('cidr', 'string', (select str from zeroes)),
+              ('macaddr', 'string', (select str from zeroes)),
+              ('macaddr8', 'string', (select str from zeroes)),
+              ('money', 'string', (select str from zeroes)),
+              ('bit', 'string', (select str from zeroes)),
+              ('varbit', 'string', (select str from zeroes)),
+              ('jsonpath', 'string', (select str from zeroes)))
 
 select ti.relpath,
        ti.attname,
@@ -241,8 +258,7 @@ from ti
          left join limits l on l.relpath = ti.relpath and l.attnum = ti.attnum
          left join def on def.relpath = ti.relpath and def.attnum = ti.attnum
          left join typemap_tab tmt on tmt.column1 = ti.atttype2
-where ti.relpath ~* '^public'
-  and ti.relpath !~* 'migrate_'
+where ti.relpath !~* 'migrate_'
 order by ti.relpath, ti.attnum
 ;
 `

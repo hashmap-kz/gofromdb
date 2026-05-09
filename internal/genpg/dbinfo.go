@@ -2,7 +2,8 @@ package genpg
 
 import (
 	"context"
-	"log"
+	"fmt"
+	"log/slog"
 
 	"github.com/jackc/pgx/v5"
 )
@@ -21,24 +22,23 @@ type ColumnInfo struct {
 	IsInsertable bool
 }
 
-func GetDBInfo(connString string) map[string][]ColumnInfo {
-	// Connect to the database
+func GetDBInfo(connString string) (map[string][]ColumnInfo, error) {
+	slog.Debug("connecting to database")
 	conn, err := pgx.Connect(context.Background(), connString)
 	if err != nil {
-		log.Fatalf("Unable to connect to database: %v\n", err)
+		return nil, fmt.Errorf("connect: %w", err)
 	}
 	defer conn.Close(context.Background())
 
-	// Execute the query
+	slog.Debug("querying column info")
 	rows, err := conn.Query(context.Background(), GetInfoQuery)
 	if err != nil {
-		log.Fatalf("Query execution failed: %v\n", err)
+		return nil, fmt.Errorf("query: %w", err)
 	}
 	defer rows.Close()
 
 	colInfo := map[string][]ColumnInfo{}
 
-	// Iterate through the rows and print the data
 	for rows.Next() {
 		var row ColumnInfo
 		if err := rows.Scan(
@@ -54,15 +54,15 @@ func GetDBInfo(connString string) map[string][]ColumnInfo {
 			&row.NullifRhs,
 			&row.IsInsertable,
 		); err != nil {
-			log.Fatalf("Failed to scan row: %v\n", err)
+			return nil, fmt.Errorf("scan row: %w", err)
 		}
 		colInfo[row.RelPath] = append(colInfo[row.RelPath], row)
 	}
 
-	// Check for errors encountered during iteration
 	if rows.Err() != nil {
-		log.Fatalf("Row iteration error: %v\n", rows.Err())
+		return nil, fmt.Errorf("rows: %w", rows.Err())
 	}
 
-	return colInfo
+	slog.Debug("db introspection complete", slog.Int("tables", len(colInfo)))
+	return colInfo, nil
 }

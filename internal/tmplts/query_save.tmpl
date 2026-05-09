@@ -1,0 +1,7 @@
+
+insert into {{.QSchemaName}}.{{.QTableName}} (
+{{.QFieldsNoPKeys | AddPadding}}
+)
+values ({{.QInsertPlaceholders}})
+returning
+{{.QFieldsWithPKeys | AddPadding}}

@@ -1,0 +1,34 @@
+
+package api
+
+import (
+	"context"
+{{- range .Structs}}
+{{- if ne .ImportAlias .DbTableName}}
+	{{.ImportAlias}} "go-project-template-v7/internal/api/{{.DbSchemaName}}/{{.DbTableName}}"
+{{- else}}
+	"go-project-template-v7/internal/api/{{.DbSchemaName}}/{{.DbTableName}}"
+{{- end}}
+{{- end }}
+)
+
+// Init all services
+
+type Services struct {
+{{- range .Structs}}
+	{{.StructName}} {{.ImportAlias}}.Service
+{{- end }}
+}
+
+type Deps struct {
+	// TODO: other deps here
+	Repos *Repositories
+}
+
+func NewServices(ctx context.Context, deps Deps) *Services {
+	return &Services{
+{{- range .Structs}}
+		{{.StructName}}: {{.ImportAlias}}.NewService(ctx, deps.Repos.{{.StructName}}),
+{{- end }}
+	}
+}
