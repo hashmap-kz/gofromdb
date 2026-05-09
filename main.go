@@ -1,26 +1,35 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"os"
 	"path"
 
 	"genpg-v5/internal/app"
+	"genpg-v5/internal/scaffold"
 	"golang.org/x/tools/imports"
 	"mvdan.cc/gofumpt/format"
 )
 
 func main() {
-	connString := "postgres://postgres:postgres@localhost:5432/bookstore"
-	structs := app.GenStructs(connString)
-	outputPath := path.Join("examples", "go-project-template-v7")
+	conn := flag.String("conn", "postgres://postgres:postgres@localhost:5432/bookstore", "postgres connection string")
+	out := flag.String("out", path.Join("examples", "go-project-template-v7"), "output directory")
+	module := flag.String("module", "go-project-template-v5", "go module name for the generated project")
+	flag.Parse()
 
-	writeInterfaces(structs, outputPath)
+	if err := scaffold.CopyTo(*out, *module); err != nil {
+		log.Fatal(err)
+	}
+
+	structs := app.GenStructs(*conn)
+
+	writeInterfaces(structs, *out)
 	for _, s := range structs {
-		writeRepoFiles(s, outputPath)
-		writeServiceFiles(s, outputPath)
-		writeHandlerFiles(s, outputPath)
+		writeRepoFiles(s, *out)
+		writeServiceFiles(s, *out)
+		writeHandlerFiles(s, *out)
 	}
 }
 
