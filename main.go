@@ -9,6 +9,8 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"runtime"
+	"time"
 
 	"golang.org/x/sync/errgroup"
 	"golang.org/x/tools/imports"
@@ -18,6 +20,8 @@ import (
 const scaffoldDir = "examples/go-project-template-v7"
 
 func main() {
+	start := time.Now()
+
 	logger.Init(&logger.Opts{
 		Level:     "debug",
 		Format:    "text",
@@ -65,8 +69,11 @@ func main() {
 
 	// process tables
 	w := *workers
-	if w <= 0 || w > len(structs) {
-		w = 2
+	if w <= 0 {
+		w = runtime.NumCPU()
+	}
+	if w > len(structs) {
+		w = len(structs)
 	}
 
 	g := new(errgroup.Group)
@@ -90,7 +97,10 @@ func main() {
 		slog.Error("failed to generate files", slog.Any("err", err))
 		os.Exit(1)
 	}
-	slog.Info("done", slog.String("output", outputPath))
+	slog.Info("done",
+		slog.String("output", outputPath),
+		slog.Duration("duration", time.Since(start)),
+	)
 }
 
 func prepareOutputDir(dst string) error {

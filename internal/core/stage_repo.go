@@ -14,7 +14,7 @@ func GenRepository(s TableToStructInfo) (GenRepo, error) {
 	}
 
 	exec := func(name string) (string, error) {
-		out, err := ExecTemplate(name, data, FuncMap)
+		out, err := ExecTemplate(name, data)
 		if err != nil {
 			return "", fmt.Errorf("repo %s: %w", name, err)
 		}

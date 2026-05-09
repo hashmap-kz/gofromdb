@@ -92,7 +92,7 @@ func NewRepoQueries(s TableToStructInfo, pk PrimaryKeyView) (RepoQueries, error)
 	}
 
 	exec := func(name string) (string, error) {
-		s, err := ExecTemplate(name, queryTemplatesData, FuncMap)
+		s, err := ExecTemplate(name, queryTemplatesData)
 		if err != nil {
 			return "", fmt.Errorf("repo query %s: %w", name, err)
 		}

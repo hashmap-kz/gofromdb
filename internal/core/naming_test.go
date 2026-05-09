@@ -55,12 +55,24 @@ func TestMakeName(t *testing.T) {
 }
 
 func TestGetSchemaTable(t *testing.T) {
-	schema, table := getSchemaTable("public.users")
+	schema, table, err := getSchemaTable("public.users")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
 	if schema != "public" {
 		t.Errorf("schema = %q, want %q", schema, "public")
 	}
 	if table != "users" {
 		t.Errorf("table = %q, want %q", table, "users")
+	}
+}
+
+func TestGetSchemaTable_Invalid(t *testing.T) {
+	if _, _, err := getSchemaTable("noDot"); err == nil {
+		t.Error("expected error for input without dot, got nil")
+	}
+	if _, _, err := getSchemaTable("a.b.c"); err == nil {
+		t.Error("expected error for input with two dots, got nil")
 	}
 }
 

@@ -19,7 +19,7 @@ var (
 
 // compileTemplates parses every *.tmpl file from the embedded FS exactly once.
 // text/template.Execute is safe for concurrent use with separate writers.
-func compileTemplates(funcMap template.FuncMap) (map[string]*template.Template, error) {
+func compileTemplates() (map[string]*template.Template, error) {
 	tmplOnce.Do(func() {
 		cache := make(map[string]*template.Template)
 		entries, err := fs.ReadDir(tmplts.FS, ".")
@@ -37,7 +37,7 @@ func compileTemplates(funcMap template.FuncMap) (map[string]*template.Template, 
 				tmplCacheErr = fmt.Errorf("read template %s: %w", e.Name(), err)
 				return
 			}
-			tmpl, err := template.New(name).Funcs(funcMap).Parse(string(content))
+			tmpl, err := template.New(name).Funcs(FuncMap).Parse(string(content))
 			if err != nil {
 				tmplCacheErr = fmt.Errorf("parse template %s: %w", name, err)
 				return
@@ -49,8 +49,8 @@ func compileTemplates(funcMap template.FuncMap) (map[string]*template.Template, 
 	return tmplCache, tmplCacheErr
 }
 
-func ExecTemplate(name string, data any, funcMap map[string]any) (string, error) {
-	cache, err := compileTemplates(funcMap)
+func ExecTemplate(name string, data any) (string, error) {
+	cache, err := compileTemplates()
 	if err != nil {
 		return "", fmt.Errorf("init templates: %w", err)
 	}

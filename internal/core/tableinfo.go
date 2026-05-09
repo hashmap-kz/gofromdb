@@ -161,7 +161,10 @@ func dbFieldNames(fields []TableToStructFieldInfo) []string {
 func makeOneStruct(relPath string, cols []genpg.ColumnInfo) (TableToStructInfo, error) {
 	fields := []TableToStructFieldInfo{}
 
-	schema, table := getSchemaTable(relPath)
+	schema, table, err := getSchemaTable(relPath)
+	if err != nil {
+		return TableToStructInfo{}, err
+	}
 	for _, c := range cols {
 		if c.GoType == "" {
 			return TableToStructInfo{}, fmt.Errorf(
@@ -185,9 +188,11 @@ func makeOneStruct(relPath string, cols []genpg.ColumnInfo) (TableToStructInfo, 
 
 	structComment := ""
 	primaryKeys := []TableToStructFieldInfo{}
+	var pkColNames []string
 	if len(cols) > 0 {
 		structComment = formatComment(cols[0].TabDesc)
-		primaryKeys = handlePkeys(fields, cols[0].PrimaryKeys)
+		pkColNames = cols[0].PrimaryKeys
+		primaryKeys = handlePkeys(fields, pkColNames)
 	}
 
 	pkNames := map[string]struct{}{}
@@ -197,7 +202,7 @@ func makeOneStruct(relPath string, cols []genpg.ColumnInfo) (TableToStructInfo, 
 	for i := range fields {
 		_, fields[i].DbIsPrimaryKey = pkNames[fields[i].DbFieldName]
 	}
-	primaryKeys = handlePkeys(fields, cols[0].PrimaryKeys)
+	primaryKeys = handlePkeys(fields, pkColNames)
 
 	pkView, err := NewPrimaryKeyView(primaryKeys)
 	if err != nil {

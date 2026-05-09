@@ -14,7 +14,7 @@ func GenInterfaces(structs []TableToStructInfo) (GenInterf, error) {
 	}
 
 	exec := func(name string) (string, error) {
-		s, err := ExecTemplate(name, data, FuncMap)
+		s, err := ExecTemplate(name, data)
 		if err != nil {
 			return "", fmt.Errorf("interface %s: %w", name, err)
 		}

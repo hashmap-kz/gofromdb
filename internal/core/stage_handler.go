@@ -38,7 +38,7 @@ func GenHandler(s TableToStructInfo) (GenHandl, error) {
 	}
 
 	exec := func(name string) (string, error) {
-		out, err := ExecTemplate(name, data, FuncMap)
+		out, err := ExecTemplate(name, data)
 		if err != nil {
 			return "", fmt.Errorf("handler %s: %w", name, err)
 		}

@@ -1,6 +1,7 @@
 package core
 
 import (
+	"fmt"
 	"strings"
 	"text/template"
 )
@@ -45,9 +46,12 @@ func makeName(from string) string {
 	return sb.String()
 }
 
-func getSchemaTable(relPath string) (string, string) {
+func getSchemaTable(relPath string) (string, string, error) {
 	r := strings.Split(relPath, ".")
-	return r[0], r[1]
+	if len(r) != 2 {
+		return "", "", fmt.Errorf("expected schema.table, got %q", relPath)
+	}
+	return r[0], r[1], nil
 }
 
 // Function to add padding (tabs) to each line
