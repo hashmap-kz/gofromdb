@@ -1,6 +1,6 @@
 .PHONY: lint
 lint:
-	golangci-lint run ./...
+	golangci-lint run --output.tab.path=stdout
 
 .PHONY: docs
 docs:
@@ -12,8 +12,8 @@ run:
 
 .PHONY: build
 build:
-	go build ./main.go
+	CGO_ENABLED=0 go build -ldflags="-s -w" -o go-project-template-v7 ./main.go
 
 .PHONY: test
 test:
-	go test -cover -v -race ./...
+	go test -v -race -cover ./...
