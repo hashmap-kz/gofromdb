@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"sort"
 
-	"genpg-v5/internal/genpg"
+	"github.com/hashmap-kz/gofromdb/internal/genpg"
 )
 
 var filters = map[string]struct{}{

@@ -8,7 +8,7 @@ import (
 	"sync"
 	"text/template"
 
-	"genpg-v5/internal/tmplts"
+	"github.com/hashmap-kz/gofromdb/internal/tmplts"
 )
 
 var (

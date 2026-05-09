@@ -1,4 +1,4 @@
-module genpg-v5
+module github.com/hashmap-kz/gofromdb
 
 go 1.26.0
 

@@ -3,8 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
-	"genpg-v5/internal/core"
-	"genpg-v5/internal/logger"
+	"github.com/hashmap-kz/gofromdb/internal/core"
+	"github.com/hashmap-kz/gofromdb/internal/logger"
 	"log/slog"
 	"os"
 	"path"
