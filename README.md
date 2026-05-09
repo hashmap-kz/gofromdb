@@ -51,14 +51,14 @@ brew install gofromdb
 ## Usage
 
 ```bash
-gofromdb -conn "postgres://postgres:postgres@localhost:5432/bookstore" -output myapp
+gofromdb -conn="postgres://postgres:postgres@localhost:5432/bookstore" -workers=8 -output=myapp
 ```
 
 ---
 
 ## Generated project structure
 
-For each database table, the generator produces a self-contained package under `internal/api/<table_name>/`:
+For each database table, the generator produces a self-contained package under `internal/api/<schema>/<table>/`:
 
 ```
 internal/api/
@@ -66,13 +66,14 @@ internal/api/
   service.go             # top-level service interfaces (all tables)
   handler.go             # router: mounts all routes
 
-  products/
-    entity.go            # DB struct mapped from table schema
-    repository.go        # pgx queries: Save, Update, Delete, Find, FindAll, paginated
-    service.go           # business logic layer, delegates to repository
-    dto.go               # CreateDto, UpdateDto, Dto (internal transfer types)
-    payload.go           # HTTP request/response types with JSON tags
-    handler.go           # net/http handlers with Swagger annotations
+  public/
+    products/
+      entity.go          # DB struct mapped from table schema
+      repository.go      # pgx queries: Save, Update, Delete, Find, FindAll, paginated
+      service.go         # business logic layer, delegates to repository
+      dto.go             # CreateDto, UpdateDto, Dto (internal transfer types)
+      payload.go         # HTTP request/response types with JSON tags
+      handler.go         # net/http handlers with Swagger annotations
 ```
 
 ---
@@ -180,32 +181,19 @@ The scaffold the generator builds on top of:
 
 ---
 
-## CLI flags
-
-| Flag       | Default                                              | Description                  |
-|------------|------------------------------------------------------|------------------------------|
-| `--conn`   | `postgres://postgres:postgres@localhost:5432/bookstore` | PostgreSQL connection string |
-| `--output` | _(in-place, updates the bundled example)_            | Output directory             |
-
-If `--output` is omitted, the generator overwrites the bundled example under `examples/go-project-template-v7/`.
-
----
-
-## Build and install
-
-```bash
-make build      # builds to bin/gofromdb
-make install    # installs to /usr/local/bin
-make test       # runs tests
-```
-
-**Prerequisites:** `goimports`, `gofumpt` must be available on PATH (used to format generated files).
-
----
-
 ## Example database
 
-A ready-to-use example schema with `users`, `categories`, `products`, `orders`, and `order_items` is in `examples/database/`. Start it with Docker Compose:
+A ready-to-use example database is in `examples/database/`. It spans multiple PostgreSQL schemas:
+
+| Schema               | Tables                                                   |
+|----------------------|----------------------------------------------------------|
+| `public`             | `users`, `categories`, `products`, `orders`, `order_items` |
+| `bookstore_catalog`  | `books`, `authors`, `book_authors`, `book_translations`, `publishers` |
+| `bookstore_sales`    | `orders`, `order_lines`, `customers`, `discount_codes`   |
+| `bookstore_inventory`| `warehouses`, `stock_levels`, `stock_events`             |
+| `bookstore_import`   | `import_batches`, `import_errors`                        |
+
+Start it with Docker Compose:
 
 ```bash
 cd examples/database
