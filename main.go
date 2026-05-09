@@ -3,14 +3,15 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/hashmap-kz/gofromdb/internal/core"
-	"github.com/hashmap-kz/gofromdb/internal/logger"
 	"log/slog"
 	"os"
 	"path"
 	"path/filepath"
 	"runtime"
 	"time"
+
+	"github.com/hashmap-kz/gofromdb/internal/core"
+	"github.com/hashmap-kz/gofromdb/internal/logger"
 
 	"golang.org/x/sync/errgroup"
 	"golang.org/x/tools/imports"
@@ -214,7 +215,7 @@ func writeFile(entityPath, content string) error {
 	if err != nil {
 		return fmt.Errorf("gofumpt %s: %w", entityPath, err)
 	}
-	if err = os.WriteFile(entityPath, src, 0o644); err != nil {
+	if err = os.WriteFile(entityPath, src, 0o600); err != nil {
 		return fmt.Errorf("write %s: %w", entityPath, err)
 	}
 	return nil

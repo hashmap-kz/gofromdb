@@ -11,10 +11,38 @@ import (
 	"sync"
 	"testing"
 	"time"
-
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
+
+func assertContains(t *testing.T, got, want string) {
+	t.Helper()
+	if !strings.Contains(got, want) {
+		t.Errorf("expected output to contain %q\ngot: %s", want, got)
+	}
+}
+
+func assertNotContains(t *testing.T, got, want string) {
+	t.Helper()
+	if strings.Contains(got, want) {
+		t.Errorf("expected output NOT to contain %q\ngot: %s", want, got)
+	}
+}
+
+func assertMatchesRegexp(t *testing.T, re *regexp.Regexp, got string) {
+	t.Helper()
+	if !re.MatchString(got) {
+		t.Errorf("expected output to match %s\ngot: %s", re, got)
+	}
+}
+
+func mustNotPanic(t *testing.T, f func()) {
+	t.Helper()
+	defer func() {
+		if r := recover(); r != nil {
+			t.Fatalf("unexpected panic: %v", r)
+		}
+	}()
+	f()
+}
 
 func TestPrettyTextHandlerBasicFormatting(t *testing.T) {
 	t.Parallel()
@@ -29,8 +57,7 @@ func TestPrettyTextHandlerBasicFormatting(t *testing.T) {
 
 	got := buf.String()
 
-	assert.Regexp(
-		t,
+	assertMatchesRegexp(t,
 		regexp.MustCompile(
 			`^INFO\s+\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\] application started\s+\n$`,
 		),
@@ -57,13 +84,13 @@ func TestPrettyTextHandlerFormatsAttrs(t *testing.T) {
 
 	got := buf.String()
 
-	assert.Contains(t, got, "INFO")
-	assert.Contains(t, got, "streaming WAL")
-	assert.Contains(t, got, "component=receiver")
-	assert.Contains(t, got, "slot=pgrwl")
-	assert.Contains(t, got, "timeline=1")
-	assert.Contains(t, got, "active=true")
-	assert.Contains(t, got, "lag=1.5s")
+	assertContains(t, got, "INFO")
+	assertContains(t, got, "streaming WAL")
+	assertContains(t, got, "component=receiver")
+	assertContains(t, got, "slot=pgrwl")
+	assertContains(t, got, "timeline=1")
+	assertContains(t, got, "active=true")
+	assertContains(t, got, "lag=1.5s")
 }
 
 func TestPrettyTextHandlerQuotesStringsWhenNeeded(t *testing.T) {
@@ -85,11 +112,11 @@ func TestPrettyTextHandlerQuotesStringsWhenNeeded(t *testing.T) {
 
 	got := buf.String()
 
-	assert.Contains(t, got, `empty=""`)
-	assert.Contains(t, got, `space="hello world"`)
-	assert.Contains(t, got, `equals="a=b"`)
-	assert.Contains(t, got, `quote="hello \"world\""`)
-	assert.Contains(t, got, `plain=hello`)
+	assertContains(t, got, `empty=""`)
+	assertContains(t, got, `space="hello world"`)
+	assertContains(t, got, `equals="a=b"`)
+	assertContains(t, got, `quote="hello \"world\""`)
+	assertContains(t, got, `plain=hello`)
 }
 
 func TestPrettyTextHandlerDebugDisabledByDefault(t *testing.T) {
@@ -104,8 +131,8 @@ func TestPrettyTextHandlerDebugDisabledByDefault(t *testing.T) {
 
 	got := buf.String()
 
-	assert.NotContains(t, got, "hidden")
-	assert.Contains(t, got, "visible")
+	assertNotContains(t, got, "hidden")
+	assertContains(t, got, "visible")
 }
 
 func TestPrettyTextHandlerDebugEnabled(t *testing.T) {
@@ -121,8 +148,8 @@ func TestPrettyTextHandlerDebugEnabled(t *testing.T) {
 
 	got := buf.String()
 
-	assert.Contains(t, got, "DEBUG")
-	assert.Contains(t, got, "debug message")
+	assertContains(t, got, "DEBUG")
+	assertContains(t, got, "debug message")
 }
 
 func TestPrettyTextHandlerCustomNegativeLevel(t *testing.T) {
@@ -152,9 +179,9 @@ func TestPrettyTextHandlerCustomNegativeLevel(t *testing.T) {
 
 	got := buf.String()
 
-	assert.Contains(t, got, "TRACE")
-	assert.Contains(t, got, "trace message")
-	assert.Contains(t, got, "component=receiver")
+	assertContains(t, got, "TRACE")
+	assertContains(t, got, "trace message")
+	assertContains(t, got, "component=receiver")
 }
 
 func TestPrettyTextHandlerReplaceAttrCanRewriteAttrs(t *testing.T) {
@@ -184,10 +211,10 @@ func TestPrettyTextHandlerReplaceAttrCanRewriteAttrs(t *testing.T) {
 
 	got := buf.String()
 
-	assert.Contains(t, got, "pg.replication_slot=pgrwl")
-	assert.Contains(t, got, "pg.password=***")
-	assert.NotContains(t, got, "secret")
-	assert.NotContains(t, got, "pg.slot=pgrwl")
+	assertContains(t, got, "pg.replication_slot=pgrwl")
+	assertContains(t, got, "pg.password=***")
+	assertNotContains(t, got, "secret")
+	assertNotContains(t, got, "pg.slot=pgrwl")
 }
 
 func TestPrettyTextHandlerReplaceAttrCanDropAttrs(t *testing.T) {
@@ -213,9 +240,9 @@ func TestPrettyTextHandlerReplaceAttrCanDropAttrs(t *testing.T) {
 
 	got := buf.String()
 
-	assert.Contains(t, got, "component=api")
-	assert.NotContains(t, got, "token=")
-	assert.NotContains(t, got, "secret-token")
+	assertContains(t, got, "component=api")
+	assertNotContains(t, got, "token=")
+	assertNotContains(t, got, "secret-token")
 }
 
 func TestPrettyTextHandlerReplaceAttrCanRewriteTime(t *testing.T) {
@@ -238,9 +265,9 @@ func TestPrettyTextHandlerReplaceAttrCanRewriteTime(t *testing.T) {
 
 	got := buf.String()
 
-	assert.Contains(t, got, "INFO")
-	assert.Contains(t, got, "[CUSTOM-TIME]")
-	assert.Contains(t, got, "time rewritten")
+	assertContains(t, got, "INFO")
+	assertContains(t, got, "[CUSTOM-TIME]")
+	assertContains(t, got, "time rewritten")
 }
 
 func TestPrettyTextHandlerCustomTimeFormatAndMessageWidth(t *testing.T) {
@@ -258,8 +285,7 @@ func TestPrettyTextHandlerCustomTimeFormatAndMessageWidth(t *testing.T) {
 
 	got := buf.String()
 
-	assert.Regexp(
-		t,
+	assertMatchesRegexp(t,
 		regexp.MustCompile(
 			`^INFO\s+\[\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.*\] msg\s+component=test\n$`,
 		),
@@ -285,9 +311,9 @@ func TestPrettyTextHandlerWithAttrs(t *testing.T) {
 
 	got := buf.String()
 
-	assert.Contains(t, got, "service=pgrwl")
-	assert.Contains(t, got, "component=receiver")
-	assert.Contains(t, got, "slot=pgrwl")
+	assertContains(t, got, "service=pgrwl")
+	assertContains(t, got, "component=receiver")
+	assertContains(t, got, "slot=pgrwl")
 }
 
 func TestPrettyTextHandlerWithGroup(t *testing.T) {
@@ -309,8 +335,8 @@ func TestPrettyTextHandlerWithGroup(t *testing.T) {
 
 	got := buf.String()
 
-	assert.Contains(t, got, "pg.slot=pgrwl")
-	assert.Contains(t, got, "pg.timeline=1")
+	assertContains(t, got, "pg.slot=pgrwl")
+	assertContains(t, got, "pg.timeline=1")
 }
 
 func TestPrettyTextHandlerNestedGroups(t *testing.T) {
@@ -330,7 +356,7 @@ func TestPrettyTextHandlerNestedGroups(t *testing.T) {
 
 	got := buf.String()
 
-	assert.Contains(t, got, "pg.wal.file=00000001000000000000000A")
+	assertContains(t, got, "pg.wal.file=00000001000000000000000A")
 }
 
 func TestPrettyTextHandlerSlogGroupAttr(t *testing.T) {
@@ -351,8 +377,8 @@ func TestPrettyTextHandlerSlogGroupAttr(t *testing.T) {
 
 	got := buf.String()
 
-	assert.Contains(t, got, "wal.file=00000001000000000000000A")
-	assert.Contains(t, got, "wal.timeline=1")
+	assertContains(t, got, "wal.file=00000001000000000000000A")
+	assertContains(t, got, "wal.timeline=1")
 }
 
 func TestPrettyTextHandlerAddSource(t *testing.T) {
@@ -380,9 +406,9 @@ func TestPrettyTextHandlerAddSource(t *testing.T) {
 
 	got := buf.String()
 
-	assert.Contains(t, got, "with source")
-	assert.Regexp(t, regexp.MustCompile(`source=.+_test\.go:\d+`), got)
-	assert.NotContains(t, got, `source="&{`)
+	assertContains(t, got, "with source")
+	assertMatchesRegexp(t, regexp.MustCompile(`source=.+_test\.go:\d+`), got)
+	assertNotContains(t, got, `source="&{`)
 }
 
 func TestFormatSource(t *testing.T) {
@@ -426,7 +452,10 @@ func TestFormatSource(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			assert.Equal(t, tt.want, formatSource(tt.src))
+			got := formatSource(tt.src)
+			if got != tt.want {
+				t.Errorf("got %q, want %q", got, tt.want)
+			}
 		})
 	}
 }
@@ -466,7 +495,7 @@ func TestPrettyTextHandlerAnyTextMarshaler(t *testing.T) {
 
 	got := buf.String()
 
-	assert.Contains(t, got, "value=hello")
+	assertContains(t, got, "value=hello")
 }
 
 func TestPrettyTextHandlerAnyTextMarshalerErrorFallsBack(t *testing.T) {
@@ -484,8 +513,8 @@ func TestPrettyTextHandlerAnyTextMarshalerErrorFallsBack(t *testing.T) {
 
 	got := buf.String()
 
-	assert.Contains(t, got, "text marshaler error")
-	assert.Contains(t, got, "value={}")
+	assertContains(t, got, "text marshaler error")
+	assertContains(t, got, "value={}")
 }
 
 func TestPrettyTextHandlerAnyTextMarshalerNilPointerPanicBecomesNil(t *testing.T) {
@@ -499,7 +528,7 @@ func TestPrettyTextHandlerAnyTextMarshalerNilPointerPanicBecomesNil(t *testing.T
 
 	var bad *panicTextMarshaler
 
-	require.NotPanics(t, func() {
+	mustNotPanic(t, func() {
 		log.Info("panic nil marshaler",
 			slog.Any("bad", bad),
 		)
@@ -507,8 +536,8 @@ func TestPrettyTextHandlerAnyTextMarshalerNilPointerPanicBecomesNil(t *testing.T
 
 	got := buf.String()
 
-	assert.Contains(t, got, "panic nil marshaler")
-	assert.Contains(t, got, "bad=<nil>")
+	assertContains(t, got, "panic nil marshaler")
+	assertContains(t, got, "bad=<nil>")
 }
 
 func TestPrettyTextHandlerAnyTextMarshalerNonNilPanicBecomesPanicMarker(t *testing.T) {
@@ -520,7 +549,7 @@ func TestPrettyTextHandlerAnyTextMarshalerNonNilPanicBecomesPanicMarker(t *testi
 		Level: slog.LevelDebug,
 	}))
 
-	require.NotPanics(t, func() {
+	mustNotPanic(t, func() {
 		log.Info("panic marshaler",
 			slog.Any("bad", &panicTextMarshaler{}),
 		)
@@ -528,8 +557,8 @@ func TestPrettyTextHandlerAnyTextMarshalerNonNilPanicBecomesPanicMarker(t *testi
 
 	got := buf.String()
 
-	assert.Contains(t, got, "panic marshaler")
-	assert.Contains(t, got, `bad="!PANIC: boom"`)
+	assertContains(t, got, "panic marshaler")
+	assertContains(t, got, `bad="!PANIC: boom"`)
 }
 
 func TestPrettyTextHandlerNilOutputDoesNotPanic(t *testing.T) {
@@ -539,7 +568,7 @@ func TestPrettyTextHandlerNilOutputDoesNotPanic(t *testing.T) {
 		Level: slog.LevelDebug,
 	}))
 
-	require.NotPanics(t, func() {
+	mustNotPanic(t, func() {
 		log.Info("discarded")
 	})
 }
@@ -576,13 +605,15 @@ func TestPrettyTextHandlerConcurrentLogging(t *testing.T) {
 
 	lines := strings.Split(strings.TrimSpace(buf.String()), "\n")
 
-	require.Len(t, lines, goroutines*perGoroutine)
+	if len(lines) != goroutines*perGoroutine {
+		t.Fatalf("expected %d lines, got %d", goroutines*perGoroutine, len(lines))
+	}
 
 	for _, line := range lines {
-		assert.Contains(t, line, "INFO")
-		assert.Contains(t, line, "concurrent log")
-		assert.Contains(t, line, "goroutine=")
-		assert.Contains(t, line, "iteration=")
+		assertContains(t, line, "INFO")
+		assertContains(t, line, "concurrent log")
+		assertContains(t, line, "goroutine=")
+		assertContains(t, line, "iteration=")
 	}
 }
 
@@ -600,7 +631,9 @@ func TestPrettyTextHandlerWriteErrorReturnedFromHandle(t *testing.T) {
 	//nolint:staticcheck
 	err := handler.Handle(nil, record)
 
-	assert.ErrorIs(t, err, wantErr)
+	if !errors.Is(err, wantErr) {
+		t.Errorf("got %v, want %v", err, wantErr)
+	}
 }
 
 type errWriter struct {
@@ -667,7 +700,10 @@ func TestFormatAttrValueKinds(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			assert.Equal(t, tt.want, formatAttrValue(tt.attr.Key, tt.attr.Value))
+			got := formatAttrValue(tt.attr.Key, tt.attr.Value)
+			if got != tt.want {
+				t.Errorf("got %q, want %q", got, tt.want)
+			}
 		})
 	}
 }
