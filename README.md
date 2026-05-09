@@ -11,7 +11,7 @@ Point it at a PostgreSQL database. Get a running Go REST API.
 [![Latest Release](https://img.shields.io/github/v/release/hashmap-kz/gofromdb)](https://github.com/hashmap-kz/gofromdb/releases/latest)
 [![Start contributing](https://img.shields.io/github/issues/hashmap-kz/gofromdb/good%20first%20issue?color=7057ff&label=Contribute)](https://github.com/hashmap-kz/gofromdb/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc+label%3A%22good+first+issue%22)
 
-The generator connects to your database, reads the schemas, and writes a complete Go project - 
+`gofromdb` connects to your database, reads the schemas, and writes a complete Go project - 
 with entity structs, repositories, services, HTTP handlers, DTOs, and Swagger annotations. 
 
 **The result compiles and runs immediately.**
@@ -201,3 +201,9 @@ docker compose up -d
 ```
 
 The generated project under `examples/go-project-template-v7/` was produced from this schema.
+
+---
+
+## License
+
+MIT License. See [LICENSE](./LICENSE) for details.
