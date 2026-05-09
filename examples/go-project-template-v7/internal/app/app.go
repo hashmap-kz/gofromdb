@@ -3,6 +3,8 @@ package app
 import (
 	"context"
 	"errors"
+	httpSwagger "github.com/swaggo/http-swagger"
+	"go-project-template-v5/pkg/httputils"
 	"log"
 	"log/slog"
 	"net/http"
@@ -44,14 +46,14 @@ func Run(configFilePath string) {
 	}
 	defer pg.Close()
 
-	// init router, register routes for all module
-	router := httpserver.InitRouter(ctx)
+	// routes for all module (docs, health-checks, etc...)
+	defaultRoutes := defaultRoutes(ctx)
 	repositories := api.NewRepositories(ctx, pg)
 	services := api.NewServices(ctx, api.Deps{
 		Repos: repositories,
 	})
 	handler := api.NewHandler(services)
-	handler.Init(router)
+	handler.Mount(defaultRoutes)
 
 	// HTTP server
 	middlewareChain := middlewares.MiddlewareChain(
@@ -59,7 +61,7 @@ func Run(configFilePath string) {
 		middlewares.LoggingMiddleware,
 		// middlewares.AuthorizeMiddleware,
 	)
-	srv := httpserver.NewServer(middlewareChain(router))
+	srv := httpserver.NewServer(middlewareChain(defaultRoutes))
 
 	go func() {
 		if err := srv.Run(); !errors.Is(err, http.ErrServerClosed) {
@@ -83,4 +85,25 @@ func Run(configFilePath string) {
 	if err := srv.Stop(ctx); err != nil {
 		logger.Error("failed to stop server", slog.String("err", err.Error()))
 	}
+}
+
+func defaultRoutes(_ context.Context) *http.ServeMux {
+	router := http.NewServeMux()
+
+	// docs
+
+	router.Handle("/swagger-ui/", httpSwagger.WrapHandler)
+	router.HandleFunc("/swagger.json", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "./docs/swagger.json")
+	})
+
+	// internal
+
+	router.HandleFunc("GET /healthz", func(w http.ResponseWriter, _ *http.Request) {
+		httputils.WriteJSON(w, http.StatusOK, map[string]string{
+			"status": "UP",
+		})
+	})
+
+	return router
 }

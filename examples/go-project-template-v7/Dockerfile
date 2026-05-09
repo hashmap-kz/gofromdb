@@ -1,4 +1,4 @@
-FROM golang:1.23-alpine AS build-stage
+FROM golang:1.26.0-alpine3.23 AS build-stage
 
 WORKDIR /app
 
@@ -18,7 +18,7 @@ RUN swag init --parseDependency --parseInternal \
   && go build -ldflags="-s -w" -o ./service
 
 # Deploy the application binary into a lean image
-# FROM golang:1.23-alpine AS build-release-stage
+# FROM golang:1.26.0-alpine3.23 AS build-release-stage
 FROM gcr.io/distroless/base-debian12 AS build-release-stage
 
 ARG APP_ENVIRONMENT
@@ -27,8 +27,6 @@ ENV APP_ENVIRONMENT=${APP_ENVIRONMENT}
 WORKDIR /app
 
 COPY --from=build-stage /app /app
-
-ENV CGO_ENABLED=0 GOOS=linux GOARCH=amd64
 
 USER nonroot:nonroot
 

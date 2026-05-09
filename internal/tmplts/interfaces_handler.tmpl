@@ -18,7 +18,7 @@ func NewHandler(services *Services) *Handler {
 	}
 }
 
-func (h *Handler) Init(router *http.ServeMux) {
+func (h *Handler) Mount(router *http.ServeMux) {
 {{- range .Structs}}
 	// {{.StructName}} routes
 	{{.StructNameLowerFirstLetter}}Handler := {{.DbTableName}}.NewHandler(h.Services.{{.StructName}})

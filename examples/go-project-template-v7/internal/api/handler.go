@@ -19,7 +19,7 @@ func NewHandler(services *Services) *Handler {
 	}
 }
 
-func (h *Handler) Init(router *http.ServeMux) {
+func (h *Handler) Mount(router *http.ServeMux) {
 	// Categories routes
 	categoriesHandler := categories.NewHandler(h.Services.Categories)
 	router.HandleFunc("POST /api/v1/categories", categoriesHandler.Save)
