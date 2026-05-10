@@ -43,14 +43,14 @@ func Run(configFilePath string) {
 	}
 	defer pg.Close()
 
-	// routes for all module (docs, health-checks, etc...)
-	defaultRoutes := defaultRoutes(ctx)
-	repositories := api.NewRepositories(ctx, pg)
-	services := api.NewServices(ctx, api.Deps{
-		Repos: repositories,
-	})
-	handler := api.NewHandler(services)
-	handler.Mount(defaultRoutes)
+	// init routing, setup API
+	router := http.NewServeMux()
+	mountInfraRoutes(router)
+	apiHandler := api.NewHandler(
+		api.NewServices(ctx, api.Deps{
+			Repos: api.NewRepositories(ctx, pg),
+		}))
+	apiHandler.Mount(router)
 
 	// HTTP server
 	middlewareChain := middlewares.MiddlewareChain(
@@ -59,7 +59,7 @@ func Run(configFilePath string) {
 		middlewares.CorsMiddleware,
 		// middlewares.AuthorizeMiddleware,
 	)
-	srv := httpserver.NewServer(middlewareChain(defaultRoutes))
+	srv := httpserver.NewServer(middlewareChain(router))
 
 	go func() {
 		if err := srv.Run(); !errors.Is(err, http.ErrServerClosed) {
@@ -87,23 +87,17 @@ func Run(configFilePath string) {
 	}
 }
 
-func defaultRoutes(_ context.Context) *http.ServeMux {
-	router := http.NewServeMux()
-
+func mountInfraRoutes(router *http.ServeMux) {
 	// docs
-
 	router.Handle("/swagger-ui/", httpSwagger.WrapHandler)
 	router.HandleFunc("/swagger.json", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "./docs/swagger.json")
 	})
 
 	// internal
-
 	router.HandleFunc("GET /healthz", func(w http.ResponseWriter, _ *http.Request) {
 		httputils.WriteJSON(w, http.StatusOK, map[string]string{
 			"status": "UP",
 		})
 	})
-
-	return router
 }
