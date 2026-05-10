@@ -65,8 +65,8 @@ func (h *Handler) Save(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 200 OK
-	httputils.WriteJSON(w, http.StatusOK, dtoToPayload)
+	// 201 Created
+	httputils.WriteJSON(w, http.StatusCreated, dtoToPayload)
 }
 
 // UpdateByID
@@ -78,7 +78,7 @@ func (h *Handler) Save(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param id path int true "Item ID"
 // @Param request body booksUpdateRequest true "Update input"
-// @Success 201 {object} booksResponse
+// @Success 200 {object} booksResponse
 // @Failure 400 {object} httputils.ErrorResponse "Bad Request"
 // @Failure 500 {object} httputils.ErrorResponse "Internal Server Error"
 // @Router /api/v1/books/{book_id} [put]
@@ -120,8 +120,8 @@ func (h *Handler) UpdateByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 201 OK
-	httputils.WriteJSON(w, http.StatusCreated, dtoToPayload)
+	// 200 OK
+	httputils.WriteJSON(w, http.StatusOK, dtoToPayload)
 }
 
 // DeleteByID
@@ -173,7 +173,7 @@ func (h *Handler) FindByID(w http.ResponseWriter, r *http.Request) {
 
 	resp, err := h.svc.FindByID(r.Context(), pkBookID)
 	if err != nil {
-		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
+		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
 		return
 	}
 
@@ -201,7 +201,7 @@ func (h *Handler) FindAll(w http.ResponseWriter, r *http.Request) {
 	// call service
 	resp, err := h.svc.FindAll(r.Context())
 	if err != nil {
-		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
+		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
 		return
 	}
 
@@ -242,7 +242,7 @@ func (h *Handler) FindAllPageable(w http.ResponseWriter, r *http.Request) {
 	// call service
 	resp, page, err := h.svc.FindAllPageable(r.Context(), pq)
 	if err != nil {
-		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
+		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
 		return
 	}
 
