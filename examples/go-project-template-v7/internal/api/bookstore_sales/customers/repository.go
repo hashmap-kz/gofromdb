@@ -2,7 +2,9 @@ package customers
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"go-project-template-v7/pkg/apperrors"
 	"go-project-template-v7/pkg/pageable"
 	"go-project-template-v7/pkg/storage/postgres"
 
@@ -116,8 +118,11 @@ func (r *repo) DeleteByID(ctx context.Context, pkCustomerID string) error {
 		`
 
 	cmdTag, err := r.db.Pool.Exec(ctx, query, pkCustomerID)
-	if err != nil || cmdTag.RowsAffected() == 0 {
-		return fmt.Errorf("%s. no rows were deleted: %w", tag, err)
+	if err != nil {
+		return fmt.Errorf("%s: %w", tag, err)
+	}
+	if cmdTag.RowsAffected() == 0 {
+		return fmt.Errorf("%s: %w", tag, apperrors.ErrNotFound)
 	}
 	return nil
 }
@@ -168,7 +173,7 @@ func (r *repo) FindAll(ctx context.Context) ([]Customers, error) {
 	}
 	defer rows.Close()
 
-	var scannedEntities []Customers
+	scannedEntities := make([]Customers, 0)
 	for rows.Next() {
 		scannedEntity, err := scanFullRow(rows)
 		if err != nil {
@@ -198,7 +203,7 @@ func (r *repo) FindAllPageable(ctx context.Context, pq *pageable.PaginationQuery
 
 	// handle empty result
 	if totalCount == 0 {
-		return nil, page, nil
+		return make([]Customers, 0), page, nil
 	}
 
 	// select entities
@@ -221,7 +226,7 @@ func (r *repo) FindAllPageable(ctx context.Context, pq *pageable.PaginationQuery
 	}
 	defer rows.Close()
 
-	var scannedEntities []Customers
+	scannedEntities := make([]Customers, 0)
 	for rows.Next() {
 		scannedEntity, err := scanFullRow(rows)
 		if err != nil {
@@ -252,6 +257,9 @@ func scanFullRow(row pgx.Row) (*Customers, error) {
 		&scannedEntity.RegisteredAt,
 	)
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, apperrors.ErrNotFound
+		}
 		return nil, err
 	}
 	return &scannedEntity, nil

@@ -1,7 +1,8 @@
 package products
 
 import (
-	"fmt"
+	"errors"
+	"go-project-template-v7/pkg/apperrors"
 	"go-project-template-v7/pkg/httputils"
 	"go-project-template-v7/pkg/pageable"
 	"go-project-template-v7/pkg/validator"
@@ -31,42 +32,22 @@ func NewHandler(svc Service) *Handler {
 // @Failure 500 {object} httputils.ErrorResponse "Internal Server Error"
 // @Router /api/v1/products [post]
 func (h *Handler) Save(w http.ResponseWriter, r *http.Request) {
-	// read RequestBody
 	req := &productsCreateRequest{}
 	if err := httputils.ReadJSON(r, &req); err != nil {
 		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
 		return
 	}
-
-	// check RequestBody
 	if err := validator.ValidateStruct(req); err != nil {
 		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
 		return
 	}
-
-	// convert handler-request-payload into service-dto
-	createInput, err := mapCreateRequestToCreateInputDto(req)
-	if err != nil {
-		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
-		return
-	}
-
-	// call service
+	createInput := mapCreateRequestToCreateInputDto(req)
 	resp, err := h.svc.Save(r.Context(), createInput)
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
 		return
 	}
-
-	// convert service-dto into handler-response-payload
-	dtoToPayload, err := mapDtoToPayload(resp)
-	if err != nil {
-		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
-		return
-	}
-
-	// 201 Created
-	httputils.WriteJSON(w, http.StatusCreated, dtoToPayload)
+	httputils.WriteJSON(w, http.StatusCreated, mapDtoToPayload(resp))
 }
 
 // UpdateByID
@@ -80,6 +61,7 @@ func (h *Handler) Save(w http.ResponseWriter, r *http.Request) {
 // @Param request body productsUpdateRequest true "Update input"
 // @Success 200 {object} productsResponse
 // @Failure 400 {object} httputils.ErrorResponse "Bad Request"
+// @Failure 404 {object} httputils.ErrorResponse "Not Found"
 // @Failure 500 {object} httputils.ErrorResponse "Internal Server Error"
 // @Router /api/v1/products/{record_id} [put]
 func (h *Handler) UpdateByID(w http.ResponseWriter, r *http.Request) {
@@ -98,30 +80,17 @@ func (h *Handler) UpdateByID(w http.ResponseWriter, r *http.Request) {
 		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
 		return
 	}
-
-	// convert handler-request-payload into service-dto
-	updateInput, err := mapUpdateRequestToUpdateInputDto(req)
-	if err != nil {
-		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
-		return
-	}
-
-	// call service
+	updateInput := mapUpdateRequestToUpdateInputDto(req)
 	resp, err := h.svc.UpdateByID(r.Context(), updateInput, pkRecordID)
 	if err != nil {
+		if errors.Is(err, apperrors.ErrNotFound) {
+			httputils.WriteJSON(w, http.StatusNotFound, httputils.ErrorResponse{Message: "record not found"})
+			return
+		}
 		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
 		return
 	}
-
-	// convert service-dto into handler-response-payload
-	dtoToPayload, err := mapDtoToPayload(resp)
-	if err != nil {
-		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
-		return
-	}
-
-	// 200 OK
-	httputils.WriteJSON(w, http.StatusOK, dtoToPayload)
+	httputils.WriteJSON(w, http.StatusOK, mapDtoToPayload(resp))
 }
 
 // DeleteByID
@@ -134,7 +103,8 @@ func (h *Handler) UpdateByID(w http.ResponseWriter, r *http.Request) {
 // @Param id path int true "Products ID"
 // @Success 204 "No Content (Successfully deleted)"
 // @Failure 400 {object} httputils.ErrorResponse "Bad Request (Invalid ID format)"
-// @Failure 500 {object} httputils.ErrorResponse "Internal Server Error (Deletion failed)"
+// @Failure 404 {object} httputils.ErrorResponse "Not Found"
+// @Failure 500 {object} httputils.ErrorResponse "Internal Server Error"
 // @Router /api/v1/products/{record_id} [delete]
 func (h *Handler) DeleteByID(w http.ResponseWriter, r *http.Request) {
 	pkRecordID, err := httputils.PathValueI32(r, "record_id")
@@ -143,17 +113,18 @@ func (h *Handler) DeleteByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.svc.DeleteByID(r.Context(), pkRecordID)
-	if err != nil {
+	if err := h.svc.DeleteByID(r.Context(), pkRecordID); err != nil {
+		if errors.Is(err, apperrors.ErrNotFound) {
+			httputils.WriteJSON(w, http.StatusNotFound, httputils.ErrorResponse{Message: "record not found"})
+			return
+		}
 		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
 		return
 	}
-
-	// 204 OK
 	w.WriteHeader(http.StatusNoContent)
 }
 
-// FindByID retrieves a purchase by its ID.
+// FindByID retrieves an item by its ID.
 //
 // @Summary Get item by ID
 // @Description Retrieves the details based on the provided ID in the request path.
@@ -162,7 +133,8 @@ func (h *Handler) DeleteByID(w http.ResponseWriter, r *http.Request) {
 // @Param id path int true "Item ID"
 // @Success 200 {object} productsResponse "Single item"
 // @Failure 400 {object} httputils.ErrorResponse "Bad Request (Invalid ID format)"
-// @Failure 500 {object} httputils.ErrorResponse "Internal Server Error (Deletion failed)"
+// @Failure 404 {object} httputils.ErrorResponse "Not Found"
+// @Failure 500 {object} httputils.ErrorResponse "Internal Server Error"
 // @Router /api/v1/products/{record_id} [get]
 func (h *Handler) FindByID(w http.ResponseWriter, r *http.Request) {
 	pkRecordID, err := httputils.PathValueI32(r, "record_id")
@@ -173,17 +145,14 @@ func (h *Handler) FindByID(w http.ResponseWriter, r *http.Request) {
 
 	resp, err := h.svc.FindByID(r.Context(), pkRecordID)
 	if err != nil {
+		if errors.Is(err, apperrors.ErrNotFound) {
+			httputils.WriteJSON(w, http.StatusNotFound, httputils.ErrorResponse{Message: "record not found"})
+			return
+		}
 		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
 		return
 	}
-
-	dtoToPayload, err := mapDtoToPayload(resp)
-	if err != nil {
-		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
-		return
-	}
-
-	httputils.WriteJSON(w, http.StatusOK, dtoToPayload)
+	httputils.WriteJSON(w, http.StatusOK, mapDtoToPayload(resp))
 }
 
 // FindAll
@@ -194,27 +163,16 @@ func (h *Handler) FindByID(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Success 200 {object} productsResponseList "List of all items"
-// @Failure 400 {object} httputils.ErrorResponse "Bad Request (Service failure)"
-// @Failure 500 {object} httputils.ErrorResponse "Internal Server Error (Data processing failure)"
+// @Failure 500 {object} httputils.ErrorResponse "Internal Server Error"
 // @Router /api/v1/products [get]
 func (h *Handler) FindAll(w http.ResponseWriter, r *http.Request) {
-	// call service
 	resp, err := h.svc.FindAll(r.Context())
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
 		return
 	}
-
-	// convert service-model to handler-payload
-	dtosToPayloads, err := mapDtosToPayloads(resp)
-	if err != nil {
-		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
-		return
-	}
-
-	// 200 OK
 	httputils.WriteJSON(w, http.StatusOK, productsResponseList{
-		Data: dtosToPayloads,
+		Data: mapDtosToPayloads(resp),
 	})
 }
 
@@ -229,8 +187,8 @@ func (h *Handler) FindAll(w http.ResponseWriter, r *http.Request) {
 // @Param size query int false "Number of items per page (default: 10)"
 // @Param sort query string false "Sort order, e.g., 'name,asc'"
 // @Success 200 {object} productsResponseList "Paginated list of Products"
-// @Failure 400 {object} httputils.ErrorResponse "Bad Request (Invalid pagination parameters or service failure)"
-// @Failure 500 {object} httputils.ErrorResponse "Internal Server Error (Data processing failure)"
+// @Failure 400 {object} httputils.ErrorResponse "Bad Request (Invalid pagination parameters)"
+// @Failure 500 {object} httputils.ErrorResponse "Internal Server Error"
 // @Router /api/v1/products/pageable [get]
 func (h *Handler) FindAllPageable(w http.ResponseWriter, r *http.Request) {
 	pq, err := pageable.GetPaginationFromCtx(r)
@@ -238,68 +196,44 @@ func (h *Handler) FindAllPageable(w http.ResponseWriter, r *http.Request) {
 		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
 		return
 	}
-
-	// call service
 	resp, page, err := h.svc.FindAllPageable(r.Context(), pq)
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
 		return
 	}
-
-	// convert service-model to handler-payload
-	dtosToPayloads, err := mapDtosToPayloads(resp)
-	if err != nil {
-		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
-		return
-	}
-
-	// 200 OK
 	httputils.WriteJSON(w, http.StatusOK, productsResponseList{
-		Data: dtosToPayloads,
+		Data: mapDtosToPayloads(resp),
 		Page: &page,
 	})
 }
 
 // mappers
 
-func mapCreateRequestToCreateInputDto(inputRequest *productsCreateRequest) (*CreateDto, error) {
-	if inputRequest == nil {
-		return nil, fmt.Errorf("unexpected nil input for mapping between productsCreateRequest->CreateDto")
-	}
+func mapCreateRequestToCreateInputDto(inputRequest *productsCreateRequest) *CreateDto {
 	return &CreateDto{
 		CategoryID:  inputRequest.CategoryID,
 		Name:        inputRequest.Name,
 		Description: inputRequest.Description,
-	}, nil
+	}
 }
 
-func mapUpdateRequestToUpdateInputDto(inputRequest *productsUpdateRequest) (*UpdateDto, error) {
-	if inputRequest == nil {
-		return nil, fmt.Errorf("unexpected nil input for mapping between productsUpdateRequest->UpdateDto")
-	}
+func mapUpdateRequestToUpdateInputDto(inputRequest *productsUpdateRequest) *UpdateDto {
 	return &UpdateDto{
 		CategoryID:  inputRequest.CategoryID,
 		Name:        inputRequest.Name,
 		Description: inputRequest.Description,
-	}, nil
+	}
 }
 
-func mapDtosToPayloads(inputDtos []Dto) ([]productsResponse, error) {
+func mapDtosToPayloads(inputDtos []Dto) []productsResponse {
 	outputResponses := make([]productsResponse, 0, len(inputDtos))
-	for i := range inputDtos { // Iterate using index to avoid copying (gocritic:rangeValCopy)
-		toPayload, err := mapDtoToPayload(&inputDtos[i])
-		if err != nil {
-			return nil, err
-		}
-		outputResponses = append(outputResponses, toPayload)
+	for i := range inputDtos {
+		outputResponses = append(outputResponses, mapDtoToPayload(&inputDtos[i]))
 	}
-	return outputResponses, nil
+	return outputResponses
 }
 
-func mapDtoToPayload(inputDto *Dto) (productsResponse, error) {
-	if inputDto == nil {
-		return productsResponse{}, fmt.Errorf("unexpected nil input for mapping between Dto->productsResponse")
-	}
+func mapDtoToPayload(inputDto *Dto) productsResponse {
 	return productsResponse{
 		RecordID:    inputDto.RecordID,
 		CategoryID:  inputDto.CategoryID,
@@ -308,5 +242,5 @@ func mapDtoToPayload(inputDto *Dto) (productsResponse, error) {
 		CreatedAt:   inputDto.CreatedAt,
 		UpdatedAt:   inputDto.UpdatedAt,
 		GUID:        inputDto.GUID,
-	}, nil
+	}
 }

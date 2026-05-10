@@ -2,7 +2,9 @@ package import_errors
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"go-project-template-v7/pkg/apperrors"
 	"go-project-template-v7/pkg/pageable"
 	"go-project-template-v7/pkg/storage/postgres"
 
@@ -89,7 +91,7 @@ func (r *repo) FindAll(ctx context.Context) ([]ImportErrors, error) {
 	}
 	defer rows.Close()
 
-	var scannedEntities []ImportErrors
+	scannedEntities := make([]ImportErrors, 0)
 	for rows.Next() {
 		scannedEntity, err := scanFullRow(rows)
 		if err != nil {
@@ -119,7 +121,7 @@ func (r *repo) FindAllPageable(ctx context.Context, pq *pageable.PaginationQuery
 
 	// handle empty result
 	if totalCount == 0 {
-		return nil, page, nil
+		return make([]ImportErrors, 0), page, nil
 	}
 
 	// select entities
@@ -143,7 +145,7 @@ func (r *repo) FindAllPageable(ctx context.Context, pq *pageable.PaginationQuery
 	}
 	defer rows.Close()
 
-	var scannedEntities []ImportErrors
+	scannedEntities := make([]ImportErrors, 0)
 	for rows.Next() {
 		scannedEntity, err := scanFullRow(rows)
 		if err != nil {
@@ -175,6 +177,9 @@ func scanFullRow(row pgx.Row) (*ImportErrors, error) {
 		&scannedEntity.CreatedAt,
 	)
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, apperrors.ErrNotFound
+		}
 		return nil, err
 	}
 	return &scannedEntity, nil
