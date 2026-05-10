@@ -1,9 +1,6 @@
 package core
 
-import (
-	"fmt"
-	"strings"
-)
+import "fmt"
 
 type GenSvc struct {
 	Dto     string
@@ -11,21 +8,9 @@ type GenSvc struct {
 }
 
 func GenService(s TableToStructInfo) (GenSvc, error) {
-	pk, err := NewPrimaryKeyView(s.PrimaryKeys)
+	data, err := NewServiceTemplateData(s)
 	if err != nil {
 		return GenSvc{}, err
-	}
-
-	data := map[string]any{
-		"StructName":        s.StructName,
-		"PackageName":       strings.ToLower(s.DbTableName),
-		"ParametersByPkeys": pk.Params,
-		"ArgumentsByPkeys":  pk.Args,
-		"DtoFieldsFull":     s.FullFields(),
-		"DtoFieldsCreate":   s.InsertFields(),
-		"DtoFieldsUpdate":   s.UpdateFields(),
-		"HasPrimaryKey":     s.HasPrimaryKey,
-		"HasUpdateFields":   s.HasUpdateFields,
 	}
 
 	exec := func(name string) (string, error) {
