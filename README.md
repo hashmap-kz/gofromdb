@@ -172,6 +172,20 @@ GET    /api/v1/products
 GET    /api/v1/products/pageable
 ```
 
+**Wiring** - the entire DI chain, no framework:
+
+```go
+router := http.NewServeMux()
+
+apiHandler := api.NewHandler(api.NewServices(ctx, api.Deps{
+    Repos: api.NewRepositories(ctx, pg),
+}))
+apiHandler.Mount(router)
+
+...
+httpserver.NewServer(router)
+```
+
 ---
 
 ## Stack
