@@ -11,8 +11,8 @@ Point it at a PostgreSQL database. Get a running Go REST API.
 [![Latest Release](https://img.shields.io/github/v/release/hashmap-kz/gofromdb)](https://github.com/hashmap-kz/gofromdb/releases/latest)
 [![Start contributing](https://img.shields.io/github/issues/hashmap-kz/gofromdb/good%20first%20issue?color=7057ff&label=Contribute)](https://github.com/hashmap-kz/gofromdb/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc+label%3A%22good+first+issue%22)
 
-`gofromdb` connects to your database, reads the schemas, and writes a **complete Go project** - 
-with entity structs, repositories, services, HTTP handlers, DTOs, and Swagger annotations. 
+`gofromdb` connects to your PostgreSQL database, reads the schema, and writes a **complete Go project** -
+entity structs, repositories, services, HTTP handlers, DTOs, and Swagger annotations.
 
 **The result compiles and runs immediately.**
 
@@ -20,49 +20,53 @@ with entity structs, repositories, services, HTTP handlers, DTOs, and Swagger an
 
 ## Purpose
 
-This tool is for **database-first** Go projects where the database schema is the source of truth.
+This tool is for **database-first** Go projects where the schema is the source of truth.
 
 It helps when:
 
-- You are tired of writing the same REST API boilerplate again and again.
-- Every new table means another handler, service, repository, DTOs, and CRUD methods.
-- You prefer _plain old SQL_ with predictable performance over hidden magic.
-- You want generated code with a consistent structure, even if you later customize it by hand.
-- You're designing a database and need a backend MVP quickly.
-- You're migrating from another language to Go and want to generate a starter API from your existing database.
-
-An imperfect standard is better than no standard.
+- You're tired of writing the same CRUD boilerplate for every new table.
+- You want plain SQL with predictable performance over hidden magic.
+- You need a backend MVP fast, or a consistent starting point to customize from.
 
 ---
 
 ## Install
 
-#### Package
-
-```bash
-go install github.com/hashmap-kz/gofromdb@latest
-```
-
-#### Brew
+**Homebrew**
 
 ```bash
 brew tap hashmap-kz/homebrew-tap
 brew install gofromdb
 ```
 
+**Go**
+
+```bash
+go install github.com/hashmap-kz/gofromdb@latest
+```
+
+---
+
 ## Usage
 
 ```bash
-gofromdb -conn="postgres://postgres:postgres@localhost:5432/bookstore" \
-  -workers=8 \
-  -output=myapp
+gofromdb \
+  -conn="postgres://user:pass@localhost:5432/mydb" \
+  -output=myapp \
+  -workers=8
+```
+
+A `-config` flag accepts a JSON file for filtering schemas and tables:
+
+```bash
+gofromdb -conn="..." -config=gofromdb.json -output=myapp
 ```
 
 ---
 
 ## Generated project structure
 
-For each database table, the generator produces a self-contained package under `internal/api/<schema>/<table>/`:
+For each table, the generator produces a self-contained package under `internal/api/<schema>/<table>/`:
 
 ```
 internal/api/
@@ -84,7 +88,7 @@ internal/api/
 
 ## Example: from schema to code
 
-Given this table in PostgreSQL:
+Given this PostgreSQL table:
 
 ```sql
 create table products (
@@ -95,33 +99,29 @@ create table products (
 );
 
 comment on table products is 'Stores products with a reference to their category.';
-comment on column products.name is 'Name of the product.';
 ```
 
-The generator produces:
-
-**entity.go** - struct with proper Go types, JSON and db tags, comments from the schema:
+**`entity.go`** - struct with proper Go types and JSON tags:
 
 ```go
 type Products struct {
-    RecordID    int      `json:"record_id"    db:"record_id"`
-    CategoryID  int      `json:"category_id"  db:"category_id"`
-    Name        string   `json:"name"         db:"name"`
-    Description *string  `json:"description"  db:"description"`
-    CreatedAt   time.Time `json:"created_at"  db:"created_at"`
-    UpdatedAt   time.Time `json:"updated_at"  db:"updated_at"`
-    GUID        string   `json:"guid"         db:"guid"`
+    RecordID    int       `json:"record_id"    db:"record_id"`
+    CategoryID  int       `json:"category_id"  db:"category_id"`
+    Name        string    `json:"name"         db:"name"`
+    Description *string   `json:"description"  db:"description"`
+    CreatedAt   time.Time `json:"created_at"   db:"created_at"`
+    UpdatedAt   time.Time `json:"updated_at"   db:"updated_at"`
 }
 ```
 
-**repository.go** - typed SQL queries using pgx/v5, including paginated list:
+**`repository.go`** - typed SQL queries via pgx/v5, including paginated list:
 
 ```go
 func (r *repo) Save(ctx context.Context, inputEntity *Products) (*Products, error) {
     query := `
         insert into public.products (category_id, name, description)
         values ($1, $2, $3)
-        returning record_id, category_id, name, description, created_at, updated_at, guid
+        returning record_id, category_id, name, description, created_at, updated_at
     `
     row := r.db.Pool.QueryRow(ctx, query,
         inputEntity.CategoryID,
@@ -132,7 +132,7 @@ func (r *repo) Save(ctx context.Context, inputEntity *Products) (*Products, erro
 }
 ```
 
-**handler.go** - stdlib `net/http` handlers with Swagger annotations:
+**`handler.go`** - stdlib `net/http` handlers with Swagger annotations:
 
 ```go
 // @Summary Create new item
@@ -144,14 +144,20 @@ func (r *repo) Save(ctx context.Context, inputEntity *Products) (*Products, erro
 // @Router /api/v1/products [post]
 func (h *Handler) Save(w http.ResponseWriter, r *http.Request) {
     req := &productsCreateRequest{}
-    if err := httputils.ReadJSON(r, req); err != nil {
+    if err := httputils.ReadJSON(r, &req); err != nil {
         httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
         return
     }
-    // validate -> map to DTO -> call service -> map to response
+    if err := validator.ValidateStruct(req); err != nil {
+        httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
+        return
+    }
     resp, err := h.svc.Save(r.Context(), mapCreateRequestToCreateInputDto(req))
-    ...
-    httputils.WriteJSON(w, http.StatusCreated, dtoToPayload)
+    if err != nil {
+        httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
+        return
+    }
+    httputils.WriteJSON(w, http.StatusCreated, mapDtoToPayload(resp))
 }
 ```
 
@@ -168,34 +174,32 @@ GET    /api/v1/products/pageable
 
 ---
 
-## Generated project stack
+## Stack
 
-The scaffold the generator builds on top of:
-
-| Concern         | Library / approach                        |
-|-----------------|-------------------------------------------|
-| HTTP server     | stdlib `net/http`                         |
-| PostgreSQL      | `pgx/v5` with connection pool             |
-| Validation      | `go-playground/validator`                 |
-| API docs        | Swagger via `swaggo/swag`                 |
-| Pagination      | built-in `pageable` package               |
-| Config          | YAML per environment                      |
-| Middleware      | CORS, structured logging (`slog`)         |
-| Containerize    | Dockerfile included                       |
+| Concern      | Library / approach                |
+|--------------|-----------------------------------|
+| HTTP server  | stdlib `net/http`                 |
+| PostgreSQL   | `pgx/v5` with connection pool     |
+| Validation   | `go-playground/validator`         |
+| API docs     | Swagger via `swaggo/swag`         |
+| Pagination   | built-in `pageable` package       |
+| Config       | YAML per environment              |
+| Middleware   | CORS, structured logging (`slog`) |
+| Containerize | Dockerfile included               |
 
 ---
 
 ## Example database
 
-A ready-to-use example database is in `examples/database/`. It spans multiple PostgreSQL schemas:
+A ready-to-use bookstore database is in `examples/database/`, spanning multiple PostgreSQL schemas:
 
-| Schema               | Tables                                                   |
-|----------------------|----------------------------------------------------------|
-| `public`             | `users`, `categories`, `products`, `orders`, `order_items` |
-| `bookstore_catalog`  | `books`, `authors`, `book_authors`, `book_translations`, `publishers` |
-| `bookstore_sales`    | `orders`, `order_lines`, `customers`, `discount_codes`   |
-| `bookstore_inventory`| `warehouses`, `stock_levels`, `stock_events`             |
-| `bookstore_import`   | `import_batches`, `import_errors`                        |
+| Schema                | Tables                                                              |
+|-----------------------|---------------------------------------------------------------------|
+| `public`              | `users`, `categories`, `products`, `orders`, `order_items`          |
+| `bookstore_catalog`   | `books`, `authors`, `book_authors`, `book_translations`, `publishers` |
+| `bookstore_sales`     | `orders`, `order_lines`, `customers`, `discount_codes`              |
+| `bookstore_inventory` | `warehouses`, `stock_levels`, `stock_events`                        |
+| `bookstore_import`    | `import_batches`, `import_errors`                                   |
 
 Start it with Docker Compose:
 
@@ -210,4 +214,4 @@ The generated project under `examples/go-project-template-v7/` was produced from
 
 ## License
 
-MIT License. See [LICENSE](./LICENSE) for details.
+MIT. See [LICENSE](./LICENSE) for details.
