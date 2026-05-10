@@ -2,7 +2,6 @@ package stock_events
 
 import (
 	"context"
-	"fmt"
 	"go-project-template-v7/pkg/pageable"
 )
 
@@ -25,19 +24,12 @@ func NewService(_ context.Context, repo Repository) Service {
 }
 
 func (s *svc) Save(ctx context.Context, input *CreateDto) (*Dto, error) {
-	entityToCreate, err := fromCreateDtoToEntity(input)
+	save, err := s.repo.Save(ctx, fromCreateDtoToEntity(input))
 	if err != nil {
 		return nil, err
 	}
-	save, err := s.repo.Save(ctx, entityToCreate)
-	if err != nil {
-		return nil, err
-	}
-	toDto, err := fromEntityToDto(save)
-	if err != nil {
-		return nil, err
-	}
-	return &toDto, err
+	result := fromEntityToDto(save)
+	return &result, nil
 }
 
 func (s *svc) FindAll(ctx context.Context) ([]Dto, error) {
@@ -45,11 +37,7 @@ func (s *svc) FindAll(ctx context.Context) ([]Dto, error) {
 	if err != nil {
 		return nil, err
 	}
-	toDtos, err := fromEntitiesToDtos(entities)
-	if err != nil {
-		return nil, err
-	}
-	return toDtos, nil
+	return fromEntitiesToDtos(entities), nil
 }
 
 func (s *svc) FindAllPageable(ctx context.Context, pq *pageable.PaginationQuery) ([]Dto, pageable.Page, error) {
@@ -57,19 +45,12 @@ func (s *svc) FindAllPageable(ctx context.Context, pq *pageable.PaginationQuery)
 	if err != nil {
 		return nil, pageable.Page{}, err
 	}
-	toDtos, err := fromEntitiesToDtos(entities)
-	if err != nil {
-		return nil, pageable.Page{}, err
-	}
-	return toDtos, page, nil
+	return fromEntitiesToDtos(entities), page, nil
 }
 
 // mappers
 
-func fromCreateDtoToEntity(input *CreateDto) (*StockEvents, error) {
-	if input == nil {
-		return nil, fmt.Errorf("convert CreateDto->StockEvents: input dto cannot be nil")
-	}
+func fromCreateDtoToEntity(input *CreateDto) *StockEvents {
 	return &StockEvents{
 		HappenedAt:    input.HappenedAt,
 		WarehouseCode: input.WarehouseCode,
@@ -77,25 +58,18 @@ func fromCreateDtoToEntity(input *CreateDto) (*StockEvents, error) {
 		DeltaQty:      input.DeltaQty,
 		Reason:        input.Reason,
 		Payload:       input.Payload,
-	}, nil
+	}
 }
 
-func fromEntitiesToDtos(inputEntities []StockEvents) ([]Dto, error) {
+func fromEntitiesToDtos(inputEntities []StockEvents) []Dto {
 	outputDtos := make([]Dto, 0, len(inputEntities))
-	for i := range inputEntities { // Iterate using index to avoid copying (gocritic:rangeValCopy)
-		toDto, err := fromEntityToDto(&inputEntities[i])
-		if err != nil {
-			return nil, err
-		}
-		outputDtos = append(outputDtos, toDto)
+	for i := range inputEntities {
+		outputDtos = append(outputDtos, fromEntityToDto(&inputEntities[i]))
 	}
-	return outputDtos, nil
+	return outputDtos
 }
 
-func fromEntityToDto(inputEntity *StockEvents) (Dto, error) {
-	if inputEntity == nil {
-		return Dto{}, fmt.Errorf("unexpected nil input for mapping between StockEvents->Dto")
-	}
+func fromEntityToDto(inputEntity *StockEvents) Dto {
 	return Dto{
 		HappenedAt:    inputEntity.HappenedAt,
 		WarehouseCode: inputEntity.WarehouseCode,
@@ -103,5 +77,5 @@ func fromEntityToDto(inputEntity *StockEvents) (Dto, error) {
 		DeltaQty:      inputEntity.DeltaQty,
 		Reason:        inputEntity.Reason,
 		Payload:       inputEntity.Payload,
-	}, nil
+	}
 }

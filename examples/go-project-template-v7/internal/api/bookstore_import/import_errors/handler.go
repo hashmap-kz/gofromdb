@@ -1,7 +1,6 @@
 package import_errors
 
 import (
-	"fmt"
 	"go-project-template-v7/pkg/httputils"
 	"go-project-template-v7/pkg/pageable"
 	"go-project-template-v7/pkg/validator"
@@ -31,42 +30,22 @@ func NewHandler(svc Service) *Handler {
 // @Failure 500 {object} httputils.ErrorResponse "Internal Server Error"
 // @Router /api/v1/import-errors [post]
 func (h *Handler) Save(w http.ResponseWriter, r *http.Request) {
-	// read RequestBody
 	req := &importErrorsCreateRequest{}
 	if err := httputils.ReadJSON(r, &req); err != nil {
 		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
 		return
 	}
-
-	// check RequestBody
 	if err := validator.ValidateStruct(req); err != nil {
 		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
 		return
 	}
-
-	// convert handler-request-payload into service-dto
-	createInput, err := mapCreateRequestToCreateInputDto(req)
-	if err != nil {
-		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
-		return
-	}
-
-	// call service
+	createInput := mapCreateRequestToCreateInputDto(req)
 	resp, err := h.svc.Save(r.Context(), createInput)
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
 		return
 	}
-
-	// convert service-dto into handler-response-payload
-	dtoToPayload, err := mapDtoToPayload(resp)
-	if err != nil {
-		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
-		return
-	}
-
-	// 201 Created
-	httputils.WriteJSON(w, http.StatusCreated, dtoToPayload)
+	httputils.WriteJSON(w, http.StatusCreated, mapDtoToPayload(resp))
 }
 
 // FindAll
@@ -77,27 +56,16 @@ func (h *Handler) Save(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Success 200 {object} importErrorsResponseList "List of all items"
-// @Failure 400 {object} httputils.ErrorResponse "Bad Request (Service failure)"
-// @Failure 500 {object} httputils.ErrorResponse "Internal Server Error (Data processing failure)"
+// @Failure 500 {object} httputils.ErrorResponse "Internal Server Error"
 // @Router /api/v1/import-errors [get]
 func (h *Handler) FindAll(w http.ResponseWriter, r *http.Request) {
-	// call service
 	resp, err := h.svc.FindAll(r.Context())
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
 		return
 	}
-
-	// convert service-model to handler-payload
-	dtosToPayloads, err := mapDtosToPayloads(resp)
-	if err != nil {
-		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
-		return
-	}
-
-	// 200 OK
 	httputils.WriteJSON(w, http.StatusOK, importErrorsResponseList{
-		Data: dtosToPayloads,
+		Data: mapDtosToPayloads(resp),
 	})
 }
 
@@ -112,8 +80,8 @@ func (h *Handler) FindAll(w http.ResponseWriter, r *http.Request) {
 // @Param size query int false "Number of items per page (default: 10)"
 // @Param sort query string false "Sort order, e.g., 'name,asc'"
 // @Success 200 {object} importErrorsResponseList "Paginated list of ImportErrors"
-// @Failure 400 {object} httputils.ErrorResponse "Bad Request (Invalid pagination parameters or service failure)"
-// @Failure 500 {object} httputils.ErrorResponse "Internal Server Error (Data processing failure)"
+// @Failure 400 {object} httputils.ErrorResponse "Bad Request (Invalid pagination parameters)"
+// @Failure 500 {object} httputils.ErrorResponse "Internal Server Error"
 // @Router /api/v1/import-errors/pageable [get]
 func (h *Handler) FindAllPageable(w http.ResponseWriter, r *http.Request) {
 	pq, err := pageable.GetPaginationFromCtx(r)
@@ -121,34 +89,20 @@ func (h *Handler) FindAllPageable(w http.ResponseWriter, r *http.Request) {
 		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
 		return
 	}
-
-	// call service
 	resp, page, err := h.svc.FindAllPageable(r.Context(), pq)
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
 		return
 	}
-
-	// convert service-model to handler-payload
-	dtosToPayloads, err := mapDtosToPayloads(resp)
-	if err != nil {
-		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
-		return
-	}
-
-	// 200 OK
 	httputils.WriteJSON(w, http.StatusOK, importErrorsResponseList{
-		Data: dtosToPayloads,
+		Data: mapDtosToPayloads(resp),
 		Page: &page,
 	})
 }
 
 // mappers
 
-func mapCreateRequestToCreateInputDto(inputRequest *importErrorsCreateRequest) (*CreateDto, error) {
-	if inputRequest == nil {
-		return nil, fmt.Errorf("unexpected nil input for mapping between importErrorsCreateRequest->CreateDto")
-	}
+func mapCreateRequestToCreateInputDto(inputRequest *importErrorsCreateRequest) *CreateDto {
 	return &CreateDto{
 		SourceName: inputRequest.SourceName,
 		BatchNo:    inputRequest.BatchNo,
@@ -156,25 +110,18 @@ func mapCreateRequestToCreateInputDto(inputRequest *importErrorsCreateRequest) (
 		ColumnName: inputRequest.ColumnName,
 		Message:    inputRequest.Message,
 		RawPayload: inputRequest.RawPayload,
-	}, nil
+	}
 }
 
-func mapDtosToPayloads(inputDtos []Dto) ([]importErrorsResponse, error) {
+func mapDtosToPayloads(inputDtos []Dto) []importErrorsResponse {
 	outputResponses := make([]importErrorsResponse, 0, len(inputDtos))
-	for i := range inputDtos { // Iterate using index to avoid copying (gocritic:rangeValCopy)
-		toPayload, err := mapDtoToPayload(&inputDtos[i])
-		if err != nil {
-			return nil, err
-		}
-		outputResponses = append(outputResponses, toPayload)
+	for i := range inputDtos {
+		outputResponses = append(outputResponses, mapDtoToPayload(&inputDtos[i]))
 	}
-	return outputResponses, nil
+	return outputResponses
 }
 
-func mapDtoToPayload(inputDto *Dto) (importErrorsResponse, error) {
-	if inputDto == nil {
-		return importErrorsResponse{}, fmt.Errorf("unexpected nil input for mapping between Dto->importErrorsResponse")
-	}
+func mapDtoToPayload(inputDto *Dto) importErrorsResponse {
 	return importErrorsResponse{
 		SourceName: inputDto.SourceName,
 		BatchNo:    inputDto.BatchNo,
@@ -183,5 +130,5 @@ func mapDtoToPayload(inputDto *Dto) (importErrorsResponse, error) {
 		Message:    inputDto.Message,
 		RawPayload: inputDto.RawPayload,
 		CreatedAt:  inputDto.CreatedAt,
-	}, nil
+	}
 }

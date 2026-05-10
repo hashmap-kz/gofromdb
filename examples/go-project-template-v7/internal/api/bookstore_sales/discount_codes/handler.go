@@ -1,7 +1,8 @@
 package discount_codes
 
 import (
-	"fmt"
+	"errors"
+	"go-project-template-v7/pkg/apperrors"
 	"go-project-template-v7/pkg/httputils"
 	"go-project-template-v7/pkg/pageable"
 	"go-project-template-v7/pkg/validator"
@@ -31,42 +32,22 @@ func NewHandler(svc Service) *Handler {
 // @Failure 500 {object} httputils.ErrorResponse "Internal Server Error"
 // @Router /api/v1/discount-codes [post]
 func (h *Handler) Save(w http.ResponseWriter, r *http.Request) {
-	// read RequestBody
 	req := &discountCodesCreateRequest{}
 	if err := httputils.ReadJSON(r, &req); err != nil {
 		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
 		return
 	}
-
-	// check RequestBody
 	if err := validator.ValidateStruct(req); err != nil {
 		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
 		return
 	}
-
-	// convert handler-request-payload into service-dto
-	createInput, err := mapCreateRequestToCreateInputDto(req)
-	if err != nil {
-		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
-		return
-	}
-
-	// call service
+	createInput := mapCreateRequestToCreateInputDto(req)
 	resp, err := h.svc.Save(r.Context(), createInput)
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
 		return
 	}
-
-	// convert service-dto into handler-response-payload
-	dtoToPayload, err := mapDtoToPayload(resp)
-	if err != nil {
-		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
-		return
-	}
-
-	// 201 Created
-	httputils.WriteJSON(w, http.StatusCreated, dtoToPayload)
+	httputils.WriteJSON(w, http.StatusCreated, mapDtoToPayload(resp))
 }
 
 // UpdateByID
@@ -80,6 +61,7 @@ func (h *Handler) Save(w http.ResponseWriter, r *http.Request) {
 // @Param request body discountCodesUpdateRequest true "Update input"
 // @Success 200 {object} discountCodesResponse
 // @Failure 400 {object} httputils.ErrorResponse "Bad Request"
+// @Failure 404 {object} httputils.ErrorResponse "Not Found"
 // @Failure 500 {object} httputils.ErrorResponse "Internal Server Error"
 // @Router /api/v1/discount-codes/{code} [put]
 func (h *Handler) UpdateByID(w http.ResponseWriter, r *http.Request) {
@@ -98,30 +80,17 @@ func (h *Handler) UpdateByID(w http.ResponseWriter, r *http.Request) {
 		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
 		return
 	}
-
-	// convert handler-request-payload into service-dto
-	updateInput, err := mapUpdateRequestToUpdateInputDto(req)
-	if err != nil {
-		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
-		return
-	}
-
-	// call service
+	updateInput := mapUpdateRequestToUpdateInputDto(req)
 	resp, err := h.svc.UpdateByID(r.Context(), updateInput, pkCode)
 	if err != nil {
+		if errors.Is(err, apperrors.ErrNotFound) {
+			httputils.WriteJSON(w, http.StatusNotFound, httputils.ErrorResponse{Message: "record not found"})
+			return
+		}
 		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
 		return
 	}
-
-	// convert service-dto into handler-response-payload
-	dtoToPayload, err := mapDtoToPayload(resp)
-	if err != nil {
-		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
-		return
-	}
-
-	// 200 OK
-	httputils.WriteJSON(w, http.StatusOK, dtoToPayload)
+	httputils.WriteJSON(w, http.StatusOK, mapDtoToPayload(resp))
 }
 
 // DeleteByID
@@ -134,7 +103,8 @@ func (h *Handler) UpdateByID(w http.ResponseWriter, r *http.Request) {
 // @Param id path int true "DiscountCodes ID"
 // @Success 204 "No Content (Successfully deleted)"
 // @Failure 400 {object} httputils.ErrorResponse "Bad Request (Invalid ID format)"
-// @Failure 500 {object} httputils.ErrorResponse "Internal Server Error (Deletion failed)"
+// @Failure 404 {object} httputils.ErrorResponse "Not Found"
+// @Failure 500 {object} httputils.ErrorResponse "Internal Server Error"
 // @Router /api/v1/discount-codes/{code} [delete]
 func (h *Handler) DeleteByID(w http.ResponseWriter, r *http.Request) {
 	pkCode, err := httputils.PathValueString(r, "code")
@@ -143,17 +113,18 @@ func (h *Handler) DeleteByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.svc.DeleteByID(r.Context(), pkCode)
-	if err != nil {
+	if err := h.svc.DeleteByID(r.Context(), pkCode); err != nil {
+		if errors.Is(err, apperrors.ErrNotFound) {
+			httputils.WriteJSON(w, http.StatusNotFound, httputils.ErrorResponse{Message: "record not found"})
+			return
+		}
 		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
 		return
 	}
-
-	// 204 OK
 	w.WriteHeader(http.StatusNoContent)
 }
 
-// FindByID retrieves a purchase by its ID.
+// FindByID retrieves an item by its ID.
 //
 // @Summary Get item by ID
 // @Description Retrieves the details based on the provided ID in the request path.
@@ -162,7 +133,8 @@ func (h *Handler) DeleteByID(w http.ResponseWriter, r *http.Request) {
 // @Param id path int true "Item ID"
 // @Success 200 {object} discountCodesResponse "Single item"
 // @Failure 400 {object} httputils.ErrorResponse "Bad Request (Invalid ID format)"
-// @Failure 500 {object} httputils.ErrorResponse "Internal Server Error (Deletion failed)"
+// @Failure 404 {object} httputils.ErrorResponse "Not Found"
+// @Failure 500 {object} httputils.ErrorResponse "Internal Server Error"
 // @Router /api/v1/discount-codes/{code} [get]
 func (h *Handler) FindByID(w http.ResponseWriter, r *http.Request) {
 	pkCode, err := httputils.PathValueString(r, "code")
@@ -173,17 +145,14 @@ func (h *Handler) FindByID(w http.ResponseWriter, r *http.Request) {
 
 	resp, err := h.svc.FindByID(r.Context(), pkCode)
 	if err != nil {
+		if errors.Is(err, apperrors.ErrNotFound) {
+			httputils.WriteJSON(w, http.StatusNotFound, httputils.ErrorResponse{Message: "record not found"})
+			return
+		}
 		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
 		return
 	}
-
-	dtoToPayload, err := mapDtoToPayload(resp)
-	if err != nil {
-		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
-		return
-	}
-
-	httputils.WriteJSON(w, http.StatusOK, dtoToPayload)
+	httputils.WriteJSON(w, http.StatusOK, mapDtoToPayload(resp))
 }
 
 // FindAll
@@ -194,27 +163,16 @@ func (h *Handler) FindByID(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce  json
 // @Success 200 {object} discountCodesResponseList "List of all items"
-// @Failure 400 {object} httputils.ErrorResponse "Bad Request (Service failure)"
-// @Failure 500 {object} httputils.ErrorResponse "Internal Server Error (Data processing failure)"
+// @Failure 500 {object} httputils.ErrorResponse "Internal Server Error"
 // @Router /api/v1/discount-codes [get]
 func (h *Handler) FindAll(w http.ResponseWriter, r *http.Request) {
-	// call service
 	resp, err := h.svc.FindAll(r.Context())
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
 		return
 	}
-
-	// convert service-model to handler-payload
-	dtosToPayloads, err := mapDtosToPayloads(resp)
-	if err != nil {
-		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
-		return
-	}
-
-	// 200 OK
 	httputils.WriteJSON(w, http.StatusOK, discountCodesResponseList{
-		Data: dtosToPayloads,
+		Data: mapDtosToPayloads(resp),
 	})
 }
 
@@ -229,8 +187,8 @@ func (h *Handler) FindAll(w http.ResponseWriter, r *http.Request) {
 // @Param size query int false "Number of items per page (default: 10)"
 // @Param sort query string false "Sort order, e.g., 'name,asc'"
 // @Success 200 {object} discountCodesResponseList "Paginated list of DiscountCodes"
-// @Failure 400 {object} httputils.ErrorResponse "Bad Request (Invalid pagination parameters or service failure)"
-// @Failure 500 {object} httputils.ErrorResponse "Internal Server Error (Data processing failure)"
+// @Failure 400 {object} httputils.ErrorResponse "Bad Request (Invalid pagination parameters)"
+// @Failure 500 {object} httputils.ErrorResponse "Internal Server Error"
 // @Router /api/v1/discount-codes/pageable [get]
 func (h *Handler) FindAllPageable(w http.ResponseWriter, r *http.Request) {
 	pq, err := pageable.GetPaginationFromCtx(r)
@@ -238,34 +196,20 @@ func (h *Handler) FindAllPageable(w http.ResponseWriter, r *http.Request) {
 		httputils.WriteJSON(w, http.StatusBadRequest, httputils.ErrorResponse{Message: err.Error()})
 		return
 	}
-
-	// call service
 	resp, page, err := h.svc.FindAllPageable(r.Context(), pq)
 	if err != nil {
 		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
 		return
 	}
-
-	// convert service-model to handler-payload
-	dtosToPayloads, err := mapDtosToPayloads(resp)
-	if err != nil {
-		httputils.WriteJSON(w, http.StatusInternalServerError, httputils.ErrorResponse{Message: err.Error()})
-		return
-	}
-
-	// 200 OK
 	httputils.WriteJSON(w, http.StatusOK, discountCodesResponseList{
-		Data: dtosToPayloads,
+		Data: mapDtosToPayloads(resp),
 		Page: &page,
 	})
 }
 
 // mappers
 
-func mapCreateRequestToCreateInputDto(inputRequest *discountCodesCreateRequest) (*CreateDto, error) {
-	if inputRequest == nil {
-		return nil, fmt.Errorf("unexpected nil input for mapping between discountCodesCreateRequest->CreateDto")
-	}
+func mapCreateRequestToCreateInputDto(inputRequest *discountCodesCreateRequest) *CreateDto {
 	return &CreateDto{
 		Code:        inputRequest.Code,
 		Description: inputRequest.Description,
@@ -273,38 +217,28 @@ func mapCreateRequestToCreateInputDto(inputRequest *discountCodesCreateRequest) 
 		ValidPeriod: inputRequest.ValidPeriod,
 		MaxUses:     inputRequest.MaxUses,
 		Active:      inputRequest.Active,
-	}, nil
+	}
 }
 
-func mapUpdateRequestToUpdateInputDto(inputRequest *discountCodesUpdateRequest) (*UpdateDto, error) {
-	if inputRequest == nil {
-		return nil, fmt.Errorf("unexpected nil input for mapping between discountCodesUpdateRequest->UpdateDto")
-	}
+func mapUpdateRequestToUpdateInputDto(inputRequest *discountCodesUpdateRequest) *UpdateDto {
 	return &UpdateDto{
 		Description: inputRequest.Description,
 		PercentOff:  inputRequest.PercentOff,
 		ValidPeriod: inputRequest.ValidPeriod,
 		MaxUses:     inputRequest.MaxUses,
 		Active:      inputRequest.Active,
-	}, nil
+	}
 }
 
-func mapDtosToPayloads(inputDtos []Dto) ([]discountCodesResponse, error) {
+func mapDtosToPayloads(inputDtos []Dto) []discountCodesResponse {
 	outputResponses := make([]discountCodesResponse, 0, len(inputDtos))
-	for i := range inputDtos { // Iterate using index to avoid copying (gocritic:rangeValCopy)
-		toPayload, err := mapDtoToPayload(&inputDtos[i])
-		if err != nil {
-			return nil, err
-		}
-		outputResponses = append(outputResponses, toPayload)
+	for i := range inputDtos {
+		outputResponses = append(outputResponses, mapDtoToPayload(&inputDtos[i]))
 	}
-	return outputResponses, nil
+	return outputResponses
 }
 
-func mapDtoToPayload(inputDto *Dto) (discountCodesResponse, error) {
-	if inputDto == nil {
-		return discountCodesResponse{}, fmt.Errorf("unexpected nil input for mapping between Dto->discountCodesResponse")
-	}
+func mapDtoToPayload(inputDto *Dto) discountCodesResponse {
 	return discountCodesResponse{
 		Code:        inputDto.Code,
 		Description: inputDto.Description,
@@ -312,5 +246,5 @@ func mapDtoToPayload(inputDto *Dto) (discountCodesResponse, error) {
 		ValidPeriod: inputDto.ValidPeriod,
 		MaxUses:     inputDto.MaxUses,
 		Active:      inputDto.Active,
-	}, nil
+	}
 }
