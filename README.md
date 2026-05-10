@@ -113,8 +113,6 @@ type Products struct {
     CategoryID  int       `json:"category_id"  db:"category_id"`
     Name        string    `json:"name"         db:"name"`
     Description *string   `json:"description"  db:"description"`
-    CreatedAt   time.Time `json:"created_at"   db:"created_at"`
-    UpdatedAt   time.Time `json:"updated_at"   db:"updated_at"`
 }
 ```
 
@@ -125,7 +123,7 @@ func (r *repo) Save(ctx context.Context, inputEntity *Products) (*Products, erro
     query := `
         insert into public.products (category_id, name, description)
         values ($1, $2, $3)
-        returning record_id, category_id, name, description, created_at, updated_at
+        returning record_id, category_id, name, description
     `
     row := r.db.Pool.QueryRow(ctx, query,
         inputEntity.CategoryID,
