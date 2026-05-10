@@ -16,6 +16,6 @@ type CreateDto struct {
 
 type UpdateDto struct {
 {{- range .DtoFieldsUpdate}}
-	{{.FieldName}} {{.FieldType}}
+	{{.FieldName}} {{.FieldType | PtrType}}
 {{- end}}
 }

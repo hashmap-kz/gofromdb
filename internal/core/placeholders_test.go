@@ -50,8 +50,7 @@ func TestMaxFieldNameLen(t *testing.T) {
 }
 
 func TestGenUpdateSets_PlaceholderIndex(t *testing.T) {
-	// 1 pkey: first update field gets $2
-	fields := []TableToStructFieldInfo{{DbFieldName: "name", DbNullifRhs: "''::text"}}
+	fields := []TableToStructFieldInfo{{DbFieldName: "name"}}
 	got := GenUpdateSets(fields, 1)
 	if len(got) != 1 {
 		t.Fatalf("len = %d, want 1", len(got))
@@ -62,13 +61,12 @@ func TestGenUpdateSets_PlaceholderIndex(t *testing.T) {
 }
 
 func TestGenUpdateSets_TwoPkeys(t *testing.T) {
-	// 2 pkeys: first update field gets $3
-	fields := []TableToStructFieldInfo{{DbFieldName: "x", DbNullifRhs: "0"}}
+	fields := []TableToStructFieldInfo{{DbFieldName: "x"}}
 	got := GenUpdateSets(fields, 2)
 	if len(got) != 1 {
 		t.Fatalf("len = %d, want 1", len(got))
 	}
-	want := "x = coalesce(nullif($3, 0), x)"
+	want := "x = coalesce($3, x)"
 	if got[0] != want {
 		t.Errorf("got %q, want %q", got[0], want)
 	}
@@ -76,14 +74,13 @@ func TestGenUpdateSets_TwoPkeys(t *testing.T) {
 
 func TestGenUpdateSets_MultipleFields(t *testing.T) {
 	fields := []TableToStructFieldInfo{
-		{DbFieldName: "name", DbNullifRhs: "''::text"},
-		{DbFieldName: "age", DbNullifRhs: "0::int4"},
+		{DbFieldName: "name"},
+		{DbFieldName: "age"},
 	}
 	got := GenUpdateSets(fields, 1)
 	if len(got) != 2 {
 		t.Fatalf("len = %d, want 2", len(got))
 	}
-	// sequential placeholders: $2, $3
 	if !strings.Contains(got[0], "$2") {
 		t.Errorf("first field should use $2, got %q", got[0])
 	}
@@ -92,20 +89,12 @@ func TestGenUpdateSets_MultipleFields(t *testing.T) {
 	}
 }
 
-func TestGenUpdateSets_CoalesceNullifPattern(t *testing.T) {
-	fields := []TableToStructFieldInfo{{DbFieldName: "email", DbNullifRhs: "''::text"}}
+func TestGenUpdateSets_CoalescePattern(t *testing.T) {
+	fields := []TableToStructFieldInfo{{DbFieldName: "email"}}
 	got := GenUpdateSets(fields, 1)
-	if !strings.HasPrefix(got[0], "email") {
-		t.Errorf("should start with field name: %q", got[0])
-	}
-	if !strings.Contains(got[0], "coalesce(nullif(") {
-		t.Errorf("should contain coalesce(nullif(: %q", got[0])
-	}
-	if !strings.Contains(got[0], "''::text") {
-		t.Errorf("should contain nullif rhs: %q", got[0])
-	}
-	if !strings.HasSuffix(strings.TrimRight(got[0], " "), ", email)") {
-		t.Errorf("should end with field name as fallback: %q", got[0])
+	want := "email = coalesce($2, email)"
+	if got[0] != want {
+		t.Errorf("got %q, want %q", got[0], want)
 	}
 }
 

@@ -31,7 +31,7 @@ type {{.UpdateRequestName}} struct {
 	{{- if .FieldComment}}
 	{{.FieldComment}}
 	{{- end}}
-	{{.FieldName}} {{.FieldType}} `json:"{{.DbFieldName}}"`
+	{{.FieldName}} {{.FieldType | PtrType}} `json:"{{.DbFieldName}}"`
 	{{- if .FieldComment}}
 		{{print "\n"}}
 	{{- end}}

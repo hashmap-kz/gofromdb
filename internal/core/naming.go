@@ -11,6 +11,12 @@ var FuncMap = template.FuncMap{
 	"AddPadding2": addPadding2,
 	"ToLower":     strings.ToLower,
 	"ToCamel":     LowerFirstLetter,
+	"PtrType": func(t string) string {
+		if strings.HasPrefix(t, "*") {
+			return t
+		}
+		return "*" + t
+	},
 }
 
 func capitalizeFirstLetter(s string) string {

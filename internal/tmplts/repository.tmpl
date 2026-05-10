@@ -16,7 +16,7 @@ import (
 type Repository interface {
 	Save(ctx context.Context, inputEntity *{{.StructName}}) (*{{.StructName}}, error)
 {{- if .HasUpdateFields}}
-	UpdateByID(ctx context.Context, inputEntity *{{.StructName}}, {{.ParametersByPkeys}}) (*{{.StructName}}, error)
+	UpdateByID(ctx context.Context, update *UpdateDto, {{.ParametersByPkeys}}) (*{{.StructName}}, error)
 {{- end}}
 {{- if .HasPrimaryKey}}
 	DeleteByID(ctx context.Context, {{.ParametersByPkeys}}) error
@@ -57,15 +57,19 @@ func (r *repo) Save(ctx context.Context, inputEntity *{{.StructName}}) (*{{.Stru
 }
 
 {{- if .HasUpdateFields}}
-func (r *repo) UpdateByID(ctx context.Context, inputEntity *{{.StructName}}, {{.ParametersByPkeys}}) (*{{.StructName}}, error) {
+func (r *repo) UpdateByID(ctx context.Context, update *UpdateDto, {{.ParametersByPkeys}}) (*{{.StructName}}, error) {
 	tag := "repository.UpdateByID"
+
+	if update == nil {
+		return nil, fmt.Errorf("%s: update is nil", tag)
+	}
 
 	query := `{{.RepoUpdateQuery | AddPadding2}}`
 
 	row := r.db.Pool.QueryRow(ctx, query,
 		{{.ArgumentsByPkeys}},
 {{- range .DtoFieldsUpdate}}
-		inputEntity.{{.FieldName}},
+		update.{{.FieldName}},
 {{- end}}
 	)
 
