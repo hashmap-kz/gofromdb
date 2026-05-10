@@ -24,6 +24,7 @@ func maxFieldNameLen(from []TableToStructFieldInfo) int {
 }
 
 func GenUpdateSets(from []TableToStructFieldInfo, pkeysCnt int) []string {
+	//nolint:prealloc
 	result := []string{}
 	maxNameLen := maxFieldNameLen(from)
 	for i, field := range from {
