@@ -1,3 +1,8 @@
+<p align="center">
+<picture>
+  <img alt="gofromdb - Generate ready-to-run Go REST microservices from PostgreSQL" src="docs/assets/gofromdb-logo.svg">
+</picture>
+
 # gofromdb
 
 Point it at a PostgreSQL database. Get a running Go REST API.
@@ -15,8 +20,6 @@ Point it at a PostgreSQL database. Get a running Go REST API.
 entity structs, repositories, services, HTTP handlers, DTOs, and Swagger annotations.
 
 **The result compiles and runs immediately.**
-
-![HTML](docs/assets/gofromdb-logo.svg)
 
 ---
 
