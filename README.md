@@ -1,4 +1,3 @@
-<p align="center">
 <picture>
   <img alt="gofromdb - Generate ready-to-run Go REST microservices from PostgreSQL" src="docs/assets/gofromdb-logo.svg">
 </picture>
