@@ -3,10 +3,11 @@ package {{.PackageName}}
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
+	"go-project-template-v7/pkg/apperrors"
 	"go-project-template-v7/pkg/pageable"
-
 	"go-project-template-v7/pkg/storage/postgres"
 
 	"github.com/jackc/pgx/v5"
@@ -88,7 +89,7 @@ func (r *repo) DeleteByID(ctx context.Context, {{.ParametersByPkeys}}) error {
 		return fmt.Errorf("%s: %w", tag, err)
 	}
 	if cmdTag.RowsAffected() == 0 {
-		return fmt.Errorf("%s: %w", tag, pgx.ErrNoRows)
+		return fmt.Errorf("%s: %w", tag, apperrors.ErrNotFound)
 	}
 	return nil
 }
@@ -190,6 +191,9 @@ func scanFullRow(row pgx.Row) (*{{.StructName}}, error) {
 {{- end}}
 	)
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, apperrors.ErrNotFound
+		}
 		return nil, err
 	}
 	return &scannedEntity, nil

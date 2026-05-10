@@ -5,8 +5,7 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/jackc/pgx/v5"
-
+	"go-project-template-v7/pkg/apperrors"
 	"go-project-template-v7/pkg/httputils"
 	"go-project-template-v7/pkg/pageable"
 	"go-project-template-v7/pkg/validator"
@@ -83,7 +82,7 @@ func (h *Handler) UpdateByID(w http.ResponseWriter, r *http.Request) {
 	updateInput := mapUpdateRequestToUpdateInputDto(req)
 	resp, err := h.svc.UpdateByID(r.Context(), updateInput, {{.ArgumentsByPkeys}})
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
+		if errors.Is(err, apperrors.ErrNotFound) {
 			httputils.WriteJSON(w, http.StatusNotFound, httputils.ErrorResponse{Message: "record not found"})
 			return
 		}
@@ -113,7 +112,7 @@ func (h *Handler) DeleteByID(w http.ResponseWriter, r *http.Request) {
 	{{.PathIDSClause}}
 
 	if err := h.svc.DeleteByID(r.Context(), {{.ArgumentsByPkeys}}); err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
+		if errors.Is(err, apperrors.ErrNotFound) {
 			httputils.WriteJSON(w, http.StatusNotFound, httputils.ErrorResponse{Message: "record not found"})
 			return
 		}
@@ -140,7 +139,7 @@ func (h *Handler) FindByID(w http.ResponseWriter, r *http.Request) {
 
 	resp, err := h.svc.FindByID(r.Context(), {{.ArgumentsByPkeys}})
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
+		if errors.Is(err, apperrors.ErrNotFound) {
 			httputils.WriteJSON(w, http.StatusNotFound, httputils.ErrorResponse{Message: "record not found"})
 			return
 		}
