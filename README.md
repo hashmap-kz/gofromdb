@@ -53,7 +53,9 @@ brew install gofromdb
 ## Usage
 
 ```bash
-gofromdb -conn="postgres://postgres:postgres@localhost:5432/bookstore" -workers=8 -output=myapp
+gofromdb -conn="postgres://postgres:postgres@localhost:5432/bookstore" \
+  -workers=8 \
+  -output=myapp
 ```
 
 ---
