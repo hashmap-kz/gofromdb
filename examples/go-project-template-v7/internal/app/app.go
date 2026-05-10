@@ -38,9 +38,9 @@ func Run(configFilePath string) {
 	pg, err := postgres.New(logger, cfg.Postgres.ConnStr, postgres.MaxPoolSize(cfg.Postgres.PoolMax))
 	if err != nil {
 		logger.Error("pg init error", slog.String("err", err.Error()))
-	} else {
-		logger.Info("pg connected")
+		os.Exit(1)
 	}
+	logger.Info("pg connected")
 	defer pg.Close()
 
 	// init routing, setup API
@@ -69,18 +69,14 @@ func Run(configFilePath string) {
 
 	logger.Info("server started", slog.String("port", cfg.Server.Port))
 
-	// Graceful Shutdown
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
-
-	<-quit
+	<-ctx.Done()
 
 	const timeout = 5 * time.Second
 
-	ctx, shutdown := context.WithTimeout(context.Background(), timeout)
+	shutdownCtx, shutdown := context.WithTimeout(context.Background(), timeout)
 	defer shutdown()
 
-	if err := srv.Stop(ctx); err != nil {
+	if err := srv.Stop(shutdownCtx); err != nil {
 		logger.Error("failed to stop server", slog.String("err", err.Error()))
 	} else {
 		logger.Info("application stopped gracefully")
