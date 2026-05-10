@@ -84,8 +84,11 @@ func (r *repo) DeleteByID(ctx context.Context, {{.ParametersByPkeys}}) error {
 	query := `{{.RepoDeleteQuery | AddPadding2}}`
 
 	cmdTag, err := r.db.Pool.Exec(ctx, query, {{.ArgumentsByPkeys}})
-	if err != nil || cmdTag.RowsAffected() == 0 {
-		return fmt.Errorf("%s. no rows were deleted: %w", tag, err)
+	if err != nil {
+		return fmt.Errorf("%s: %w", tag, err)
+	}
+	if cmdTag.RowsAffected() == 0 {
+		return fmt.Errorf("%s: %w", tag, pgx.ErrNoRows)
 	}
 	return nil
 }
@@ -117,7 +120,7 @@ func (r *repo) FindAll(ctx context.Context) ([]{{.StructName}}, error) {
 	}
 	defer rows.Close()
 
-	var scannedEntities []{{.StructName}}
+	scannedEntities := make([]{{.StructName}}, 0)
 	for rows.Next() {
 		scannedEntity, err := scanFullRow(rows)
 		if err != nil {
@@ -147,7 +150,7 @@ func (r *repo) FindAllPageable(ctx context.Context, pq *pageable.PaginationQuery
 
 	// handle empty result
 	if totalCount == 0 {
-		return nil, page, nil
+		return make([]{{.StructName}}, 0), page, nil
 	}
 
 	// select entities
@@ -159,7 +162,7 @@ func (r *repo) FindAllPageable(ctx context.Context, pq *pageable.PaginationQuery
 	}
 	defer rows.Close()
 
-	var scannedEntities []{{.StructName}}
+	scannedEntities := make([]{{.StructName}}, 0)
 	for rows.Next() {
 		scannedEntity, err := scanFullRow(rows)
 		if err != nil {
