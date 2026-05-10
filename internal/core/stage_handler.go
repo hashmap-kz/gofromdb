@@ -1,9 +1,6 @@
 package core
 
-import (
-	"fmt"
-	"strings"
-)
+import "fmt"
 
 type GenHandl struct {
 	Payload string
@@ -11,30 +8,9 @@ type GenHandl struct {
 }
 
 func GenHandler(s TableToStructInfo) (GenHandl, error) {
-	pk, err := NewPrimaryKeyView(s.PrimaryKeys)
+	data, err := NewHandlerTemplateData(s)
 	if err != nil {
 		return GenHandl{}, err
-	}
-
-	data := map[string]any{
-		"StructName":                  s.StructName,
-		"StructComment":               s.StructComment,
-		"PackageName":                 strings.ToLower(s.DbTableName),
-		"PathIDSClause":               pk.PathRead,
-		"PkeysURLPath":                pk.URLPath,
-		"ArgumentsByPkeys":            pk.Args,
-		"StructNameLowerFirstLetter":  s.StructNameLowerFirstLetter,
-		"StructNamePluralRequestPath": s.StructNamePluralRequestPath,
-		"ServiceVarName":              s.StructNameLowerFirstLetter + "Service",
-		"CreateRequestName":           s.StructNameLowerFirstLetter + "CreateRequest",
-		"UpdateRequestName":           s.StructNameLowerFirstLetter + "UpdateRequest",
-		"ResponseName":                s.StructNameLowerFirstLetter + "Response",
-		"ResponseListName":            s.StructNameLowerFirstLetter + "ResponseList",
-		"DtoFieldsFull":               s.FullFields(),
-		"DtoFieldsCreate":             s.InsertFields(),
-		"DtoFieldsUpdate":             s.UpdateFields(),
-		"HasPrimaryKey":               s.HasPrimaryKey,
-		"HasUpdateFields":             s.HasUpdateFields,
 	}
 
 	exec := func(name string) (string, error) {
