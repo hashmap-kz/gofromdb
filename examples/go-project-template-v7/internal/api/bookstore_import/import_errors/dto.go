@@ -22,10 +22,10 @@ type CreateDto struct {
 }
 
 type UpdateDto struct {
-	SourceName string
-	BatchNo    int
-	RowNo      int
+	SourceName *string
+	BatchNo    *int
+	RowNo      *int
 	ColumnName *string
-	Message    string
-	RawPayload string
+	Message    *string
+	RawPayload *string
 }

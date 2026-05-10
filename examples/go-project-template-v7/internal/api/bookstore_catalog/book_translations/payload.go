@@ -18,7 +18,7 @@ type bookTranslationsCreateRequest struct {
 // bookTranslationsUpdateRequest
 // Natural composite key: one translation per book and language.
 type bookTranslationsUpdateRequest struct {
-	TranslatedTitle string     `json:"translated_title"`
+	TranslatedTitle *string    `json:"translated_title"`
 	TranslatedBy    *string    `json:"translated_by"`
 	ReleasedOn      *time.Time `json:"released_on"`
 }

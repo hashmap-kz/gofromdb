@@ -13,7 +13,7 @@ import (
 
 type Repository interface {
 	Save(ctx context.Context, inputEntity *Authors) (*Authors, error)
-	UpdateByID(ctx context.Context, inputEntity *Authors, pkAuthorID string) (*Authors, error)
+	UpdateByID(ctx context.Context, update *UpdateDto, pkAuthorID string) (*Authors, error)
 	DeleteByID(ctx context.Context, pkAuthorID string) error
 	FindByID(ctx context.Context, pkAuthorID string) (*Authors, error)
 	FindAll(ctx context.Context) ([]Authors, error)
@@ -74,18 +74,22 @@ func (r *repo) Save(ctx context.Context, inputEntity *Authors) (*Authors, error)
 	return scannedEntity, nil
 }
 
-func (r *repo) UpdateByID(ctx context.Context, inputEntity *Authors, pkAuthorID string) (*Authors, error) {
+func (r *repo) UpdateByID(ctx context.Context, update *UpdateDto, pkAuthorID string) (*Authors, error) {
 	tag := "repository.UpdateByID"
+
+	if update == nil {
+		return nil, fmt.Errorf("%s: update is nil", tag)
+	}
 
 	query := `		
 		update bookstore_catalog.authors
 		set
-			display_name = coalesce(nullif($2, ''), display_name),
-			legal_name   = coalesce(nullif($3, ''), legal_name),
-			biography    = coalesce(nullif($4, ''), biography),
-			metadata     = coalesce(nullif($5, '{}'::jsonb), metadata),
-			active       = coalesce(nullif($6, 'false'::bool), active),
-			born_on      = coalesce(nullif($7, '0001-01-01 00:00:00'::date), born_on)
+			display_name = coalesce($2, display_name),
+			legal_name   = coalesce($3, legal_name),
+			biography    = coalesce($4, biography),
+			metadata     = coalesce($5, metadata),
+			active       = coalesce($6, active),
+			born_on      = coalesce($7, born_on)
 		where author_id = $1
 		returning
 			author_id,
@@ -100,12 +104,12 @@ func (r *repo) UpdateByID(ctx context.Context, inputEntity *Authors, pkAuthorID 
 	row := r.db.Pool.QueryRow(
 		ctx, query,
 		pkAuthorID,
-		inputEntity.DisplayName,
-		inputEntity.LegalName,
-		inputEntity.Biography,
-		inputEntity.Metadata,
-		inputEntity.Active,
-		inputEntity.BornOn,
+		update.DisplayName,
+		update.LegalName,
+		update.Biography,
+		update.Metadata,
+		update.Active,
+		update.BornOn,
 	)
 
 	scannedEntity, err := scanFullRow(row)

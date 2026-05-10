@@ -10,5 +10,5 @@ logger:
   level: debug
 
 postgres:
-  conn_str: "postgresql://postgres:postgres@localhost:5432/bookstore?sslmode=disable"
+  conn_str: "postgresql://postgres:postgres@localhost:15432/bookstore?sslmode=disable"
   pool_max: 10

@@ -21,8 +21,8 @@ type CreateDto struct {
 }
 
 type UpdateDto struct {
-	AvailableQty     int
-	ReservedQty      int
-	ReorderThreshold int
+	AvailableQty     *int
+	ReservedQty      *int
+	ReorderThreshold *int
 	LastCountedAt    *time.Time
 }

@@ -21,9 +21,9 @@ type CreateDto struct {
 }
 
 type UpdateDto struct {
-	Name        string
-	CountryCode string
+	Name        *string
+	CountryCode *string
 	Website     *string
 	FoundedOn   *time.Time
-	Active      bool
+	Active      *bool
 }

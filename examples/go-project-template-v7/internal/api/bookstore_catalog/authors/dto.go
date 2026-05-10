@@ -23,10 +23,10 @@ type CreateDto struct {
 }
 
 type UpdateDto struct {
-	DisplayName string
+	DisplayName *string
 	LegalName   *string
 	Biography   *string
-	Metadata    string
-	Active      bool
+	Metadata    *string
+	Active      *bool
 	BornOn      *time.Time
 }

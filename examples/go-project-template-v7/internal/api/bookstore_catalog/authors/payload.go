@@ -20,11 +20,11 @@ type authorsCreateRequest struct {
 // authorsUpdateRequest
 // Authors. Uses a UUID primary key with a database default.
 type authorsUpdateRequest struct {
-	DisplayName string     `json:"display_name"`
+	DisplayName *string    `json:"display_name"`
 	LegalName   *string    `json:"legal_name"`
 	Biography   *string    `json:"biography"`
-	Metadata    string     `json:"metadata"`
-	Active      bool       `json:"active"`
+	Metadata    *string    `json:"metadata"`
+	Active      *bool      `json:"active"`
 	BornOn      *time.Time `json:"born_on"`
 }
 

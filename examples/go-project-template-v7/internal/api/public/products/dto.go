@@ -19,7 +19,7 @@ type CreateDto struct {
 }
 
 type UpdateDto struct {
-	CategoryID  int
-	Name        string
+	CategoryID  *int
+	Name        *string
 	Description *string
 }

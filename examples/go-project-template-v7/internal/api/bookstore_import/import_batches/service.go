@@ -36,11 +36,11 @@ func (s *svc) Save(ctx context.Context, input *CreateDto) (*Dto, error) {
 }
 
 func (s *svc) UpdateByID(ctx context.Context, input *UpdateDto, pkSourceName string, pkBatchNo int) (*Dto, error) {
-	updatedResult, err := s.repo.UpdateByID(ctx, fromUpdateDtoToEntity(input), pkSourceName, pkBatchNo)
+	updated, err := s.repo.UpdateByID(ctx, input, pkSourceName, pkBatchNo)
 	if err != nil {
 		return nil, err
 	}
-	result := fromEntityToDto(updatedResult)
+	result := fromEntityToDto(updated)
 	return &result, nil
 }
 
@@ -79,16 +79,6 @@ func fromCreateDtoToEntity(input *CreateDto) *ImportBatches {
 	return &ImportBatches{
 		SourceName: input.SourceName,
 		BatchNo:    input.BatchNo,
-		StartedAt:  input.StartedAt,
-		FinishedAt: input.FinishedAt,
-		FileName:   input.FileName,
-		RowCount:   input.RowCount,
-		Metadata:   input.Metadata,
-	}
-}
-
-func fromUpdateDtoToEntity(input *UpdateDto) *ImportBatches {
-	return &ImportBatches{
 		StartedAt:  input.StartedAt,
 		FinishedAt: input.FinishedAt,
 		FileName:   input.FileName,

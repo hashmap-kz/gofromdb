@@ -19,12 +19,12 @@ type stockEventsCreateRequest struct {
 // stockEventsUpdateRequest
 // Append-only stock event stream. Intentionally has no primary key.
 type stockEventsUpdateRequest struct {
-	HappenedAt    time.Time `json:"happened_at"`
-	WarehouseCode string    `json:"warehouse_code"`
-	BookID        int64     `json:"book_id"`
-	DeltaQty      int       `json:"delta_qty"`
-	Reason        string    `json:"reason"`
-	Payload       string    `json:"payload"`
+	HappenedAt    *time.Time `json:"happened_at"`
+	WarehouseCode *string    `json:"warehouse_code"`
+	BookID        *int64     `json:"book_id"`
+	DeltaQty      *int       `json:"delta_qty"`
+	Reason        *string    `json:"reason"`
+	Payload       *string    `json:"payload"`
 }
 
 // stockEventsResponse

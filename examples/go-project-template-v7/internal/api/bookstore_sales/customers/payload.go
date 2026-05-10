@@ -19,11 +19,11 @@ type customersCreateRequest struct {
 // customersUpdateRequest
 // Store customers. UUID primary key and simple unique field.
 type customersUpdateRequest struct {
-	Email          string    `json:"email"`
-	FullName       string    `json:"full_name"`
-	Phone          *string   `json:"phone"`
-	MarketingOptIn bool      `json:"marketing_opt_in"`
-	RegisteredAt   time.Time `json:"registered_at"`
+	Email          *string    `json:"email"`
+	FullName       *string    `json:"full_name"`
+	Phone          *string    `json:"phone"`
+	MarketingOptIn *bool      `json:"marketing_opt_in"`
+	RegisteredAt   *time.Time `json:"registered_at"`
 }
 
 // customersResponse

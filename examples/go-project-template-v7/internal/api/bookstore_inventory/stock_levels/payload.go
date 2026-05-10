@@ -21,9 +21,9 @@ type stockLevelsCreateRequest struct {
 // Current stock per warehouse and book. Natural + surrogate composite foreign
 // key primary key.
 type stockLevelsUpdateRequest struct {
-	AvailableQty     int        `json:"available_qty"`
-	ReservedQty      int        `json:"reserved_qty"`
-	ReorderThreshold int        `json:"reorder_threshold"`
+	AvailableQty     *int       `json:"available_qty"`
+	ReservedQty      *int       `json:"reserved_qty"`
+	ReorderThreshold *int       `json:"reorder_threshold"`
 	LastCountedAt    *time.Time `json:"last_counted_at"`
 }
 

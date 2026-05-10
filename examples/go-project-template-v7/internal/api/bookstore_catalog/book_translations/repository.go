@@ -13,7 +13,7 @@ import (
 
 type Repository interface {
 	Save(ctx context.Context, inputEntity *BookTranslations) (*BookTranslations, error)
-	UpdateByID(ctx context.Context, inputEntity *BookTranslations, pkBookID int64, pkLanguageCode string) (*BookTranslations, error)
+	UpdateByID(ctx context.Context, update *UpdateDto, pkBookID int64, pkLanguageCode string) (*BookTranslations, error)
 	DeleteByID(ctx context.Context, pkBookID int64, pkLanguageCode string) error
 	FindByID(ctx context.Context, pkBookID int64, pkLanguageCode string) (*BookTranslations, error)
 	FindAll(ctx context.Context) ([]BookTranslations, error)
@@ -68,15 +68,19 @@ func (r *repo) Save(ctx context.Context, inputEntity *BookTranslations) (*BookTr
 	return scannedEntity, nil
 }
 
-func (r *repo) UpdateByID(ctx context.Context, inputEntity *BookTranslations, pkBookID int64, pkLanguageCode string) (*BookTranslations, error) {
+func (r *repo) UpdateByID(ctx context.Context, update *UpdateDto, pkBookID int64, pkLanguageCode string) (*BookTranslations, error) {
 	tag := "repository.UpdateByID"
+
+	if update == nil {
+		return nil, fmt.Errorf("%s: update is nil", tag)
+	}
 
 	query := `		
 		update bookstore_catalog.book_translations
 		set
-			translated_title = coalesce(nullif($3, ''), translated_title),
-			translated_by    = coalesce(nullif($4, ''), translated_by),
-			released_on      = coalesce(nullif($5, '0001-01-01 00:00:00'::date), released_on)
+			translated_title = coalesce($3, translated_title),
+			translated_by    = coalesce($4, translated_by),
+			released_on      = coalesce($5, released_on)
 		where book_id = $1 and language_code = $2
 		returning
 			book_id,
@@ -89,9 +93,9 @@ func (r *repo) UpdateByID(ctx context.Context, inputEntity *BookTranslations, pk
 	row := r.db.Pool.QueryRow(
 		ctx, query,
 		pkBookID, pkLanguageCode,
-		inputEntity.TranslatedTitle,
-		inputEntity.TranslatedBy,
-		inputEntity.ReleasedOn,
+		update.TranslatedTitle,
+		update.TranslatedBy,
+		update.ReleasedOn,
 	)
 
 	scannedEntity, err := scanFullRow(row)

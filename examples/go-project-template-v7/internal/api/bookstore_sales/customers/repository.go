@@ -13,7 +13,7 @@ import (
 
 type Repository interface {
 	Save(ctx context.Context, inputEntity *Customers) (*Customers, error)
-	UpdateByID(ctx context.Context, inputEntity *Customers, pkCustomerID string) (*Customers, error)
+	UpdateByID(ctx context.Context, update *UpdateDto, pkCustomerID string) (*Customers, error)
 	DeleteByID(ctx context.Context, pkCustomerID string) error
 	FindByID(ctx context.Context, pkCustomerID string) (*Customers, error)
 	FindAll(ctx context.Context) ([]Customers, error)
@@ -71,17 +71,21 @@ func (r *repo) Save(ctx context.Context, inputEntity *Customers) (*Customers, er
 	return scannedEntity, nil
 }
 
-func (r *repo) UpdateByID(ctx context.Context, inputEntity *Customers, pkCustomerID string) (*Customers, error) {
+func (r *repo) UpdateByID(ctx context.Context, update *UpdateDto, pkCustomerID string) (*Customers, error) {
 	tag := "repository.UpdateByID"
+
+	if update == nil {
+		return nil, fmt.Errorf("%s: update is nil", tag)
+	}
 
 	query := `		
 		update bookstore_sales.customers
 		set
-			email            = coalesce(nullif($2, ''), email),
-			full_name        = coalesce(nullif($3, ''), full_name),
-			phone            = coalesce(nullif($4, ''), phone),
-			marketing_opt_in = coalesce(nullif($5, 'false'::bool), marketing_opt_in),
-			registered_at    = coalesce(nullif($6, '0001-01-01 00:00:00'::timestamptz), registered_at)
+			email            = coalesce($2, email),
+			full_name        = coalesce($3, full_name),
+			phone            = coalesce($4, phone),
+			marketing_opt_in = coalesce($5, marketing_opt_in),
+			registered_at    = coalesce($6, registered_at)
 		where customer_id = $1
 		returning
 			customer_id,
@@ -95,11 +99,11 @@ func (r *repo) UpdateByID(ctx context.Context, inputEntity *Customers, pkCustome
 	row := r.db.Pool.QueryRow(
 		ctx, query,
 		pkCustomerID,
-		inputEntity.Email,
-		inputEntity.FullName,
-		inputEntity.Phone,
-		inputEntity.MarketingOptIn,
-		inputEntity.RegisteredAt,
+		update.Email,
+		update.FullName,
+		update.Phone,
+		update.MarketingOptIn,
+		update.RegisteredAt,
 	)
 
 	scannedEntity, err := scanFullRow(row)

@@ -22,8 +22,8 @@ type CreateDto struct {
 }
 
 type UpdateDto struct {
-	CustomerID  string
-	Status      string
+	CustomerID  *string
+	Status      *string
 	PlacedAt    *time.Time
 	PaidAt      *time.Time
 	CancelledAt *time.Time

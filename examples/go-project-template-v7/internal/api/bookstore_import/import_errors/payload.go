@@ -19,12 +19,12 @@ type importErrorsCreateRequest struct {
 // importErrorsUpdateRequest
 // Import validation errors. Intentionally has no primary key.
 type importErrorsUpdateRequest struct {
-	SourceName string  `json:"source_name"`
-	BatchNo    int     `json:"batch_no"`
-	RowNo      int     `json:"row_no"`
+	SourceName *string `json:"source_name"`
+	BatchNo    *int    `json:"batch_no"`
+	RowNo      *int    `json:"row_no"`
 	ColumnName *string `json:"column_name"`
-	Message    string  `json:"message"`
-	RawPayload string  `json:"raw_payload"`
+	Message    *string `json:"message"`
+	RawPayload *string `json:"raw_payload"`
 }
 
 // importErrorsResponse

@@ -19,7 +19,7 @@ type publicOrdersCreateRequest struct {
 // Represents purchases made by users.
 type publicOrdersUpdateRequest struct {
 	// Foreign key referencing the user who made the order.
-	UserID int `json:"user_id"`
+	UserID *int `json:"user_id"`
 
 	// Optional description or additional details of the order.
 	Description *string `json:"description"`

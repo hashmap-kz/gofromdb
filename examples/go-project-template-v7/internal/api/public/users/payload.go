@@ -16,7 +16,7 @@ type usersCreateRequest struct {
 // Stores users information, identified by a unique email.
 type usersUpdateRequest struct {
 	// Unique email address of the user.
-	Email string `json:"email"`
+	Email *string `json:"email"`
 }
 
 // usersResponse

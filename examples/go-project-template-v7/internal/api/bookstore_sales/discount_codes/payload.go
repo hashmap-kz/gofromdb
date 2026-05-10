@@ -21,11 +21,11 @@ type discountCodesCreateRequest struct {
 // discountCodesUpdateRequest
 // Discount codes. Natural text primary key plus daterange.
 type discountCodesUpdateRequest struct {
-	Description *string                 `json:"description"`
-	PercentOff  string                  `json:"percent_off"`
-	ValidPeriod pgtype.Range[time.Time] `json:"valid_period"`
-	MaxUses     *int                    `json:"max_uses"`
-	Active      bool                    `json:"active"`
+	Description *string                  `json:"description"`
+	PercentOff  *string                  `json:"percent_off"`
+	ValidPeriod *pgtype.Range[time.Time] `json:"valid_period"`
+	MaxUses     *int                     `json:"max_uses"`
+	Active      *bool                    `json:"active"`
 }
 
 // discountCodesResponse

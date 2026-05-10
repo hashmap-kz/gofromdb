@@ -17,8 +17,8 @@ type bookAuthorsCreateRequest struct {
 // bookAuthorsUpdateRequest
 // Many-to-many link. Tests composite primary key order: book_id, author_id.
 type bookAuthorsUpdateRequest struct {
-	ContributionOrder int16   `json:"contribution_order"`
-	Role              string  `json:"role"`
+	ContributionOrder *int16  `json:"contribution_order"`
+	Role              *string `json:"role"`
 	Notes             *string `json:"notes"`
 }
 

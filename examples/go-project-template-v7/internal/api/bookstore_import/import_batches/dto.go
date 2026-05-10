@@ -23,9 +23,9 @@ type CreateDto struct {
 }
 
 type UpdateDto struct {
-	StartedAt  time.Time
+	StartedAt  *time.Time
 	FinishedAt *time.Time
-	FileName   string
-	RowCount   int
-	Metadata   string
+	FileName   *string
+	RowCount   *int
+	Metadata   *string
 }

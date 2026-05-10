@@ -13,7 +13,7 @@ import (
 
 type Repository interface {
 	Save(ctx context.Context, inputEntity *PublicOrders) (*PublicOrders, error)
-	UpdateByID(ctx context.Context, inputEntity *PublicOrders, pkRecordID int) (*PublicOrders, error)
+	UpdateByID(ctx context.Context, update *UpdateDto, pkRecordID int) (*PublicOrders, error)
 	DeleteByID(ctx context.Context, pkRecordID int) error
 	FindByID(ctx context.Context, pkRecordID int) (*PublicOrders, error)
 	FindAll(ctx context.Context) ([]PublicOrders, error)
@@ -63,14 +63,18 @@ func (r *repo) Save(ctx context.Context, inputEntity *PublicOrders) (*PublicOrde
 	return scannedEntity, nil
 }
 
-func (r *repo) UpdateByID(ctx context.Context, inputEntity *PublicOrders, pkRecordID int) (*PublicOrders, error) {
+func (r *repo) UpdateByID(ctx context.Context, update *UpdateDto, pkRecordID int) (*PublicOrders, error) {
 	tag := "repository.UpdateByID"
+
+	if update == nil {
+		return nil, fmt.Errorf("%s: update is nil", tag)
+	}
 
 	query := `		
 		update public.orders
 		set
-			user_id     = coalesce(nullif($2, 0::int4), user_id),
-			description = coalesce(nullif($3, ''), description)
+			user_id     = coalesce($2, user_id),
+			description = coalesce($3, description)
 		where record_id = $1
 		returning
 			record_id,
@@ -84,8 +88,8 @@ func (r *repo) UpdateByID(ctx context.Context, inputEntity *PublicOrders, pkReco
 	row := r.db.Pool.QueryRow(
 		ctx, query,
 		pkRecordID,
-		inputEntity.UserID,
-		inputEntity.Description,
+		update.UserID,
+		update.Description,
 	)
 
 	scannedEntity, err := scanFullRow(row)

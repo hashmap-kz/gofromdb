@@ -26,8 +26,8 @@ type CreateDto struct {
 
 type UpdateDto struct {
 	Description *string
-	PercentOff  string
-	ValidPeriod pgtype.Range[time.Time]
+	PercentOff  *string
+	ValidPeriod *pgtype.Range[time.Time]
 	MaxUses     *int
-	Active      bool
+	Active      *bool
 }

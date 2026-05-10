@@ -24,21 +24,20 @@ func maxFieldNameLen(from []TableToStructFieldInfo) int {
 }
 
 func GenUpdateSets(from []TableToStructFieldInfo, pkeysCnt int) []string {
+	//nolint:prealloc
 	result := []string{}
 	maxNameLen := maxFieldNameLen(from)
-	for i := 0; i < len(from); i++ {
-		structFieldInfo := from[i]
-
+	for i, field := range from {
 		// because $1 is a first parameter (starts with 1, not 0), and also $1 is reserved for ID
 		indexOf := i + pkeysCnt + 1
 
-		// pattern: `<FIELD_NAME> = coalesce(nullif($1, <RHS_EMPTY_VALUE>::typename), <FIELD_NAME>)`
-		updatePattern := fmt.Sprintf("%s %s= coalesce(nullif($%d, %s), %s)",
-			structFieldInfo.DbFieldName,
-			strings.Repeat(" ", maxNameLen-len(structFieldInfo.DbFieldName)), // just a padding
+		// v1 --- pattern: `<FIELD_NAME> = coalesce(nullif($1, <RHS_EMPTY_VALUE>::typename), <FIELD_NAME>)`
+		// v2 --- nil pointer -> keep existing value; non-nil -> update with the provided value
+		updatePattern := fmt.Sprintf("%s %s= coalesce($%d, %s)",
+			field.DbFieldName,
+			strings.Repeat(" ", maxNameLen-len(field.DbFieldName)), // just a padding
 			indexOf,
-			structFieldInfo.DbNullifRhs,
-			structFieldInfo.DbFieldName,
+			field.DbFieldName,
 		)
 
 		result = append(result, updatePattern)

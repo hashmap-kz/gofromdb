@@ -13,7 +13,7 @@ import (
 
 type Repository interface {
 	Save(ctx context.Context, inputEntity *ImportBatches) (*ImportBatches, error)
-	UpdateByID(ctx context.Context, inputEntity *ImportBatches, pkSourceName string, pkBatchNo int) (*ImportBatches, error)
+	UpdateByID(ctx context.Context, update *UpdateDto, pkSourceName string, pkBatchNo int) (*ImportBatches, error)
 	DeleteByID(ctx context.Context, pkSourceName string, pkBatchNo int) error
 	FindByID(ctx context.Context, pkSourceName string, pkBatchNo int) (*ImportBatches, error)
 	FindAll(ctx context.Context) ([]ImportBatches, error)
@@ -74,17 +74,21 @@ func (r *repo) Save(ctx context.Context, inputEntity *ImportBatches) (*ImportBat
 	return scannedEntity, nil
 }
 
-func (r *repo) UpdateByID(ctx context.Context, inputEntity *ImportBatches, pkSourceName string, pkBatchNo int) (*ImportBatches, error) {
+func (r *repo) UpdateByID(ctx context.Context, update *UpdateDto, pkSourceName string, pkBatchNo int) (*ImportBatches, error) {
 	tag := "repository.UpdateByID"
+
+	if update == nil {
+		return nil, fmt.Errorf("%s: update is nil", tag)
+	}
 
 	query := `		
 		update bookstore_import.import_batches
 		set
-			started_at  = coalesce(nullif($3, '0001-01-01 00:00:00'::timestamptz), started_at),
-			finished_at = coalesce(nullif($4, '0001-01-01 00:00:00'::timestamptz), finished_at),
-			file_name   = coalesce(nullif($5, ''), file_name),
-			row_count   = coalesce(nullif($6, 0::int4), row_count),
-			metadata    = coalesce(nullif($7, '{}'::jsonb), metadata)
+			started_at  = coalesce($3, started_at),
+			finished_at = coalesce($4, finished_at),
+			file_name   = coalesce($5, file_name),
+			row_count   = coalesce($6, row_count),
+			metadata    = coalesce($7, metadata)
 		where source_name = $1 and batch_no = $2
 		returning
 			source_name,
@@ -99,11 +103,11 @@ func (r *repo) UpdateByID(ctx context.Context, inputEntity *ImportBatches, pkSou
 	row := r.db.Pool.QueryRow(
 		ctx, query,
 		pkSourceName, pkBatchNo,
-		inputEntity.StartedAt,
-		inputEntity.FinishedAt,
-		inputEntity.FileName,
-		inputEntity.RowCount,
-		inputEntity.Metadata,
+		update.StartedAt,
+		update.FinishedAt,
+		update.FileName,
+		update.RowCount,
+		update.Metadata,
 	)
 
 	scannedEntity, err := scanFullRow(row)

@@ -17,8 +17,8 @@ type CreateDto struct {
 }
 
 type UpdateDto struct {
-	Name     string
-	Address  string
-	Timezone string
-	Active   bool
+	Name     *string
+	Address  *string
+	Timezone *string
+	Active   *bool
 }

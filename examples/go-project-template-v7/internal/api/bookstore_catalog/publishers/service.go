@@ -36,11 +36,11 @@ func (s *svc) Save(ctx context.Context, input *CreateDto) (*Dto, error) {
 }
 
 func (s *svc) UpdateByID(ctx context.Context, input *UpdateDto, pkCode string) (*Dto, error) {
-	updatedResult, err := s.repo.UpdateByID(ctx, fromUpdateDtoToEntity(input), pkCode)
+	updated, err := s.repo.UpdateByID(ctx, input, pkCode)
 	if err != nil {
 		return nil, err
 	}
-	result := fromEntityToDto(updatedResult)
+	result := fromEntityToDto(updated)
 	return &result, nil
 }
 
@@ -78,16 +78,6 @@ func (s *svc) FindAllPageable(ctx context.Context, pq *pageable.PaginationQuery)
 func fromCreateDtoToEntity(input *CreateDto) *Publishers {
 	return &Publishers{
 		Code:        input.Code,
-		Name:        input.Name,
-		CountryCode: input.CountryCode,
-		Website:     input.Website,
-		FoundedOn:   input.FoundedOn,
-		Active:      input.Active,
-	}
-}
-
-func fromUpdateDtoToEntity(input *UpdateDto) *Publishers {
-	return &Publishers{
 		Name:        input.Name,
 		CountryCode: input.CountryCode,
 		Website:     input.Website,

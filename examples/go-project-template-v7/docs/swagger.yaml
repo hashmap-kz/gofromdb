@@ -1,4 +1,274 @@
 definitions:
+  authors.authorsCreateRequest:
+    properties:
+      active:
+        type: boolean
+      author_id:
+        type: string
+      biography:
+        type: string
+      born_on:
+        type: string
+      display_name:
+        type: string
+      legal_name:
+        type: string
+      metadata:
+        type: string
+    type: object
+  authors.authorsResponse:
+    properties:
+      active:
+        type: boolean
+      author_id:
+        type: string
+      biography:
+        type: string
+      born_on:
+        type: string
+      display_name:
+        type: string
+      legal_name:
+        type: string
+      metadata:
+        type: string
+    type: object
+  authors.authorsResponseList:
+    properties:
+      data:
+        description: Payload
+        items:
+          $ref: '#/definitions/authors.authorsResponse'
+        type: array
+      page:
+        allOf:
+        - $ref: '#/definitions/pageable.Page'
+        description: Page information (if present)
+    type: object
+  authors.authorsUpdateRequest:
+    properties:
+      active:
+        type: boolean
+      biography:
+        type: string
+      born_on:
+        type: string
+      display_name:
+        type: string
+      legal_name:
+        type: string
+      metadata:
+        type: string
+    type: object
+  book_authors.bookAuthorsCreateRequest:
+    properties:
+      author_id:
+        type: string
+      book_id:
+        type: integer
+      contribution_order:
+        type: integer
+      notes:
+        type: string
+      role:
+        type: string
+    type: object
+  book_authors.bookAuthorsResponse:
+    properties:
+      author_id:
+        type: string
+      book_id:
+        type: integer
+      contribution_order:
+        type: integer
+      notes:
+        type: string
+      role:
+        type: string
+    type: object
+  book_authors.bookAuthorsResponseList:
+    properties:
+      data:
+        description: Payload
+        items:
+          $ref: '#/definitions/book_authors.bookAuthorsResponse'
+        type: array
+      page:
+        allOf:
+        - $ref: '#/definitions/pageable.Page'
+        description: Page information (if present)
+    type: object
+  book_authors.bookAuthorsUpdateRequest:
+    properties:
+      contribution_order:
+        type: integer
+      notes:
+        type: string
+      role:
+        type: string
+    type: object
+  book_translations.bookTranslationsCreateRequest:
+    properties:
+      book_id:
+        type: integer
+      language_code:
+        type: string
+      released_on:
+        type: string
+      translated_by:
+        type: string
+      translated_title:
+        type: string
+    type: object
+  book_translations.bookTranslationsResponse:
+    properties:
+      book_id:
+        type: integer
+      language_code:
+        type: string
+      released_on:
+        type: string
+      translated_by:
+        type: string
+      translated_title:
+        type: string
+    type: object
+  book_translations.bookTranslationsResponseList:
+    properties:
+      data:
+        description: Payload
+        items:
+          $ref: '#/definitions/book_translations.bookTranslationsResponse'
+        type: array
+      page:
+        allOf:
+        - $ref: '#/definitions/pageable.Page'
+        description: Page information (if present)
+    type: object
+  book_translations.bookTranslationsUpdateRequest:
+    properties:
+      released_on:
+        type: string
+      translated_by:
+        type: string
+      translated_title:
+        type: string
+    type: object
+  books.booksCreateRequest:
+    properties:
+      archived_at:
+        type: string
+      attrs:
+        type: string
+      cover_image:
+        items:
+          type: integer
+        type: array
+      description:
+        type: string
+      isbn13:
+        type: string
+      price:
+        type: string
+      published_on:
+        type: string
+      publisher_code:
+        type: string
+      rating:
+        type: string
+      subtitle:
+        type: string
+      tags:
+        items:
+          type: string
+        type: array
+      title:
+        type: string
+      weight_grams:
+        type: integer
+    type: object
+  books.booksResponse:
+    properties:
+      archived_at:
+        type: string
+      attrs:
+        type: string
+      book_id:
+        type: integer
+      cover_image:
+        items:
+          type: integer
+        type: array
+      description:
+        type: string
+      isbn13:
+        type: string
+      price:
+        type: string
+      published_on:
+        type: string
+      publisher_code:
+        type: string
+      rating:
+        type: string
+      subtitle:
+        type: string
+      tags:
+        items:
+          type: string
+        type: array
+      title:
+        type: string
+      title_search:
+        type: string
+      weight_grams:
+        type: integer
+    type: object
+  books.booksResponseList:
+    properties:
+      data:
+        description: Payload
+        items:
+          $ref: '#/definitions/books.booksResponse'
+        type: array
+      page:
+        allOf:
+        - $ref: '#/definitions/pageable.Page'
+        description: Page information (if present)
+    type: object
+  books.booksUpdateRequest:
+    properties:
+      archived_at:
+        type: string
+      attrs:
+        type: string
+      cover_image:
+        items:
+          type: integer
+        type: array
+      description:
+        type: string
+      isbn13:
+        type: string
+      price:
+        type: string
+      published_on:
+        type: string
+      publisher_code:
+        type: string
+      rating:
+        type: string
+      subtitle:
+        type: string
+      tags:
+        items:
+          type: string
+        type: array
+      title:
+        type: string
+      weight_grams:
+        type: integer
+    type: object
   categories.categoriesCreateRequest:
     properties:
       name:
@@ -65,6 +335,116 @@ definitions:
         - $ref: '#/definitions/pgtype.Range-time_Time'
         description: Validity period of this category naming.
     type: object
+  customers.customersCreateRequest:
+    properties:
+      customer_id:
+        type: string
+      email:
+        type: string
+      full_name:
+        type: string
+      marketing_opt_in:
+        type: boolean
+      phone:
+        type: string
+      registered_at:
+        type: string
+    type: object
+  customers.customersResponse:
+    properties:
+      customer_id:
+        type: string
+      email:
+        type: string
+      full_name:
+        type: string
+      marketing_opt_in:
+        type: boolean
+      phone:
+        type: string
+      registered_at:
+        type: string
+    type: object
+  customers.customersResponseList:
+    properties:
+      data:
+        description: Payload
+        items:
+          $ref: '#/definitions/customers.customersResponse'
+        type: array
+      page:
+        allOf:
+        - $ref: '#/definitions/pageable.Page'
+        description: Page information (if present)
+    type: object
+  customers.customersUpdateRequest:
+    properties:
+      email:
+        type: string
+      full_name:
+        type: string
+      marketing_opt_in:
+        type: boolean
+      phone:
+        type: string
+      registered_at:
+        type: string
+    type: object
+  discount_codes.discountCodesCreateRequest:
+    properties:
+      active:
+        type: boolean
+      code:
+        type: string
+      description:
+        type: string
+      max_uses:
+        type: integer
+      percent_off:
+        type: string
+      valid_period:
+        $ref: '#/definitions/pgtype.Range-time_Time'
+    type: object
+  discount_codes.discountCodesResponse:
+    properties:
+      active:
+        type: boolean
+      code:
+        type: string
+      description:
+        type: string
+      max_uses:
+        type: integer
+      percent_off:
+        type: string
+      valid_period:
+        $ref: '#/definitions/pgtype.Range-time_Time'
+    type: object
+  discount_codes.discountCodesResponseList:
+    properties:
+      data:
+        description: Payload
+        items:
+          $ref: '#/definitions/discount_codes.discountCodesResponse'
+        type: array
+      page:
+        allOf:
+        - $ref: '#/definitions/pageable.Page'
+        description: Page information (if present)
+    type: object
+  discount_codes.discountCodesUpdateRequest:
+    properties:
+      active:
+        type: boolean
+      description:
+        type: string
+      max_uses:
+        type: integer
+      percent_off:
+        type: string
+      valid_period:
+        $ref: '#/definitions/pgtype.Range-time_Time'
+    type: object
   httputils.ErrorDetail:
     properties:
       field:
@@ -80,6 +460,109 @@ definitions:
         type: array
       message:
         type: string
+    type: object
+  import_batches.importBatchesCreateRequest:
+    properties:
+      batch_no:
+        type: integer
+      file_name:
+        type: string
+      finished_at:
+        type: string
+      metadata:
+        type: string
+      row_count:
+        type: integer
+      source_name:
+        type: string
+      started_at:
+        type: string
+    type: object
+  import_batches.importBatchesResponse:
+    properties:
+      batch_no:
+        type: integer
+      file_name:
+        type: string
+      finished_at:
+        type: string
+      metadata:
+        type: string
+      row_count:
+        type: integer
+      source_name:
+        type: string
+      started_at:
+        type: string
+    type: object
+  import_batches.importBatchesResponseList:
+    properties:
+      data:
+        description: Payload
+        items:
+          $ref: '#/definitions/import_batches.importBatchesResponse'
+        type: array
+      page:
+        allOf:
+        - $ref: '#/definitions/pageable.Page'
+        description: Page information (if present)
+    type: object
+  import_batches.importBatchesUpdateRequest:
+    properties:
+      file_name:
+        type: string
+      finished_at:
+        type: string
+      metadata:
+        type: string
+      row_count:
+        type: integer
+      started_at:
+        type: string
+    type: object
+  import_errors.importErrorsCreateRequest:
+    properties:
+      batch_no:
+        type: integer
+      column_name:
+        type: string
+      message:
+        type: string
+      raw_payload:
+        type: string
+      row_no:
+        type: integer
+      source_name:
+        type: string
+    type: object
+  import_errors.importErrorsResponse:
+    properties:
+      batch_no:
+        type: integer
+      column_name:
+        type: string
+      created_at:
+        type: string
+      message:
+        type: string
+      raw_payload:
+        type: string
+      row_no:
+        type: integer
+      source_name:
+        type: string
+    type: object
+  import_errors.importErrorsResponseList:
+    properties:
+      data:
+        description: Payload
+        items:
+          $ref: '#/definitions/import_errors.importErrorsResponse'
+        type: array
+      page:
+        allOf:
+        - $ref: '#/definitions/pageable.Page'
+        description: Page information (if present)
     type: object
   order_items.orderItemsCreateRequest:
     properties:
@@ -150,7 +633,125 @@ definitions:
         description: Number of units of the product.
         type: string
     type: object
-  orders.ordersCreateRequest:
+  order_lines.orderLinesCreateRequest:
+    properties:
+      book_id:
+        type: integer
+      discount_amount:
+        type: string
+      line_no:
+        type: integer
+      note:
+        type: string
+      order_id:
+        type: integer
+      quantity:
+        type: integer
+      unit_price:
+        type: string
+    type: object
+  order_lines.orderLinesResponse:
+    properties:
+      book_id:
+        type: integer
+      discount_amount:
+        type: string
+      line_no:
+        type: integer
+      note:
+        type: string
+      order_id:
+        type: integer
+      quantity:
+        type: integer
+      unit_price:
+        type: string
+    type: object
+  order_lines.orderLinesResponseList:
+    properties:
+      data:
+        description: Payload
+        items:
+          $ref: '#/definitions/order_lines.orderLinesResponse'
+        type: array
+      page:
+        allOf:
+        - $ref: '#/definitions/pageable.Page'
+        description: Page information (if present)
+    type: object
+  order_lines.orderLinesUpdateRequest:
+    properties:
+      book_id:
+        type: integer
+      discount_amount:
+        type: string
+      note:
+        type: string
+      quantity:
+        type: integer
+      unit_price:
+        type: string
+    type: object
+  orders.bookstoreSalesOrdersCreateRequest:
+    properties:
+      cancelled_at:
+        type: string
+      comment:
+        type: string
+      customer_id:
+        type: string
+      paid_at:
+        type: string
+      placed_at:
+        type: string
+      status:
+        type: string
+    type: object
+  orders.bookstoreSalesOrdersResponse:
+    properties:
+      cancelled_at:
+        type: string
+      comment:
+        type: string
+      customer_id:
+        type: string
+      order_id:
+        type: integer
+      paid_at:
+        type: string
+      placed_at:
+        type: string
+      status:
+        type: string
+    type: object
+  orders.bookstoreSalesOrdersResponseList:
+    properties:
+      data:
+        description: Payload
+        items:
+          $ref: '#/definitions/orders.bookstoreSalesOrdersResponse'
+        type: array
+      page:
+        allOf:
+        - $ref: '#/definitions/pageable.Page'
+        description: Page information (if present)
+    type: object
+  orders.bookstoreSalesOrdersUpdateRequest:
+    properties:
+      cancelled_at:
+        type: string
+      comment:
+        type: string
+      customer_id:
+        type: string
+      paid_at:
+        type: string
+      placed_at:
+        type: string
+      status:
+        type: string
+    type: object
+  orders.publicOrdersCreateRequest:
     properties:
       description:
         description: Optional description or additional details of the order.
@@ -159,7 +760,7 @@ definitions:
         description: Foreign key referencing the user who made the order.
         type: integer
     type: object
-  orders.ordersResponse:
+  orders.publicOrdersResponse:
     properties:
       created_at:
         description: Internal field, creation TS
@@ -180,19 +781,19 @@ definitions:
         description: Foreign key referencing the user who made the order.
         type: integer
     type: object
-  orders.ordersResponseList:
+  orders.publicOrdersResponseList:
     properties:
       data:
         description: Payload
         items:
-          $ref: '#/definitions/orders.ordersResponse'
+          $ref: '#/definitions/orders.publicOrdersResponse'
         type: array
       page:
         allOf:
         - $ref: '#/definitions/pageable.Page'
         description: Page information (if present)
     type: object
-  orders.ordersUpdateRequest:
+  orders.publicOrdersUpdateRequest:
     properties:
       description:
         description: Optional description or additional details of the order.
@@ -301,6 +902,158 @@ definitions:
         description: Name of the product.
         type: string
     type: object
+  publishers.publishersCreateRequest:
+    properties:
+      active:
+        type: boolean
+      code:
+        description: Natural publisher code, for example no_starch or manning.
+        type: string
+      country_code:
+        type: string
+      founded_on:
+        type: string
+      name:
+        type: string
+      website:
+        type: string
+    type: object
+  publishers.publishersResponse:
+    properties:
+      active:
+        type: boolean
+      code:
+        description: Natural publisher code, for example no_starch or manning.
+        type: string
+      country_code:
+        type: string
+      founded_on:
+        type: string
+      name:
+        type: string
+      website:
+        type: string
+    type: object
+  publishers.publishersResponseList:
+    properties:
+      data:
+        description: Payload
+        items:
+          $ref: '#/definitions/publishers.publishersResponse'
+        type: array
+      page:
+        allOf:
+        - $ref: '#/definitions/pageable.Page'
+        description: Page information (if present)
+    type: object
+  publishers.publishersUpdateRequest:
+    properties:
+      active:
+        type: boolean
+      country_code:
+        type: string
+      founded_on:
+        type: string
+      name:
+        type: string
+      website:
+        type: string
+    type: object
+  stock_events.stockEventsCreateRequest:
+    properties:
+      book_id:
+        type: integer
+      delta_qty:
+        type: integer
+      happened_at:
+        type: string
+      payload:
+        type: string
+      reason:
+        type: string
+      warehouse_code:
+        type: string
+    type: object
+  stock_events.stockEventsResponse:
+    properties:
+      book_id:
+        type: integer
+      delta_qty:
+        type: integer
+      happened_at:
+        type: string
+      payload:
+        type: string
+      reason:
+        type: string
+      warehouse_code:
+        type: string
+    type: object
+  stock_events.stockEventsResponseList:
+    properties:
+      data:
+        description: Payload
+        items:
+          $ref: '#/definitions/stock_events.stockEventsResponse'
+        type: array
+      page:
+        allOf:
+        - $ref: '#/definitions/pageable.Page'
+        description: Page information (if present)
+    type: object
+  stock_levels.stockLevelsCreateRequest:
+    properties:
+      available_qty:
+        type: integer
+      book_id:
+        type: integer
+      last_counted_at:
+        type: string
+      reorder_threshold:
+        type: integer
+      reserved_qty:
+        type: integer
+      warehouse_code:
+        type: string
+    type: object
+  stock_levels.stockLevelsResponse:
+    properties:
+      available_qty:
+        type: integer
+      book_id:
+        type: integer
+      last_counted_at:
+        type: string
+      reorder_threshold:
+        type: integer
+      reserved_qty:
+        type: integer
+      warehouse_code:
+        type: string
+    type: object
+  stock_levels.stockLevelsResponseList:
+    properties:
+      data:
+        description: Payload
+        items:
+          $ref: '#/definitions/stock_levels.stockLevelsResponse'
+        type: array
+      page:
+        allOf:
+        - $ref: '#/definitions/pageable.Page'
+        description: Page information (if present)
+    type: object
+  stock_levels.stockLevelsUpdateRequest:
+    properties:
+      available_qty:
+        type: integer
+      last_counted_at:
+        type: string
+      reorder_threshold:
+        type: integer
+      reserved_qty:
+        type: integer
+    type: object
   users.usersCreateRequest:
     properties:
       email:
@@ -343,9 +1096,973 @@ definitions:
         description: Unique email address of the user.
         type: string
     type: object
+  warehouses.warehousesCreateRequest:
+    properties:
+      active:
+        type: boolean
+      address:
+        type: string
+      code:
+        type: string
+      name:
+        type: string
+      timezone:
+        type: string
+    type: object
+  warehouses.warehousesResponse:
+    properties:
+      active:
+        type: boolean
+      address:
+        type: string
+      code:
+        type: string
+      name:
+        type: string
+      timezone:
+        type: string
+    type: object
+  warehouses.warehousesResponseList:
+    properties:
+      data:
+        description: Payload
+        items:
+          $ref: '#/definitions/warehouses.warehousesResponse'
+        type: array
+      page:
+        allOf:
+        - $ref: '#/definitions/pageable.Page'
+        description: Page information (if present)
+    type: object
+  warehouses.warehousesUpdateRequest:
+    properties:
+      active:
+        type: boolean
+      address:
+        type: string
+      name:
+        type: string
+      timezone:
+        type: string
+    type: object
 info:
   contact: {}
 paths:
+  /api/v1/authors:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a list without pagination.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of all items
+          schema:
+            $ref: '#/definitions/authors.authorsResponseList'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Get all
+      tags:
+      - authors
+    post:
+      consumes:
+      - application/json
+      description: Create new item handler
+      parameters:
+      - description: Create input
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/authors.authorsCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/authors.authorsResponse'
+        "400":
+          description: Bad Request (Invalid request payload)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Create new item
+      tags:
+      - authors
+  /api/v1/authors/{author_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes an item by its ID
+      parameters:
+      - description: Authors ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content (Successfully deleted)
+        "400":
+          description: Bad Request (Invalid ID format)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Delete existing item
+      tags:
+      - authors
+    get:
+      description: Retrieves the details based on the provided ID in the request path.
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Single item
+          schema:
+            $ref: '#/definitions/authors.authorsResponse'
+        "400":
+          description: Bad Request (Invalid ID format)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Get item by ID
+      tags:
+      - authors
+    put:
+      consumes:
+      - application/json
+      description: Updates an item by its ID
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update input
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/authors.authorsUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/authors.authorsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Update existing item
+      tags:
+      - authors
+  /api/v1/authors/pageable:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a paginated list using pagination parameters.
+      parameters:
+      - description: 'Page number (default: 1)'
+        in: query
+        name: page
+        type: integer
+      - description: 'Number of items per page (default: 10)'
+        in: query
+        name: size
+        type: integer
+      - description: Sort order, e.g., 'name,asc'
+        in: query
+        name: sort
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Paginated list of Authors
+          schema:
+            $ref: '#/definitions/authors.authorsResponseList'
+        "400":
+          description: Bad Request (Invalid pagination parameters)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Get paginated list
+      tags:
+      - authors
+  /api/v1/book-authors:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a list without pagination.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of all items
+          schema:
+            $ref: '#/definitions/book_authors.bookAuthorsResponseList'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Get all
+      tags:
+      - book-authors
+    post:
+      consumes:
+      - application/json
+      description: Create new item handler
+      parameters:
+      - description: Create input
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/book_authors.bookAuthorsCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/book_authors.bookAuthorsResponse'
+        "400":
+          description: Bad Request (Invalid request payload)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Create new item
+      tags:
+      - book-authors
+  /api/v1/book-authors/{book_id}/{author_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes an item by its ID
+      parameters:
+      - description: BookAuthors ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content (Successfully deleted)
+        "400":
+          description: Bad Request (Invalid ID format)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Delete existing item
+      tags:
+      - book-authors
+    get:
+      description: Retrieves the details based on the provided ID in the request path.
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Single item
+          schema:
+            $ref: '#/definitions/book_authors.bookAuthorsResponse'
+        "400":
+          description: Bad Request (Invalid ID format)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Get item by ID
+      tags:
+      - book-authors
+    put:
+      consumes:
+      - application/json
+      description: Updates an item by its ID
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update input
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/book_authors.bookAuthorsUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/book_authors.bookAuthorsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Update existing item
+      tags:
+      - book-authors
+  /api/v1/book-authors/pageable:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a paginated list using pagination parameters.
+      parameters:
+      - description: 'Page number (default: 1)'
+        in: query
+        name: page
+        type: integer
+      - description: 'Number of items per page (default: 10)'
+        in: query
+        name: size
+        type: integer
+      - description: Sort order, e.g., 'name,asc'
+        in: query
+        name: sort
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Paginated list of BookAuthors
+          schema:
+            $ref: '#/definitions/book_authors.bookAuthorsResponseList'
+        "400":
+          description: Bad Request (Invalid pagination parameters)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Get paginated list
+      tags:
+      - book-authors
+  /api/v1/book-translations:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a list without pagination.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of all items
+          schema:
+            $ref: '#/definitions/book_translations.bookTranslationsResponseList'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Get all
+      tags:
+      - book-translations
+    post:
+      consumes:
+      - application/json
+      description: Create new item handler
+      parameters:
+      - description: Create input
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/book_translations.bookTranslationsCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/book_translations.bookTranslationsResponse'
+        "400":
+          description: Bad Request (Invalid request payload)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Create new item
+      tags:
+      - book-translations
+  /api/v1/book-translations/{book_id}/{language_code}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes an item by its ID
+      parameters:
+      - description: BookTranslations ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content (Successfully deleted)
+        "400":
+          description: Bad Request (Invalid ID format)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Delete existing item
+      tags:
+      - book-translations
+    get:
+      description: Retrieves the details based on the provided ID in the request path.
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Single item
+          schema:
+            $ref: '#/definitions/book_translations.bookTranslationsResponse'
+        "400":
+          description: Bad Request (Invalid ID format)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Get item by ID
+      tags:
+      - book-translations
+    put:
+      consumes:
+      - application/json
+      description: Updates an item by its ID
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update input
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/book_translations.bookTranslationsUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/book_translations.bookTranslationsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Update existing item
+      tags:
+      - book-translations
+  /api/v1/book-translations/pageable:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a paginated list using pagination parameters.
+      parameters:
+      - description: 'Page number (default: 1)'
+        in: query
+        name: page
+        type: integer
+      - description: 'Number of items per page (default: 10)'
+        in: query
+        name: size
+        type: integer
+      - description: Sort order, e.g., 'name,asc'
+        in: query
+        name: sort
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Paginated list of BookTranslations
+          schema:
+            $ref: '#/definitions/book_translations.bookTranslationsResponseList'
+        "400":
+          description: Bad Request (Invalid pagination parameters)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Get paginated list
+      tags:
+      - book-translations
+  /api/v1/books:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a list without pagination.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of all items
+          schema:
+            $ref: '#/definitions/books.booksResponseList'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Get all
+      tags:
+      - books
+    post:
+      consumes:
+      - application/json
+      description: Create new item handler
+      parameters:
+      - description: Create input
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/books.booksCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/books.booksResponse'
+        "400":
+          description: Bad Request (Invalid request payload)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Create new item
+      tags:
+      - books
+  /api/v1/books/{book_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes an item by its ID
+      parameters:
+      - description: Books ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content (Successfully deleted)
+        "400":
+          description: Bad Request (Invalid ID format)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Delete existing item
+      tags:
+      - books
+    get:
+      description: Retrieves the details based on the provided ID in the request path.
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Single item
+          schema:
+            $ref: '#/definitions/books.booksResponse'
+        "400":
+          description: Bad Request (Invalid ID format)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Get item by ID
+      tags:
+      - books
+    put:
+      consumes:
+      - application/json
+      description: Updates an item by its ID
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update input
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/books.booksUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/books.booksResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Update existing item
+      tags:
+      - books
+  /api/v1/books/pageable:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a paginated list using pagination parameters.
+      parameters:
+      - description: 'Page number (default: 1)'
+        in: query
+        name: page
+        type: integer
+      - description: 'Number of items per page (default: 10)'
+        in: query
+        name: size
+        type: integer
+      - description: Sort order, e.g., 'name,asc'
+        in: query
+        name: sort
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Paginated list of Books
+          schema:
+            $ref: '#/definitions/books.booksResponseList'
+        "400":
+          description: Bad Request (Invalid pagination parameters)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Get paginated list
+      tags:
+      - books
+  /api/v1/bookstore-sales-orders:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a list without pagination.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of all items
+          schema:
+            $ref: '#/definitions/orders.bookstoreSalesOrdersResponseList'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Get all
+      tags:
+      - bookstore-sales-orders
+    post:
+      consumes:
+      - application/json
+      description: Create new item handler
+      parameters:
+      - description: Create input
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/orders.bookstoreSalesOrdersCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/orders.bookstoreSalesOrdersResponse'
+        "400":
+          description: Bad Request (Invalid request payload)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Create new item
+      tags:
+      - bookstore-sales-orders
+  /api/v1/bookstore-sales-orders/{order_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes an item by its ID
+      parameters:
+      - description: BookstoreSalesOrders ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content (Successfully deleted)
+        "400":
+          description: Bad Request (Invalid ID format)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Delete existing item
+      tags:
+      - bookstore-sales-orders
+    get:
+      description: Retrieves the details based on the provided ID in the request path.
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Single item
+          schema:
+            $ref: '#/definitions/orders.bookstoreSalesOrdersResponse'
+        "400":
+          description: Bad Request (Invalid ID format)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Get item by ID
+      tags:
+      - bookstore-sales-orders
+    put:
+      consumes:
+      - application/json
+      description: Updates an item by its ID
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update input
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/orders.bookstoreSalesOrdersUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/orders.bookstoreSalesOrdersResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Update existing item
+      tags:
+      - bookstore-sales-orders
+  /api/v1/bookstore-sales-orders/pageable:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a paginated list using pagination parameters.
+      parameters:
+      - description: 'Page number (default: 1)'
+        in: query
+        name: page
+        type: integer
+      - description: 'Number of items per page (default: 10)'
+        in: query
+        name: size
+        type: integer
+      - description: Sort order, e.g., 'name,asc'
+        in: query
+        name: sort
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Paginated list of BookstoreSalesOrders
+          schema:
+            $ref: '#/definitions/orders.bookstoreSalesOrdersResponseList'
+        "400":
+          description: Bad Request (Invalid pagination parameters)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Get paginated list
+      tags:
+      - bookstore-sales-orders
   /api/v1/categories:
     get:
       consumes:
@@ -358,12 +2075,8 @@ paths:
           description: List of all items
           schema:
             $ref: '#/definitions/categories.categoriesResponseList'
-        "400":
-          description: Bad Request (Service failure)
-          schema:
-            $ref: '#/definitions/httputils.ErrorResponse'
         "500":
-          description: Internal Server Error (Data processing failure)
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
       summary: Get all
@@ -418,8 +2131,12 @@ paths:
           description: Bad Request (Invalid ID format)
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
         "500":
-          description: Internal Server Error (Deletion failed)
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
       summary: Delete existing item
@@ -444,8 +2161,12 @@ paths:
           description: Bad Request (Invalid ID format)
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
         "500":
-          description: Internal Server Error (Deletion failed)
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
       summary: Get item by ID
@@ -470,12 +2191,16 @@ paths:
       produces:
       - application/json
       responses:
-        "201":
-          description: Created
+        "200":
+          description: OK
           schema:
             $ref: '#/definitions/categories.categoriesResponse'
         "400":
           description: Bad Request
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "404":
+          description: Not Found
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
         "500":
@@ -511,16 +2236,649 @@ paths:
           schema:
             $ref: '#/definitions/categories.categoriesResponseList'
         "400":
-          description: Bad Request (Invalid pagination parameters or service failure)
+          description: Bad Request (Invalid pagination parameters)
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
         "500":
-          description: Internal Server Error (Data processing failure)
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
       summary: Get paginated list
       tags:
       - categories
+  /api/v1/customers:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a list without pagination.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of all items
+          schema:
+            $ref: '#/definitions/customers.customersResponseList'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Get all
+      tags:
+      - customers
+    post:
+      consumes:
+      - application/json
+      description: Create new item handler
+      parameters:
+      - description: Create input
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/customers.customersCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/customers.customersResponse'
+        "400":
+          description: Bad Request (Invalid request payload)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Create new item
+      tags:
+      - customers
+  /api/v1/customers/{customer_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes an item by its ID
+      parameters:
+      - description: Customers ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content (Successfully deleted)
+        "400":
+          description: Bad Request (Invalid ID format)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Delete existing item
+      tags:
+      - customers
+    get:
+      description: Retrieves the details based on the provided ID in the request path.
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Single item
+          schema:
+            $ref: '#/definitions/customers.customersResponse'
+        "400":
+          description: Bad Request (Invalid ID format)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Get item by ID
+      tags:
+      - customers
+    put:
+      consumes:
+      - application/json
+      description: Updates an item by its ID
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update input
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/customers.customersUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/customers.customersResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Update existing item
+      tags:
+      - customers
+  /api/v1/customers/pageable:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a paginated list using pagination parameters.
+      parameters:
+      - description: 'Page number (default: 1)'
+        in: query
+        name: page
+        type: integer
+      - description: 'Number of items per page (default: 10)'
+        in: query
+        name: size
+        type: integer
+      - description: Sort order, e.g., 'name,asc'
+        in: query
+        name: sort
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Paginated list of Customers
+          schema:
+            $ref: '#/definitions/customers.customersResponseList'
+        "400":
+          description: Bad Request (Invalid pagination parameters)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Get paginated list
+      tags:
+      - customers
+  /api/v1/discount-codes:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a list without pagination.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of all items
+          schema:
+            $ref: '#/definitions/discount_codes.discountCodesResponseList'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Get all
+      tags:
+      - discount-codes
+    post:
+      consumes:
+      - application/json
+      description: Create new item handler
+      parameters:
+      - description: Create input
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/discount_codes.discountCodesCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/discount_codes.discountCodesResponse'
+        "400":
+          description: Bad Request (Invalid request payload)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Create new item
+      tags:
+      - discount-codes
+  /api/v1/discount-codes/{code}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes an item by its ID
+      parameters:
+      - description: DiscountCodes ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content (Successfully deleted)
+        "400":
+          description: Bad Request (Invalid ID format)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Delete existing item
+      tags:
+      - discount-codes
+    get:
+      description: Retrieves the details based on the provided ID in the request path.
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Single item
+          schema:
+            $ref: '#/definitions/discount_codes.discountCodesResponse'
+        "400":
+          description: Bad Request (Invalid ID format)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Get item by ID
+      tags:
+      - discount-codes
+    put:
+      consumes:
+      - application/json
+      description: Updates an item by its ID
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update input
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/discount_codes.discountCodesUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/discount_codes.discountCodesResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Update existing item
+      tags:
+      - discount-codes
+  /api/v1/discount-codes/pageable:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a paginated list using pagination parameters.
+      parameters:
+      - description: 'Page number (default: 1)'
+        in: query
+        name: page
+        type: integer
+      - description: 'Number of items per page (default: 10)'
+        in: query
+        name: size
+        type: integer
+      - description: Sort order, e.g., 'name,asc'
+        in: query
+        name: sort
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Paginated list of DiscountCodes
+          schema:
+            $ref: '#/definitions/discount_codes.discountCodesResponseList'
+        "400":
+          description: Bad Request (Invalid pagination parameters)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Get paginated list
+      tags:
+      - discount-codes
+  /api/v1/import-batches:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a list without pagination.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of all items
+          schema:
+            $ref: '#/definitions/import_batches.importBatchesResponseList'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Get all
+      tags:
+      - import-batches
+    post:
+      consumes:
+      - application/json
+      description: Create new item handler
+      parameters:
+      - description: Create input
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/import_batches.importBatchesCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/import_batches.importBatchesResponse'
+        "400":
+          description: Bad Request (Invalid request payload)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Create new item
+      tags:
+      - import-batches
+  /api/v1/import-batches/{source_name}/{batch_no}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes an item by its ID
+      parameters:
+      - description: ImportBatches ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content (Successfully deleted)
+        "400":
+          description: Bad Request (Invalid ID format)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Delete existing item
+      tags:
+      - import-batches
+    get:
+      description: Retrieves the details based on the provided ID in the request path.
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Single item
+          schema:
+            $ref: '#/definitions/import_batches.importBatchesResponse'
+        "400":
+          description: Bad Request (Invalid ID format)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Get item by ID
+      tags:
+      - import-batches
+    put:
+      consumes:
+      - application/json
+      description: Updates an item by its ID
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update input
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/import_batches.importBatchesUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/import_batches.importBatchesResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Update existing item
+      tags:
+      - import-batches
+  /api/v1/import-batches/pageable:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a paginated list using pagination parameters.
+      parameters:
+      - description: 'Page number (default: 1)'
+        in: query
+        name: page
+        type: integer
+      - description: 'Number of items per page (default: 10)'
+        in: query
+        name: size
+        type: integer
+      - description: Sort order, e.g., 'name,asc'
+        in: query
+        name: sort
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Paginated list of ImportBatches
+          schema:
+            $ref: '#/definitions/import_batches.importBatchesResponseList'
+        "400":
+          description: Bad Request (Invalid pagination parameters)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Get paginated list
+      tags:
+      - import-batches
+  /api/v1/import-errors:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a list without pagination.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of all items
+          schema:
+            $ref: '#/definitions/import_errors.importErrorsResponseList'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Get all
+      tags:
+      - import-errors
+    post:
+      consumes:
+      - application/json
+      description: Create new item handler
+      parameters:
+      - description: Create input
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/import_errors.importErrorsCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/import_errors.importErrorsResponse'
+        "400":
+          description: Bad Request (Invalid request payload)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Create new item
+      tags:
+      - import-errors
+  /api/v1/import-errors/pageable:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a paginated list using pagination parameters.
+      parameters:
+      - description: 'Page number (default: 1)'
+        in: query
+        name: page
+        type: integer
+      - description: 'Number of items per page (default: 10)'
+        in: query
+        name: size
+        type: integer
+      - description: Sort order, e.g., 'name,asc'
+        in: query
+        name: sort
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Paginated list of ImportErrors
+          schema:
+            $ref: '#/definitions/import_errors.importErrorsResponseList'
+        "400":
+          description: Bad Request (Invalid pagination parameters)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Get paginated list
+      tags:
+      - import-errors
   /api/v1/order-items:
     get:
       consumes:
@@ -533,12 +2891,8 @@ paths:
           description: List of all items
           schema:
             $ref: '#/definitions/order_items.orderItemsResponseList'
-        "400":
-          description: Bad Request (Service failure)
-          schema:
-            $ref: '#/definitions/httputils.ErrorResponse'
         "500":
-          description: Internal Server Error (Data processing failure)
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
       summary: Get all
@@ -593,8 +2947,12 @@ paths:
           description: Bad Request (Invalid ID format)
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
         "500":
-          description: Internal Server Error (Deletion failed)
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
       summary: Delete existing item
@@ -619,8 +2977,12 @@ paths:
           description: Bad Request (Invalid ID format)
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
         "500":
-          description: Internal Server Error (Deletion failed)
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
       summary: Get item by ID
@@ -645,12 +3007,16 @@ paths:
       produces:
       - application/json
       responses:
-        "201":
-          description: Created
+        "200":
+          description: OK
           schema:
             $ref: '#/definitions/order_items.orderItemsResponse'
         "400":
           description: Bad Request
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "404":
+          description: Not Found
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
         "500":
@@ -686,17 +3052,17 @@ paths:
           schema:
             $ref: '#/definitions/order_items.orderItemsResponseList'
         "400":
-          description: Bad Request (Invalid pagination parameters or service failure)
+          description: Bad Request (Invalid pagination parameters)
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
         "500":
-          description: Internal Server Error (Data processing failure)
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
       summary: Get paginated list
       tags:
       - order-items
-  /api/v1/orders:
+  /api/v1/order-lines:
     get:
       consumes:
       - application/json
@@ -707,18 +3073,14 @@ paths:
         "200":
           description: List of all items
           schema:
-            $ref: '#/definitions/orders.ordersResponseList'
-        "400":
-          description: Bad Request (Service failure)
-          schema:
-            $ref: '#/definitions/httputils.ErrorResponse'
+            $ref: '#/definitions/order_lines.orderLinesResponseList'
         "500":
-          description: Internal Server Error (Data processing failure)
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
       summary: Get all
       tags:
-      - orders
+      - order-lines
     post:
       consumes:
       - application/json
@@ -729,14 +3091,14 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/orders.ordersCreateRequest'
+          $ref: '#/definitions/order_lines.orderLinesCreateRequest'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/orders.ordersResponse'
+            $ref: '#/definitions/order_lines.orderLinesResponse'
         "400":
           description: Bad Request (Invalid request payload)
           schema:
@@ -747,14 +3109,14 @@ paths:
             $ref: '#/definitions/httputils.ErrorResponse'
       summary: Create new item
       tags:
-      - orders
-  /api/v1/orders/{record_id}:
+      - order-lines
+  /api/v1/order-lines/{order_id}/{line_no}:
     delete:
       consumes:
       - application/json
       description: Deletes an item by its ID
       parameters:
-      - description: Orders ID
+      - description: OrderLines ID
         in: path
         name: id
         required: true
@@ -768,13 +3130,17 @@ paths:
           description: Bad Request (Invalid ID format)
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
         "500":
-          description: Internal Server Error (Deletion failed)
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
       summary: Delete existing item
       tags:
-      - orders
+      - order-lines
     get:
       description: Retrieves the details based on the provided ID in the request path.
       parameters:
@@ -789,18 +3155,22 @@ paths:
         "200":
           description: Single item
           schema:
-            $ref: '#/definitions/orders.ordersResponse'
+            $ref: '#/definitions/order_lines.orderLinesResponse'
         "400":
           description: Bad Request (Invalid ID format)
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
         "500":
-          description: Internal Server Error (Deletion failed)
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
       summary: Get item by ID
       tags:
-      - orders
+      - order-lines
     put:
       consumes:
       - application/json
@@ -816,16 +3186,20 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/orders.ordersUpdateRequest'
+          $ref: '#/definitions/order_lines.orderLinesUpdateRequest'
       produces:
       - application/json
       responses:
-        "201":
-          description: Created
+        "200":
+          description: OK
           schema:
-            $ref: '#/definitions/orders.ordersResponse'
+            $ref: '#/definitions/order_lines.orderLinesResponse'
         "400":
           description: Bad Request
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "404":
+          description: Not Found
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
         "500":
@@ -834,8 +3208,8 @@ paths:
             $ref: '#/definitions/httputils.ErrorResponse'
       summary: Update existing item
       tags:
-      - orders
-  /api/v1/orders/pageable:
+      - order-lines
+  /api/v1/order-lines/pageable:
     get:
       consumes:
       - application/json
@@ -857,20 +3231,20 @@ paths:
       - application/json
       responses:
         "200":
-          description: Paginated list of Orders
+          description: Paginated list of OrderLines
           schema:
-            $ref: '#/definitions/orders.ordersResponseList'
+            $ref: '#/definitions/order_lines.orderLinesResponseList'
         "400":
-          description: Bad Request (Invalid pagination parameters or service failure)
+          description: Bad Request (Invalid pagination parameters)
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
         "500":
-          description: Internal Server Error (Data processing failure)
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
       summary: Get paginated list
       tags:
-      - orders
+      - order-lines
   /api/v1/products:
     get:
       consumes:
@@ -883,12 +3257,8 @@ paths:
           description: List of all items
           schema:
             $ref: '#/definitions/products.productsResponseList'
-        "400":
-          description: Bad Request (Service failure)
-          schema:
-            $ref: '#/definitions/httputils.ErrorResponse'
         "500":
-          description: Internal Server Error (Data processing failure)
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
       summary: Get all
@@ -943,8 +3313,12 @@ paths:
           description: Bad Request (Invalid ID format)
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
         "500":
-          description: Internal Server Error (Deletion failed)
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
       summary: Delete existing item
@@ -969,8 +3343,12 @@ paths:
           description: Bad Request (Invalid ID format)
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
         "500":
-          description: Internal Server Error (Deletion failed)
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
       summary: Get item by ID
@@ -995,12 +3373,16 @@ paths:
       produces:
       - application/json
       responses:
-        "201":
-          description: Created
+        "200":
+          description: OK
           schema:
             $ref: '#/definitions/products.productsResponse'
         "400":
           description: Bad Request
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "404":
+          description: Not Found
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
         "500":
@@ -1036,16 +3418,649 @@ paths:
           schema:
             $ref: '#/definitions/products.productsResponseList'
         "400":
-          description: Bad Request (Invalid pagination parameters or service failure)
+          description: Bad Request (Invalid pagination parameters)
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
         "500":
-          description: Internal Server Error (Data processing failure)
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
       summary: Get paginated list
       tags:
       - products
+  /api/v1/public-orders:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a list without pagination.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of all items
+          schema:
+            $ref: '#/definitions/orders.publicOrdersResponseList'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Get all
+      tags:
+      - public-orders
+    post:
+      consumes:
+      - application/json
+      description: Create new item handler
+      parameters:
+      - description: Create input
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/orders.publicOrdersCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/orders.publicOrdersResponse'
+        "400":
+          description: Bad Request (Invalid request payload)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Create new item
+      tags:
+      - public-orders
+  /api/v1/public-orders/{record_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes an item by its ID
+      parameters:
+      - description: PublicOrders ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content (Successfully deleted)
+        "400":
+          description: Bad Request (Invalid ID format)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Delete existing item
+      tags:
+      - public-orders
+    get:
+      description: Retrieves the details based on the provided ID in the request path.
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Single item
+          schema:
+            $ref: '#/definitions/orders.publicOrdersResponse'
+        "400":
+          description: Bad Request (Invalid ID format)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Get item by ID
+      tags:
+      - public-orders
+    put:
+      consumes:
+      - application/json
+      description: Updates an item by its ID
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update input
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/orders.publicOrdersUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/orders.publicOrdersResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Update existing item
+      tags:
+      - public-orders
+  /api/v1/public-orders/pageable:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a paginated list using pagination parameters.
+      parameters:
+      - description: 'Page number (default: 1)'
+        in: query
+        name: page
+        type: integer
+      - description: 'Number of items per page (default: 10)'
+        in: query
+        name: size
+        type: integer
+      - description: Sort order, e.g., 'name,asc'
+        in: query
+        name: sort
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Paginated list of PublicOrders
+          schema:
+            $ref: '#/definitions/orders.publicOrdersResponseList'
+        "400":
+          description: Bad Request (Invalid pagination parameters)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Get paginated list
+      tags:
+      - public-orders
+  /api/v1/publishers:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a list without pagination.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of all items
+          schema:
+            $ref: '#/definitions/publishers.publishersResponseList'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Get all
+      tags:
+      - publishers
+    post:
+      consumes:
+      - application/json
+      description: Create new item handler
+      parameters:
+      - description: Create input
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/publishers.publishersCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/publishers.publishersResponse'
+        "400":
+          description: Bad Request (Invalid request payload)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Create new item
+      tags:
+      - publishers
+  /api/v1/publishers/{code}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes an item by its ID
+      parameters:
+      - description: Publishers ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content (Successfully deleted)
+        "400":
+          description: Bad Request (Invalid ID format)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Delete existing item
+      tags:
+      - publishers
+    get:
+      description: Retrieves the details based on the provided ID in the request path.
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Single item
+          schema:
+            $ref: '#/definitions/publishers.publishersResponse'
+        "400":
+          description: Bad Request (Invalid ID format)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Get item by ID
+      tags:
+      - publishers
+    put:
+      consumes:
+      - application/json
+      description: Updates an item by its ID
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update input
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/publishers.publishersUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/publishers.publishersResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Update existing item
+      tags:
+      - publishers
+  /api/v1/publishers/pageable:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a paginated list using pagination parameters.
+      parameters:
+      - description: 'Page number (default: 1)'
+        in: query
+        name: page
+        type: integer
+      - description: 'Number of items per page (default: 10)'
+        in: query
+        name: size
+        type: integer
+      - description: Sort order, e.g., 'name,asc'
+        in: query
+        name: sort
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Paginated list of Publishers
+          schema:
+            $ref: '#/definitions/publishers.publishersResponseList'
+        "400":
+          description: Bad Request (Invalid pagination parameters)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Get paginated list
+      tags:
+      - publishers
+  /api/v1/stock-events:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a list without pagination.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of all items
+          schema:
+            $ref: '#/definitions/stock_events.stockEventsResponseList'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Get all
+      tags:
+      - stock-events
+    post:
+      consumes:
+      - application/json
+      description: Create new item handler
+      parameters:
+      - description: Create input
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/stock_events.stockEventsCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/stock_events.stockEventsResponse'
+        "400":
+          description: Bad Request (Invalid request payload)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Create new item
+      tags:
+      - stock-events
+  /api/v1/stock-events/pageable:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a paginated list using pagination parameters.
+      parameters:
+      - description: 'Page number (default: 1)'
+        in: query
+        name: page
+        type: integer
+      - description: 'Number of items per page (default: 10)'
+        in: query
+        name: size
+        type: integer
+      - description: Sort order, e.g., 'name,asc'
+        in: query
+        name: sort
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Paginated list of StockEvents
+          schema:
+            $ref: '#/definitions/stock_events.stockEventsResponseList'
+        "400":
+          description: Bad Request (Invalid pagination parameters)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Get paginated list
+      tags:
+      - stock-events
+  /api/v1/stock-levels:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a list without pagination.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of all items
+          schema:
+            $ref: '#/definitions/stock_levels.stockLevelsResponseList'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Get all
+      tags:
+      - stock-levels
+    post:
+      consumes:
+      - application/json
+      description: Create new item handler
+      parameters:
+      - description: Create input
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/stock_levels.stockLevelsCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/stock_levels.stockLevelsResponse'
+        "400":
+          description: Bad Request (Invalid request payload)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Create new item
+      tags:
+      - stock-levels
+  /api/v1/stock-levels/{warehouse_code}/{book_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes an item by its ID
+      parameters:
+      - description: StockLevels ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content (Successfully deleted)
+        "400":
+          description: Bad Request (Invalid ID format)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Delete existing item
+      tags:
+      - stock-levels
+    get:
+      description: Retrieves the details based on the provided ID in the request path.
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Single item
+          schema:
+            $ref: '#/definitions/stock_levels.stockLevelsResponse'
+        "400":
+          description: Bad Request (Invalid ID format)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Get item by ID
+      tags:
+      - stock-levels
+    put:
+      consumes:
+      - application/json
+      description: Updates an item by its ID
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update input
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/stock_levels.stockLevelsUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/stock_levels.stockLevelsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Update existing item
+      tags:
+      - stock-levels
+  /api/v1/stock-levels/pageable:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a paginated list using pagination parameters.
+      parameters:
+      - description: 'Page number (default: 1)'
+        in: query
+        name: page
+        type: integer
+      - description: 'Number of items per page (default: 10)'
+        in: query
+        name: size
+        type: integer
+      - description: Sort order, e.g., 'name,asc'
+        in: query
+        name: sort
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Paginated list of StockLevels
+          schema:
+            $ref: '#/definitions/stock_levels.stockLevelsResponseList'
+        "400":
+          description: Bad Request (Invalid pagination parameters)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Get paginated list
+      tags:
+      - stock-levels
   /api/v1/users:
     get:
       consumes:
@@ -1058,12 +4073,8 @@ paths:
           description: List of all items
           schema:
             $ref: '#/definitions/users.usersResponseList'
-        "400":
-          description: Bad Request (Service failure)
-          schema:
-            $ref: '#/definitions/httputils.ErrorResponse'
         "500":
-          description: Internal Server Error (Data processing failure)
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
       summary: Get all
@@ -1118,8 +4129,12 @@ paths:
           description: Bad Request (Invalid ID format)
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
         "500":
-          description: Internal Server Error (Deletion failed)
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
       summary: Delete existing item
@@ -1144,8 +4159,12 @@ paths:
           description: Bad Request (Invalid ID format)
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
         "500":
-          description: Internal Server Error (Deletion failed)
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
       summary: Get item by ID
@@ -1170,12 +4189,16 @@ paths:
       produces:
       - application/json
       responses:
-        "201":
-          description: Created
+        "200":
+          description: OK
           schema:
             $ref: '#/definitions/users.usersResponse'
         "400":
           description: Bad Request
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "404":
+          description: Not Found
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
         "500":
@@ -1211,14 +4234,197 @@ paths:
           schema:
             $ref: '#/definitions/users.usersResponseList'
         "400":
-          description: Bad Request (Invalid pagination parameters or service failure)
+          description: Bad Request (Invalid pagination parameters)
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
         "500":
-          description: Internal Server Error (Data processing failure)
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/httputils.ErrorResponse'
       summary: Get paginated list
       tags:
       - users
+  /api/v1/warehouses:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a list without pagination.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of all items
+          schema:
+            $ref: '#/definitions/warehouses.warehousesResponseList'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Get all
+      tags:
+      - warehouses
+    post:
+      consumes:
+      - application/json
+      description: Create new item handler
+      parameters:
+      - description: Create input
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/warehouses.warehousesCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/warehouses.warehousesResponse'
+        "400":
+          description: Bad Request (Invalid request payload)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Create new item
+      tags:
+      - warehouses
+  /api/v1/warehouses/{code}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes an item by its ID
+      parameters:
+      - description: Warehouses ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content (Successfully deleted)
+        "400":
+          description: Bad Request (Invalid ID format)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Delete existing item
+      tags:
+      - warehouses
+    get:
+      description: Retrieves the details based on the provided ID in the request path.
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Single item
+          schema:
+            $ref: '#/definitions/warehouses.warehousesResponse'
+        "400":
+          description: Bad Request (Invalid ID format)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Get item by ID
+      tags:
+      - warehouses
+    put:
+      consumes:
+      - application/json
+      description: Updates an item by its ID
+      parameters:
+      - description: Item ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update input
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/warehouses.warehousesUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/warehouses.warehousesResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Update existing item
+      tags:
+      - warehouses
+  /api/v1/warehouses/pageable:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a paginated list using pagination parameters.
+      parameters:
+      - description: 'Page number (default: 1)'
+        in: query
+        name: page
+        type: integer
+      - description: 'Number of items per page (default: 10)'
+        in: query
+        name: size
+        type: integer
+      - description: Sort order, e.g., 'name,asc'
+        in: query
+        name: sort
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Paginated list of Warehouses
+          schema:
+            $ref: '#/definitions/warehouses.warehousesResponseList'
+        "400":
+          description: Bad Request (Invalid pagination parameters)
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputils.ErrorResponse'
+      summary: Get paginated list
+      tags:
+      - warehouses
 swagger: "2.0"

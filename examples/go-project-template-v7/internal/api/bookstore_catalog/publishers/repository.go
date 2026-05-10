@@ -13,7 +13,7 @@ import (
 
 type Repository interface {
 	Save(ctx context.Context, inputEntity *Publishers) (*Publishers, error)
-	UpdateByID(ctx context.Context, inputEntity *Publishers, pkCode string) (*Publishers, error)
+	UpdateByID(ctx context.Context, update *UpdateDto, pkCode string) (*Publishers, error)
 	DeleteByID(ctx context.Context, pkCode string) error
 	FindByID(ctx context.Context, pkCode string) (*Publishers, error)
 	FindAll(ctx context.Context) ([]Publishers, error)
@@ -71,17 +71,21 @@ func (r *repo) Save(ctx context.Context, inputEntity *Publishers) (*Publishers, 
 	return scannedEntity, nil
 }
 
-func (r *repo) UpdateByID(ctx context.Context, inputEntity *Publishers, pkCode string) (*Publishers, error) {
+func (r *repo) UpdateByID(ctx context.Context, update *UpdateDto, pkCode string) (*Publishers, error) {
 	tag := "repository.UpdateByID"
+
+	if update == nil {
+		return nil, fmt.Errorf("%s: update is nil", tag)
+	}
 
 	query := `		
 		update bookstore_catalog.publishers
 		set
-			name         = coalesce(nullif($2, ''), name),
-			country_code = coalesce(nullif($3, ''), country_code),
-			website      = coalesce(nullif($4, ''), website),
-			founded_on   = coalesce(nullif($5, '0001-01-01 00:00:00'::date), founded_on),
-			active       = coalesce(nullif($6, 'false'::bool), active)
+			name         = coalesce($2, name),
+			country_code = coalesce($3, country_code),
+			website      = coalesce($4, website),
+			founded_on   = coalesce($5, founded_on),
+			active       = coalesce($6, active)
 		where code = $1
 		returning
 			code,
@@ -95,11 +99,11 @@ func (r *repo) UpdateByID(ctx context.Context, inputEntity *Publishers, pkCode s
 	row := r.db.Pool.QueryRow(
 		ctx, query,
 		pkCode,
-		inputEntity.Name,
-		inputEntity.CountryCode,
-		inputEntity.Website,
-		inputEntity.FoundedOn,
-		inputEntity.Active,
+		update.Name,
+		update.CountryCode,
+		update.Website,
+		update.FoundedOn,
+		update.Active,
 	)
 
 	scannedEntity, err := scanFullRow(row)

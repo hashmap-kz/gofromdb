@@ -21,8 +21,8 @@ type CreateDto struct {
 }
 
 type UpdateDto struct {
-	OrderID   int
-	ProductID int
-	Quantity  string
-	Price     string
+	OrderID   *int
+	ProductID *int
+	Quantity  *string
+	Price     *string
 }
