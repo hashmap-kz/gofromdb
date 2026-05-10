@@ -249,6 +249,11 @@ select ti.relpath,
            end                                                       as go_type,
        tmt.column3                                                   as nullif_rhs,
        -- A column is insertable if it is neither an 'IDENTITY' nor 'GENERATED', nor one of the 'SERIAL' types.
+       -- NOTE:
+       -- Some columns are technically insertable, but have default values and should not be
+       -- user-managed.
+       -- These columns require a dedicated config file so they can be excluded from
+       -- insert/update methods while still being preserved in get/list methods.
        (ti.attidentity = ''
            and ti.attgenerated = ''
            and (not coalesce(def.attdefexpr, '') ilike 'nextval(%')) as is_insertable
