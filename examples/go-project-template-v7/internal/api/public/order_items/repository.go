@@ -13,7 +13,7 @@ import (
 
 type Repository interface {
 	Save(ctx context.Context, inputEntity *OrderItems) (*OrderItems, error)
-	UpdateByID(ctx context.Context, inputEntity *OrderItems, pkRecordID int) (*OrderItems, error)
+	UpdateByID(ctx context.Context, update *UpdateDto, pkRecordID int) (*OrderItems, error)
 	DeleteByID(ctx context.Context, pkRecordID int) error
 	FindByID(ctx context.Context, pkRecordID int) (*OrderItems, error)
 	FindAll(ctx context.Context) ([]OrderItems, error)
@@ -69,16 +69,20 @@ func (r *repo) Save(ctx context.Context, inputEntity *OrderItems) (*OrderItems, 
 	return scannedEntity, nil
 }
 
-func (r *repo) UpdateByID(ctx context.Context, inputEntity *OrderItems, pkRecordID int) (*OrderItems, error) {
+func (r *repo) UpdateByID(ctx context.Context, update *UpdateDto, pkRecordID int) (*OrderItems, error) {
 	tag := "repository.UpdateByID"
+
+	if update == nil {
+		return nil, fmt.Errorf("%s: update is nil", tag)
+	}
 
 	query := `		
 		update public.order_items
 		set
-			order_id   = coalesce(nullif($2, 0::int4), order_id),
-			product_id = coalesce(nullif($3, 0::int4), product_id),
-			quantity   = coalesce(nullif($4, 0::numeric), quantity),
-			price      = coalesce(nullif($5, 0::numeric), price)
+			order_id   = coalesce($2, order_id),
+			product_id = coalesce($3, product_id),
+			quantity   = coalesce($4, quantity),
+			price      = coalesce($5, price)
 		where record_id = $1
 		returning
 			record_id,
@@ -94,10 +98,10 @@ func (r *repo) UpdateByID(ctx context.Context, inputEntity *OrderItems, pkRecord
 	row := r.db.Pool.QueryRow(
 		ctx, query,
 		pkRecordID,
-		inputEntity.OrderID,
-		inputEntity.ProductID,
-		inputEntity.Quantity,
-		inputEntity.Price,
+		update.OrderID,
+		update.ProductID,
+		update.Quantity,
+		update.Price,
 	)
 
 	scannedEntity, err := scanFullRow(row)

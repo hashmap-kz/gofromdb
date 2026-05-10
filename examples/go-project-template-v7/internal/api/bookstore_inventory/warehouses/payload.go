@@ -17,10 +17,10 @@ type warehousesCreateRequest struct {
 // warehousesUpdateRequest
 // Warehouses. Natural text primary key.
 type warehousesUpdateRequest struct {
-	Name     string `json:"name"`
-	Address  string `json:"address"`
-	Timezone string `json:"timezone"`
-	Active   bool   `json:"active"`
+	Name     *string `json:"name"`
+	Address  *string `json:"address"`
+	Timezone *string `json:"timezone"`
+	Active   *bool   `json:"active"`
 }
 
 // warehousesResponse

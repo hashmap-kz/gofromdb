@@ -21,11 +21,11 @@ type publishersCreateRequest struct {
 // publishersUpdateRequest
 // Book publishers. Uses a natural text primary key.
 type publishersUpdateRequest struct {
-	Name        string     `json:"name"`
-	CountryCode string     `json:"country_code"`
+	Name        *string    `json:"name"`
+	CountryCode *string    `json:"country_code"`
 	Website     *string    `json:"website"`
 	FoundedOn   *time.Time `json:"founded_on"`
-	Active      bool       `json:"active"`
+	Active      *bool      `json:"active"`
 }
 
 // publishersResponse

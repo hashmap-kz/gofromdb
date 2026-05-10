@@ -19,10 +19,10 @@ type orderLinesCreateRequest struct {
 // orderLinesUpdateRequest
 // Order lines. Tests composite primary key order: order_id, line_no.
 type orderLinesUpdateRequest struct {
-	BookID         int64   `json:"book_id"`
-	Quantity       int16   `json:"quantity"`
-	UnitPrice      string  `json:"unit_price"`
-	DiscountAmount string  `json:"discount_amount"`
+	BookID         *int64  `json:"book_id"`
+	Quantity       *int16  `json:"quantity"`
+	UnitPrice      *string `json:"unit_price"`
+	DiscountAmount *string `json:"discount_amount"`
 	Note           *string `json:"note"`
 }
 

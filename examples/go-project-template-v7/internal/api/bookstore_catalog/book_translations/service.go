@@ -36,11 +36,11 @@ func (s *svc) Save(ctx context.Context, input *CreateDto) (*Dto, error) {
 }
 
 func (s *svc) UpdateByID(ctx context.Context, input *UpdateDto, pkBookID int64, pkLanguageCode string) (*Dto, error) {
-	updatedResult, err := s.repo.UpdateByID(ctx, fromUpdateDtoToEntity(input), pkBookID, pkLanguageCode)
+	updated, err := s.repo.UpdateByID(ctx, input, pkBookID, pkLanguageCode)
 	if err != nil {
 		return nil, err
 	}
-	result := fromEntityToDto(updatedResult)
+	result := fromEntityToDto(updated)
 	return &result, nil
 }
 
@@ -79,14 +79,6 @@ func fromCreateDtoToEntity(input *CreateDto) *BookTranslations {
 	return &BookTranslations{
 		BookID:          input.BookID,
 		LanguageCode:    input.LanguageCode,
-		TranslatedTitle: input.TranslatedTitle,
-		TranslatedBy:    input.TranslatedBy,
-		ReleasedOn:      input.ReleasedOn,
-	}
-}
-
-func fromUpdateDtoToEntity(input *UpdateDto) *BookTranslations {
-	return &BookTranslations{
 		TranslatedTitle: input.TranslatedTitle,
 		TranslatedBy:    input.TranslatedBy,
 		ReleasedOn:      input.ReleasedOn,

@@ -13,7 +13,7 @@ import (
 
 type Repository interface {
 	Save(ctx context.Context, inputEntity *DiscountCodes) (*DiscountCodes, error)
-	UpdateByID(ctx context.Context, inputEntity *DiscountCodes, pkCode string) (*DiscountCodes, error)
+	UpdateByID(ctx context.Context, update *UpdateDto, pkCode string) (*DiscountCodes, error)
 	DeleteByID(ctx context.Context, pkCode string) error
 	FindByID(ctx context.Context, pkCode string) (*DiscountCodes, error)
 	FindAll(ctx context.Context) ([]DiscountCodes, error)
@@ -71,17 +71,21 @@ func (r *repo) Save(ctx context.Context, inputEntity *DiscountCodes) (*DiscountC
 	return scannedEntity, nil
 }
 
-func (r *repo) UpdateByID(ctx context.Context, inputEntity *DiscountCodes, pkCode string) (*DiscountCodes, error) {
+func (r *repo) UpdateByID(ctx context.Context, update *UpdateDto, pkCode string) (*DiscountCodes, error) {
 	tag := "repository.UpdateByID"
+
+	if update == nil {
+		return nil, fmt.Errorf("%s: update is nil", tag)
+	}
 
 	query := `		
 		update bookstore_sales.discount_codes
 		set
-			description  = coalesce(nullif($2, ''), description),
-			percent_off  = coalesce(nullif($3, 0::numeric), percent_off),
-			valid_period = coalesce(nullif($4, 'empty'::daterange), valid_period),
-			max_uses     = coalesce(nullif($5, 0::int4), max_uses),
-			active       = coalesce(nullif($6, 'false'::bool), active)
+			description  = coalesce($2, description),
+			percent_off  = coalesce($3, percent_off),
+			valid_period = coalesce($4, valid_period),
+			max_uses     = coalesce($5, max_uses),
+			active       = coalesce($6, active)
 		where code = $1
 		returning
 			code,
@@ -95,11 +99,11 @@ func (r *repo) UpdateByID(ctx context.Context, inputEntity *DiscountCodes, pkCod
 	row := r.db.Pool.QueryRow(
 		ctx, query,
 		pkCode,
-		inputEntity.Description,
-		inputEntity.PercentOff,
-		inputEntity.ValidPeriod,
-		inputEntity.MaxUses,
-		inputEntity.Active,
+		update.Description,
+		update.PercentOff,
+		update.ValidPeriod,
+		update.MaxUses,
+		update.Active,
 	)
 
 	scannedEntity, err := scanFullRow(row)

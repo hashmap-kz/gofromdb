@@ -17,7 +17,7 @@ type CreateDto struct {
 }
 
 type UpdateDto struct {
-	ContributionOrder int16
-	Role              string
+	ContributionOrder *int16
+	Role              *string
 	Notes             *string
 }

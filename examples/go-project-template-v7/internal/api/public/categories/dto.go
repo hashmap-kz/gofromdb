@@ -24,7 +24,7 @@ type CreateDto struct {
 }
 
 type UpdateDto struct {
-	Name        string
+	Name        *string
 	ParentID    *int
-	ValidPeriod pgtype.Range[time.Time]
+	ValidPeriod *pgtype.Range[time.Time]
 }

@@ -13,7 +13,7 @@ import (
 
 type Repository interface {
 	Save(ctx context.Context, inputEntity *BookstoreSalesOrders) (*BookstoreSalesOrders, error)
-	UpdateByID(ctx context.Context, inputEntity *BookstoreSalesOrders, pkOrderID int64) (*BookstoreSalesOrders, error)
+	UpdateByID(ctx context.Context, update *UpdateDto, pkOrderID int64) (*BookstoreSalesOrders, error)
 	DeleteByID(ctx context.Context, pkOrderID int64) error
 	FindByID(ctx context.Context, pkOrderID int64) (*BookstoreSalesOrders, error)
 	FindAll(ctx context.Context) ([]BookstoreSalesOrders, error)
@@ -72,18 +72,22 @@ func (r *repo) Save(ctx context.Context, inputEntity *BookstoreSalesOrders) (*Bo
 	return scannedEntity, nil
 }
 
-func (r *repo) UpdateByID(ctx context.Context, inputEntity *BookstoreSalesOrders, pkOrderID int64) (*BookstoreSalesOrders, error) {
+func (r *repo) UpdateByID(ctx context.Context, update *UpdateDto, pkOrderID int64) (*BookstoreSalesOrders, error) {
 	tag := "repository.UpdateByID"
+
+	if update == nil {
+		return nil, fmt.Errorf("%s: update is nil", tag)
+	}
 
 	query := `		
 		update bookstore_sales.orders
 		set
-			customer_id  = coalesce(nullif($2, '00000000-0000-0000-0000-000000000000'::uuid), customer_id),
-			status       = coalesce(nullif($3, ''), status),
-			placed_at    = coalesce(nullif($4, '0001-01-01 00:00:00'::timestamptz), placed_at),
-			paid_at      = coalesce(nullif($5, '0001-01-01 00:00:00'::timestamptz), paid_at),
-			cancelled_at = coalesce(nullif($6, '0001-01-01 00:00:00'::timestamptz), cancelled_at),
-			comment      = coalesce(nullif($7, ''), comment)
+			customer_id  = coalesce($2, customer_id),
+			status       = coalesce($3, status),
+			placed_at    = coalesce($4, placed_at),
+			paid_at      = coalesce($5, paid_at),
+			cancelled_at = coalesce($6, cancelled_at),
+			comment      = coalesce($7, comment)
 		where order_id = $1
 		returning
 			order_id,
@@ -98,12 +102,12 @@ func (r *repo) UpdateByID(ctx context.Context, inputEntity *BookstoreSalesOrders
 	row := r.db.Pool.QueryRow(
 		ctx, query,
 		pkOrderID,
-		inputEntity.CustomerID,
-		inputEntity.Status,
-		inputEntity.PlacedAt,
-		inputEntity.PaidAt,
-		inputEntity.CancelledAt,
-		inputEntity.Comment,
+		update.CustomerID,
+		update.Status,
+		update.PlacedAt,
+		update.PaidAt,
+		update.CancelledAt,
+		update.Comment,
 	)
 
 	scannedEntity, err := scanFullRow(row)

@@ -20,11 +20,11 @@ type importBatchesCreateRequest struct {
 // importBatchesUpdateRequest
 // Import batch metadata. Composite natural primary key.
 type importBatchesUpdateRequest struct {
-	StartedAt  time.Time  `json:"started_at"`
+	StartedAt  *time.Time `json:"started_at"`
 	FinishedAt *time.Time `json:"finished_at"`
-	FileName   string     `json:"file_name"`
-	RowCount   int        `json:"row_count"`
-	Metadata   string     `json:"metadata"`
+	FileName   *string    `json:"file_name"`
+	RowCount   *int       `json:"row_count"`
+	Metadata   *string    `json:"metadata"`
 }
 
 // importBatchesResponse

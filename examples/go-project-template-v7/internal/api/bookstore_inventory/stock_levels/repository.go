@@ -13,7 +13,7 @@ import (
 
 type Repository interface {
 	Save(ctx context.Context, inputEntity *StockLevels) (*StockLevels, error)
-	UpdateByID(ctx context.Context, inputEntity *StockLevels, pkWarehouseCode string, pkBookID int64) (*StockLevels, error)
+	UpdateByID(ctx context.Context, update *UpdateDto, pkWarehouseCode string, pkBookID int64) (*StockLevels, error)
 	DeleteByID(ctx context.Context, pkWarehouseCode string, pkBookID int64) error
 	FindByID(ctx context.Context, pkWarehouseCode string, pkBookID int64) (*StockLevels, error)
 	FindAll(ctx context.Context) ([]StockLevels, error)
@@ -71,16 +71,20 @@ func (r *repo) Save(ctx context.Context, inputEntity *StockLevels) (*StockLevels
 	return scannedEntity, nil
 }
 
-func (r *repo) UpdateByID(ctx context.Context, inputEntity *StockLevels, pkWarehouseCode string, pkBookID int64) (*StockLevels, error) {
+func (r *repo) UpdateByID(ctx context.Context, update *UpdateDto, pkWarehouseCode string, pkBookID int64) (*StockLevels, error) {
 	tag := "repository.UpdateByID"
+
+	if update == nil {
+		return nil, fmt.Errorf("%s: update is nil", tag)
+	}
 
 	query := `		
 		update bookstore_inventory.stock_levels
 		set
-			available_qty     = coalesce(nullif($3, 0::int4), available_qty),
-			reserved_qty      = coalesce(nullif($4, 0::int4), reserved_qty),
-			reorder_threshold = coalesce(nullif($5, 0::int4), reorder_threshold),
-			last_counted_at   = coalesce(nullif($6, '0001-01-01 00:00:00'::timestamp), last_counted_at)
+			available_qty     = coalesce($3, available_qty),
+			reserved_qty      = coalesce($4, reserved_qty),
+			reorder_threshold = coalesce($5, reorder_threshold),
+			last_counted_at   = coalesce($6, last_counted_at)
 		where warehouse_code = $1 and book_id = $2
 		returning
 			warehouse_code,
@@ -94,10 +98,10 @@ func (r *repo) UpdateByID(ctx context.Context, inputEntity *StockLevels, pkWareh
 	row := r.db.Pool.QueryRow(
 		ctx, query,
 		pkWarehouseCode, pkBookID,
-		inputEntity.AvailableQty,
-		inputEntity.ReservedQty,
-		inputEntity.ReorderThreshold,
-		inputEntity.LastCountedAt,
+		update.AvailableQty,
+		update.ReservedQty,
+		update.ReorderThreshold,
+		update.LastCountedAt,
 	)
 
 	scannedEntity, err := scanFullRow(row)

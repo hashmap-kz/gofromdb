@@ -13,7 +13,7 @@ import (
 
 type Repository interface {
 	Save(ctx context.Context, inputEntity *OrderLines) (*OrderLines, error)
-	UpdateByID(ctx context.Context, inputEntity *OrderLines, pkOrderID int64, pkLineNo int) (*OrderLines, error)
+	UpdateByID(ctx context.Context, update *UpdateDto, pkOrderID int64, pkLineNo int) (*OrderLines, error)
 	DeleteByID(ctx context.Context, pkOrderID int64, pkLineNo int) error
 	FindByID(ctx context.Context, pkOrderID int64, pkLineNo int) (*OrderLines, error)
 	FindAll(ctx context.Context) ([]OrderLines, error)
@@ -74,17 +74,21 @@ func (r *repo) Save(ctx context.Context, inputEntity *OrderLines) (*OrderLines, 
 	return scannedEntity, nil
 }
 
-func (r *repo) UpdateByID(ctx context.Context, inputEntity *OrderLines, pkOrderID int64, pkLineNo int) (*OrderLines, error) {
+func (r *repo) UpdateByID(ctx context.Context, update *UpdateDto, pkOrderID int64, pkLineNo int) (*OrderLines, error) {
 	tag := "repository.UpdateByID"
+
+	if update == nil {
+		return nil, fmt.Errorf("%s: update is nil", tag)
+	}
 
 	query := `		
 		update bookstore_sales.order_lines
 		set
-			book_id         = coalesce(nullif($3, 0::int8), book_id),
-			quantity        = coalesce(nullif($4, 0::int2), quantity),
-			unit_price      = coalesce(nullif($5, 0::numeric), unit_price),
-			discount_amount = coalesce(nullif($6, 0::numeric), discount_amount),
-			note            = coalesce(nullif($7, ''), note)
+			book_id         = coalesce($3, book_id),
+			quantity        = coalesce($4, quantity),
+			unit_price      = coalesce($5, unit_price),
+			discount_amount = coalesce($6, discount_amount),
+			note            = coalesce($7, note)
 		where order_id = $1 and line_no = $2
 		returning
 			order_id,
@@ -99,11 +103,11 @@ func (r *repo) UpdateByID(ctx context.Context, inputEntity *OrderLines, pkOrderI
 	row := r.db.Pool.QueryRow(
 		ctx, query,
 		pkOrderID, pkLineNo,
-		inputEntity.BookID,
-		inputEntity.Quantity,
-		inputEntity.UnitPrice,
-		inputEntity.DiscountAmount,
-		inputEntity.Note,
+		update.BookID,
+		update.Quantity,
+		update.UnitPrice,
+		update.DiscountAmount,
+		update.Note,
 	)
 
 	scannedEntity, err := scanFullRow(row)

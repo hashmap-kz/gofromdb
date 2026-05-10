@@ -13,7 +13,7 @@ import (
 
 type Repository interface {
 	Save(ctx context.Context, inputEntity *Books) (*Books, error)
-	UpdateByID(ctx context.Context, inputEntity *Books, pkBookID int64) (*Books, error)
+	UpdateByID(ctx context.Context, update *UpdateDto, pkBookID int64) (*Books, error)
 	DeleteByID(ctx context.Context, pkBookID int64) error
 	FindByID(ctx context.Context, pkBookID int64) (*Books, error)
 	FindAll(ctx context.Context) ([]Books, error)
@@ -94,25 +94,29 @@ func (r *repo) Save(ctx context.Context, inputEntity *Books) (*Books, error) {
 	return scannedEntity, nil
 }
 
-func (r *repo) UpdateByID(ctx context.Context, inputEntity *Books, pkBookID int64) (*Books, error) {
+func (r *repo) UpdateByID(ctx context.Context, update *UpdateDto, pkBookID int64) (*Books, error) {
 	tag := "repository.UpdateByID"
+
+	if update == nil {
+		return nil, fmt.Errorf("%s: update is nil", tag)
+	}
 
 	query := `		
 		update bookstore_catalog.books
 		set
-			publisher_code = coalesce(nullif($2, ''), publisher_code),
-			isbn13         = coalesce(nullif($3, ''), isbn13),
-			title          = coalesce(nullif($4, ''), title),
-			subtitle       = coalesce(nullif($5, ''), subtitle),
-			description    = coalesce(nullif($6, ''), description),
-			price          = coalesce(nullif($7, 0::numeric), price),
-			weight_grams   = coalesce(nullif($8, 0::int4), weight_grams),
-			rating         = coalesce(nullif($9, 0::numeric), rating),
-			published_on   = coalesce(nullif($10, '0001-01-01 00:00:00'::date), published_on),
-			tags           = coalesce(nullif($11, '{}'::text[]), tags),
-			attrs          = coalesce(nullif($12, '{}'::jsonb), attrs),
-			cover_image    = coalesce(nullif($13, ''::bytea), cover_image),
-			archived_at    = coalesce(nullif($14, '0001-01-01 00:00:00'::timestamptz), archived_at)
+			publisher_code = coalesce($2, publisher_code),
+			isbn13         = coalesce($3, isbn13),
+			title          = coalesce($4, title),
+			subtitle       = coalesce($5, subtitle),
+			description    = coalesce($6, description),
+			price          = coalesce($7, price),
+			weight_grams   = coalesce($8, weight_grams),
+			rating         = coalesce($9, rating),
+			published_on   = coalesce($10, published_on),
+			tags           = coalesce($11, tags),
+			attrs          = coalesce($12, attrs),
+			cover_image    = coalesce($13, cover_image),
+			archived_at    = coalesce($14, archived_at)
 		where book_id = $1
 		returning
 			book_id,
@@ -135,19 +139,19 @@ func (r *repo) UpdateByID(ctx context.Context, inputEntity *Books, pkBookID int6
 	row := r.db.Pool.QueryRow(
 		ctx, query,
 		pkBookID,
-		inputEntity.PublisherCode,
-		inputEntity.Isbn13,
-		inputEntity.Title,
-		inputEntity.Subtitle,
-		inputEntity.Description,
-		inputEntity.Price,
-		inputEntity.WeightGrams,
-		inputEntity.Rating,
-		inputEntity.PublishedOn,
-		inputEntity.Tags,
-		inputEntity.Attrs,
-		inputEntity.CoverImage,
-		inputEntity.ArchivedAt,
+		update.PublisherCode,
+		update.Isbn13,
+		update.Title,
+		update.Subtitle,
+		update.Description,
+		update.Price,
+		update.WeightGrams,
+		update.Rating,
+		update.PublishedOn,
+		update.Tags,
+		update.Attrs,
+		update.CoverImage,
+		update.ArchivedAt,
 	)
 
 	scannedEntity, err := scanFullRow(row)

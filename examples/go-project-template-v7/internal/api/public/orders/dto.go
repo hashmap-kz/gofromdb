@@ -17,6 +17,6 @@ type CreateDto struct {
 }
 
 type UpdateDto struct {
-	UserID      int
+	UserID      *int
 	Description *string
 }

@@ -15,5 +15,5 @@ type CreateDto struct {
 }
 
 type UpdateDto struct {
-	Email string
+	Email *string
 }

@@ -13,7 +13,7 @@ import (
 
 type Repository interface {
 	Save(ctx context.Context, inputEntity *Categories) (*Categories, error)
-	UpdateByID(ctx context.Context, inputEntity *Categories, pkRecordID int) (*Categories, error)
+	UpdateByID(ctx context.Context, update *UpdateDto, pkRecordID int) (*Categories, error)
 	DeleteByID(ctx context.Context, pkRecordID int) error
 	FindByID(ctx context.Context, pkRecordID int) (*Categories, error)
 	FindAll(ctx context.Context) ([]Categories, error)
@@ -67,15 +67,19 @@ func (r *repo) Save(ctx context.Context, inputEntity *Categories) (*Categories, 
 	return scannedEntity, nil
 }
 
-func (r *repo) UpdateByID(ctx context.Context, inputEntity *Categories, pkRecordID int) (*Categories, error) {
+func (r *repo) UpdateByID(ctx context.Context, update *UpdateDto, pkRecordID int) (*Categories, error) {
 	tag := "repository.UpdateByID"
+
+	if update == nil {
+		return nil, fmt.Errorf("%s: update is nil", tag)
+	}
 
 	query := `		
 		update public.categories
 		set
-			name         = coalesce(nullif($2, ''), name),
-			parent_id    = coalesce(nullif($3, 0::int4), parent_id),
-			valid_period = coalesce(nullif($4, 'empty'::daterange), valid_period)
+			name         = coalesce($2, name),
+			parent_id    = coalesce($3, parent_id),
+			valid_period = coalesce($4, valid_period)
 		where record_id = $1
 		returning
 			record_id,
@@ -91,9 +95,9 @@ func (r *repo) UpdateByID(ctx context.Context, inputEntity *Categories, pkRecord
 	row := r.db.Pool.QueryRow(
 		ctx, query,
 		pkRecordID,
-		inputEntity.Name,
-		inputEntity.ParentID,
-		inputEntity.ValidPeriod,
+		update.Name,
+		update.ParentID,
+		update.ValidPeriod,
 	)
 
 	scannedEntity, err := scanFullRow(row)

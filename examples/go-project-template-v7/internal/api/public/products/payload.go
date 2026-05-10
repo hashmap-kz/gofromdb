@@ -22,10 +22,10 @@ type productsCreateRequest struct {
 // Stores products with a reference to their category.
 type productsUpdateRequest struct {
 	// Foreign key referencing the category to which the product belongs.
-	CategoryID int `json:"category_id"`
+	CategoryID *int `json:"category_id"`
 
 	// Name of the product.
-	Name string `json:"name"`
+	Name *string `json:"name"`
 
 	// Detailed description of the product.
 	Description *string `json:"description"`

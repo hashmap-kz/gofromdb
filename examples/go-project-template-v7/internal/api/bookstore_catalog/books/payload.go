@@ -28,18 +28,18 @@ type booksCreateRequest struct {
 // Books available in the store. Covers serial PK, arrays, jsonb, bytea,
 // nullable fields, and generated columns.
 type booksUpdateRequest struct {
-	PublisherCode string     `json:"publisher_code"`
-	Isbn13        string     `json:"isbn13"`
-	Title         string     `json:"title"`
+	PublisherCode *string    `json:"publisher_code"`
+	Isbn13        *string    `json:"isbn13"`
+	Title         *string    `json:"title"`
 	Subtitle      *string    `json:"subtitle"`
 	Description   *string    `json:"description"`
-	Price         string     `json:"price"`
+	Price         *string    `json:"price"`
 	WeightGrams   *int       `json:"weight_grams"`
 	Rating        *string    `json:"rating"`
 	PublishedOn   *time.Time `json:"published_on"`
-	Tags          []string   `json:"tags"`
-	Attrs         string     `json:"attrs"`
-	CoverImage    []byte     `json:"cover_image"`
+	Tags          *[]string  `json:"tags"`
+	Attrs         *string    `json:"attrs"`
+	CoverImage    *[]byte    `json:"cover_image"`
 	ArchivedAt    *time.Time `json:"archived_at"`
 }
 

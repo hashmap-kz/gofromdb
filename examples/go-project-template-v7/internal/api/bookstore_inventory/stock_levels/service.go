@@ -36,11 +36,11 @@ func (s *svc) Save(ctx context.Context, input *CreateDto) (*Dto, error) {
 }
 
 func (s *svc) UpdateByID(ctx context.Context, input *UpdateDto, pkWarehouseCode string, pkBookID int64) (*Dto, error) {
-	updatedResult, err := s.repo.UpdateByID(ctx, fromUpdateDtoToEntity(input), pkWarehouseCode, pkBookID)
+	updated, err := s.repo.UpdateByID(ctx, input, pkWarehouseCode, pkBookID)
 	if err != nil {
 		return nil, err
 	}
-	result := fromEntityToDto(updatedResult)
+	result := fromEntityToDto(updated)
 	return &result, nil
 }
 
@@ -79,15 +79,6 @@ func fromCreateDtoToEntity(input *CreateDto) *StockLevels {
 	return &StockLevels{
 		WarehouseCode:    input.WarehouseCode,
 		BookID:           input.BookID,
-		AvailableQty:     input.AvailableQty,
-		ReservedQty:      input.ReservedQty,
-		ReorderThreshold: input.ReorderThreshold,
-		LastCountedAt:    input.LastCountedAt,
-	}
-}
-
-func fromUpdateDtoToEntity(input *UpdateDto) *StockLevels {
-	return &StockLevels{
 		AvailableQty:     input.AvailableQty,
 		ReservedQty:      input.ReservedQty,
 		ReorderThreshold: input.ReorderThreshold,

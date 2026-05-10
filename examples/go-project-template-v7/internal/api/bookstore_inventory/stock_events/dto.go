@@ -21,10 +21,10 @@ type CreateDto struct {
 }
 
 type UpdateDto struct {
-	HappenedAt    time.Time
-	WarehouseCode string
-	BookID        int64
-	DeltaQty      int
-	Reason        string
-	Payload       string
+	HappenedAt    *time.Time
+	WarehouseCode *string
+	BookID        *int64
+	DeltaQty      *int
+	Reason        *string
+	Payload       *string
 }

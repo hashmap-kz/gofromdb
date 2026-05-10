@@ -25,16 +25,16 @@ type orderItemsCreateRequest struct {
 // Represents items in a sales, including quantity and price.
 type orderItemsUpdateRequest struct {
 	// Foreign key referencing the associated order.
-	OrderID int `json:"order_id"`
+	OrderID *int `json:"order_id"`
 
 	// Foreign key referencing the product.
-	ProductID int `json:"product_id"`
+	ProductID *int `json:"product_id"`
 
 	// Number of units of the product.
-	Quantity string `json:"quantity"`
+	Quantity *string `json:"quantity"`
 
 	// Price per unit of the product at the time of ordering.
-	Price string `json:"price"`
+	Price *string `json:"price"`
 }
 
 // orderItemsResponse

@@ -13,7 +13,7 @@ import (
 
 type Repository interface {
 	Save(ctx context.Context, inputEntity *Warehouses) (*Warehouses, error)
-	UpdateByID(ctx context.Context, inputEntity *Warehouses, pkCode string) (*Warehouses, error)
+	UpdateByID(ctx context.Context, update *UpdateDto, pkCode string) (*Warehouses, error)
 	DeleteByID(ctx context.Context, pkCode string) error
 	FindByID(ctx context.Context, pkCode string) (*Warehouses, error)
 	FindAll(ctx context.Context) ([]Warehouses, error)
@@ -68,16 +68,20 @@ func (r *repo) Save(ctx context.Context, inputEntity *Warehouses) (*Warehouses, 
 	return scannedEntity, nil
 }
 
-func (r *repo) UpdateByID(ctx context.Context, inputEntity *Warehouses, pkCode string) (*Warehouses, error) {
+func (r *repo) UpdateByID(ctx context.Context, update *UpdateDto, pkCode string) (*Warehouses, error) {
 	tag := "repository.UpdateByID"
+
+	if update == nil {
+		return nil, fmt.Errorf("%s: update is nil", tag)
+	}
 
 	query := `		
 		update bookstore_inventory.warehouses
 		set
-			name     = coalesce(nullif($2, ''), name),
-			address  = coalesce(nullif($3, '{}'::jsonb), address),
-			timezone = coalesce(nullif($4, ''), timezone),
-			active   = coalesce(nullif($5, 'false'::bool), active)
+			name     = coalesce($2, name),
+			address  = coalesce($3, address),
+			timezone = coalesce($4, timezone),
+			active   = coalesce($5, active)
 		where code = $1
 		returning
 			code,
@@ -90,10 +94,10 @@ func (r *repo) UpdateByID(ctx context.Context, inputEntity *Warehouses, pkCode s
 	row := r.db.Pool.QueryRow(
 		ctx, query,
 		pkCode,
-		inputEntity.Name,
-		inputEntity.Address,
-		inputEntity.Timezone,
-		inputEntity.Active,
+		update.Name,
+		update.Address,
+		update.Timezone,
+		update.Active,
 	)
 
 	scannedEntity, err := scanFullRow(row)

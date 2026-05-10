@@ -13,7 +13,7 @@ import (
 
 type Repository interface {
 	Save(ctx context.Context, inputEntity *BookAuthors) (*BookAuthors, error)
-	UpdateByID(ctx context.Context, inputEntity *BookAuthors, pkBookID int64, pkAuthorID string) (*BookAuthors, error)
+	UpdateByID(ctx context.Context, update *UpdateDto, pkBookID int64, pkAuthorID string) (*BookAuthors, error)
 	DeleteByID(ctx context.Context, pkBookID int64, pkAuthorID string) error
 	FindByID(ctx context.Context, pkBookID int64, pkAuthorID string) (*BookAuthors, error)
 	FindAll(ctx context.Context) ([]BookAuthors, error)
@@ -68,15 +68,19 @@ func (r *repo) Save(ctx context.Context, inputEntity *BookAuthors) (*BookAuthors
 	return scannedEntity, nil
 }
 
-func (r *repo) UpdateByID(ctx context.Context, inputEntity *BookAuthors, pkBookID int64, pkAuthorID string) (*BookAuthors, error) {
+func (r *repo) UpdateByID(ctx context.Context, update *UpdateDto, pkBookID int64, pkAuthorID string) (*BookAuthors, error) {
 	tag := "repository.UpdateByID"
+
+	if update == nil {
+		return nil, fmt.Errorf("%s: update is nil", tag)
+	}
 
 	query := `		
 		update bookstore_catalog.book_authors
 		set
-			contribution_order = coalesce(nullif($3, 0::int2), contribution_order),
-			role               = coalesce(nullif($4, ''), role),
-			notes              = coalesce(nullif($5, ''), notes)
+			contribution_order = coalesce($3, contribution_order),
+			role               = coalesce($4, role),
+			notes              = coalesce($5, notes)
 		where book_id = $1 and author_id = $2
 		returning
 			book_id,
@@ -89,9 +93,9 @@ func (r *repo) UpdateByID(ctx context.Context, inputEntity *BookAuthors, pkBookI
 	row := r.db.Pool.QueryRow(
 		ctx, query,
 		pkBookID, pkAuthorID,
-		inputEntity.ContributionOrder,
-		inputEntity.Role,
-		inputEntity.Notes,
+		update.ContributionOrder,
+		update.Role,
+		update.Notes,
 	)
 
 	scannedEntity, err := scanFullRow(row)

@@ -21,8 +21,8 @@ type bookstoreSalesOrdersCreateRequest struct {
 // Sales orders. Duplicate table name with public.orders to test schema-aware
 // generation.
 type bookstoreSalesOrdersUpdateRequest struct {
-	CustomerID  string     `json:"customer_id"`
-	Status      string     `json:"status"`
+	CustomerID  *string    `json:"customer_id"`
+	Status      *string    `json:"status"`
 	PlacedAt    *time.Time `json:"placed_at"`
 	PaidAt      *time.Time `json:"paid_at"`
 	CancelledAt *time.Time `json:"cancelled_at"`

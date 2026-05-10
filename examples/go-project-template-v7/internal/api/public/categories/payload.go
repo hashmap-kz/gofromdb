@@ -24,13 +24,13 @@ type categoriesCreateRequest struct {
 // Represents product categories, supporting hierarchical relationships.
 type categoriesUpdateRequest struct {
 	// Name of the category.
-	Name string `json:"name"`
+	Name *string `json:"name"`
 
 	// Reference to the parent category. NULL if it is a root category.
 	ParentID *int `json:"parent_id"`
 
 	// Validity period of this category naming.
-	ValidPeriod pgtype.Range[time.Time] `json:"valid_period"`
+	ValidPeriod *pgtype.Range[time.Time] `json:"valid_period"`
 }
 
 // categoriesResponse

@@ -36,11 +36,11 @@ func (s *svc) Save(ctx context.Context, input *CreateDto) (*Dto, error) {
 }
 
 func (s *svc) UpdateByID(ctx context.Context, input *UpdateDto, pkOrderID int64, pkLineNo int) (*Dto, error) {
-	updatedResult, err := s.repo.UpdateByID(ctx, fromUpdateDtoToEntity(input), pkOrderID, pkLineNo)
+	updated, err := s.repo.UpdateByID(ctx, input, pkOrderID, pkLineNo)
 	if err != nil {
 		return nil, err
 	}
-	result := fromEntityToDto(updatedResult)
+	result := fromEntityToDto(updated)
 	return &result, nil
 }
 
@@ -79,16 +79,6 @@ func fromCreateDtoToEntity(input *CreateDto) *OrderLines {
 	return &OrderLines{
 		OrderID:        input.OrderID,
 		LineNo:         input.LineNo,
-		BookID:         input.BookID,
-		Quantity:       input.Quantity,
-		UnitPrice:      input.UnitPrice,
-		DiscountAmount: input.DiscountAmount,
-		Note:           input.Note,
-	}
-}
-
-func fromUpdateDtoToEntity(input *UpdateDto) *OrderLines {
-	return &OrderLines{
 		BookID:         input.BookID,
 		Quantity:       input.Quantity,
 		UnitPrice:      input.UnitPrice,

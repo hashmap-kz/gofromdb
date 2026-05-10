@@ -19,7 +19,7 @@ type CreateDto struct {
 }
 
 type UpdateDto struct {
-	TranslatedTitle string
+	TranslatedTitle *string
 	TranslatedBy    *string
 	ReleasedOn      *time.Time
 }

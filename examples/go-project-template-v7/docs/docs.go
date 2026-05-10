@@ -15,6 +15,1391 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/v1/authors": {
+            "get": {
+                "description": "Retrieves a list without pagination.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "authors"
+                ],
+                "summary": "Get all",
+                "responses": {
+                    "200": {
+                        "description": "List of all items",
+                        "schema": {
+                            "$ref": "#/definitions/authors.authorsResponseList"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create new item handler",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "authors"
+                ],
+                "summary": "Create new item",
+                "parameters": [
+                    {
+                        "description": "Create input",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/authors.authorsCreateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/authors.authorsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid request payload)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/authors/pageable": {
+            "get": {
+                "description": "Retrieves a paginated list using pagination parameters.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "authors"
+                ],
+                "summary": "Get paginated list",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page number (default: 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Number of items per page (default: 10)",
+                        "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort order, e.g., 'name,asc'",
+                        "name": "sort",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated list of Authors",
+                        "schema": {
+                            "$ref": "#/definitions/authors.authorsResponseList"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid pagination parameters)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/authors/{author_id}": {
+            "get": {
+                "description": "Retrieves the details based on the provided ID in the request path.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "authors"
+                ],
+                "summary": "Get item by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Single item",
+                        "schema": {
+                            "$ref": "#/definitions/authors.authorsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid ID format)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Updates an item by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "authors"
+                ],
+                "summary": "Update existing item",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update input",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/authors.authorsUpdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/authors.authorsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Deletes an item by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "authors"
+                ],
+                "summary": "Delete existing item",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Authors ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content (Successfully deleted)"
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid ID format)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/book-authors": {
+            "get": {
+                "description": "Retrieves a list without pagination.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "book-authors"
+                ],
+                "summary": "Get all",
+                "responses": {
+                    "200": {
+                        "description": "List of all items",
+                        "schema": {
+                            "$ref": "#/definitions/book_authors.bookAuthorsResponseList"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create new item handler",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "book-authors"
+                ],
+                "summary": "Create new item",
+                "parameters": [
+                    {
+                        "description": "Create input",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/book_authors.bookAuthorsCreateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/book_authors.bookAuthorsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid request payload)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/book-authors/pageable": {
+            "get": {
+                "description": "Retrieves a paginated list using pagination parameters.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "book-authors"
+                ],
+                "summary": "Get paginated list",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page number (default: 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Number of items per page (default: 10)",
+                        "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort order, e.g., 'name,asc'",
+                        "name": "sort",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated list of BookAuthors",
+                        "schema": {
+                            "$ref": "#/definitions/book_authors.bookAuthorsResponseList"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid pagination parameters)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/book-authors/{book_id}/{author_id}": {
+            "get": {
+                "description": "Retrieves the details based on the provided ID in the request path.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "book-authors"
+                ],
+                "summary": "Get item by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Single item",
+                        "schema": {
+                            "$ref": "#/definitions/book_authors.bookAuthorsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid ID format)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Updates an item by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "book-authors"
+                ],
+                "summary": "Update existing item",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update input",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/book_authors.bookAuthorsUpdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/book_authors.bookAuthorsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Deletes an item by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "book-authors"
+                ],
+                "summary": "Delete existing item",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "BookAuthors ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content (Successfully deleted)"
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid ID format)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/book-translations": {
+            "get": {
+                "description": "Retrieves a list without pagination.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "book-translations"
+                ],
+                "summary": "Get all",
+                "responses": {
+                    "200": {
+                        "description": "List of all items",
+                        "schema": {
+                            "$ref": "#/definitions/book_translations.bookTranslationsResponseList"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create new item handler",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "book-translations"
+                ],
+                "summary": "Create new item",
+                "parameters": [
+                    {
+                        "description": "Create input",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/book_translations.bookTranslationsCreateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/book_translations.bookTranslationsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid request payload)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/book-translations/pageable": {
+            "get": {
+                "description": "Retrieves a paginated list using pagination parameters.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "book-translations"
+                ],
+                "summary": "Get paginated list",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page number (default: 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Number of items per page (default: 10)",
+                        "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort order, e.g., 'name,asc'",
+                        "name": "sort",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated list of BookTranslations",
+                        "schema": {
+                            "$ref": "#/definitions/book_translations.bookTranslationsResponseList"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid pagination parameters)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/book-translations/{book_id}/{language_code}": {
+            "get": {
+                "description": "Retrieves the details based on the provided ID in the request path.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "book-translations"
+                ],
+                "summary": "Get item by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Single item",
+                        "schema": {
+                            "$ref": "#/definitions/book_translations.bookTranslationsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid ID format)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Updates an item by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "book-translations"
+                ],
+                "summary": "Update existing item",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update input",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/book_translations.bookTranslationsUpdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/book_translations.bookTranslationsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Deletes an item by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "book-translations"
+                ],
+                "summary": "Delete existing item",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "BookTranslations ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content (Successfully deleted)"
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid ID format)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/books": {
+            "get": {
+                "description": "Retrieves a list without pagination.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "books"
+                ],
+                "summary": "Get all",
+                "responses": {
+                    "200": {
+                        "description": "List of all items",
+                        "schema": {
+                            "$ref": "#/definitions/books.booksResponseList"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create new item handler",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "books"
+                ],
+                "summary": "Create new item",
+                "parameters": [
+                    {
+                        "description": "Create input",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/books.booksCreateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/books.booksResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid request payload)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/books/pageable": {
+            "get": {
+                "description": "Retrieves a paginated list using pagination parameters.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "books"
+                ],
+                "summary": "Get paginated list",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page number (default: 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Number of items per page (default: 10)",
+                        "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort order, e.g., 'name,asc'",
+                        "name": "sort",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated list of Books",
+                        "schema": {
+                            "$ref": "#/definitions/books.booksResponseList"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid pagination parameters)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/books/{book_id}": {
+            "get": {
+                "description": "Retrieves the details based on the provided ID in the request path.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "books"
+                ],
+                "summary": "Get item by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Single item",
+                        "schema": {
+                            "$ref": "#/definitions/books.booksResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid ID format)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Updates an item by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "books"
+                ],
+                "summary": "Update existing item",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update input",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/books.booksUpdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/books.booksResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Deletes an item by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "books"
+                ],
+                "summary": "Delete existing item",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Books ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content (Successfully deleted)"
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid ID format)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/bookstore-sales-orders": {
+            "get": {
+                "description": "Retrieves a list without pagination.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "bookstore-sales-orders"
+                ],
+                "summary": "Get all",
+                "responses": {
+                    "200": {
+                        "description": "List of all items",
+                        "schema": {
+                            "$ref": "#/definitions/orders.bookstoreSalesOrdersResponseList"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create new item handler",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "bookstore-sales-orders"
+                ],
+                "summary": "Create new item",
+                "parameters": [
+                    {
+                        "description": "Create input",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/orders.bookstoreSalesOrdersCreateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/orders.bookstoreSalesOrdersResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid request payload)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/bookstore-sales-orders/pageable": {
+            "get": {
+                "description": "Retrieves a paginated list using pagination parameters.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "bookstore-sales-orders"
+                ],
+                "summary": "Get paginated list",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page number (default: 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Number of items per page (default: 10)",
+                        "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort order, e.g., 'name,asc'",
+                        "name": "sort",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated list of BookstoreSalesOrders",
+                        "schema": {
+                            "$ref": "#/definitions/orders.bookstoreSalesOrdersResponseList"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid pagination parameters)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/bookstore-sales-orders/{order_id}": {
+            "get": {
+                "description": "Retrieves the details based on the provided ID in the request path.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "bookstore-sales-orders"
+                ],
+                "summary": "Get item by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Single item",
+                        "schema": {
+                            "$ref": "#/definitions/orders.bookstoreSalesOrdersResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid ID format)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Updates an item by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "bookstore-sales-orders"
+                ],
+                "summary": "Update existing item",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update input",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/orders.bookstoreSalesOrdersUpdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/orders.bookstoreSalesOrdersResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Deletes an item by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "bookstore-sales-orders"
+                ],
+                "summary": "Delete existing item",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "BookstoreSalesOrders ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content (Successfully deleted)"
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid ID format)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/categories": {
             "get": {
                 "description": "Retrieves a list without pagination.",
@@ -35,14 +1420,8 @@ const docTemplate = `{
                             "$ref": "#/definitions/categories.categoriesResponseList"
                         }
                     },
-                    "400": {
-                        "description": "Bad Request (Service failure)",
-                        "schema": {
-                            "$ref": "#/definitions/httputils.ErrorResponse"
-                        }
-                    },
                     "500": {
-                        "description": "Internal Server Error (Data processing failure)",
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
@@ -135,13 +1514,13 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Bad Request (Invalid pagination parameters or service failure)",
+                        "description": "Bad Request (Invalid pagination parameters)",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error (Data processing failure)",
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
@@ -181,8 +1560,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
                     },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
                     "500": {
-                        "description": "Internal Server Error (Deletion failed)",
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
@@ -220,14 +1605,20 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "201": {
-                        "description": "Created",
+                    "200": {
+                        "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/categories.categoriesResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
@@ -271,8 +1662,973 @@ const docTemplate = `{
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
                     },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
                     "500": {
-                        "description": "Internal Server Error (Deletion failed)",
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/customers": {
+            "get": {
+                "description": "Retrieves a list without pagination.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "customers"
+                ],
+                "summary": "Get all",
+                "responses": {
+                    "200": {
+                        "description": "List of all items",
+                        "schema": {
+                            "$ref": "#/definitions/customers.customersResponseList"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create new item handler",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "customers"
+                ],
+                "summary": "Create new item",
+                "parameters": [
+                    {
+                        "description": "Create input",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/customers.customersCreateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/customers.customersResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid request payload)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/customers/pageable": {
+            "get": {
+                "description": "Retrieves a paginated list using pagination parameters.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "customers"
+                ],
+                "summary": "Get paginated list",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page number (default: 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Number of items per page (default: 10)",
+                        "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort order, e.g., 'name,asc'",
+                        "name": "sort",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated list of Customers",
+                        "schema": {
+                            "$ref": "#/definitions/customers.customersResponseList"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid pagination parameters)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/customers/{customer_id}": {
+            "get": {
+                "description": "Retrieves the details based on the provided ID in the request path.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "customers"
+                ],
+                "summary": "Get item by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Single item",
+                        "schema": {
+                            "$ref": "#/definitions/customers.customersResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid ID format)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Updates an item by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "customers"
+                ],
+                "summary": "Update existing item",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update input",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/customers.customersUpdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/customers.customersResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Deletes an item by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "customers"
+                ],
+                "summary": "Delete existing item",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Customers ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content (Successfully deleted)"
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid ID format)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/discount-codes": {
+            "get": {
+                "description": "Retrieves a list without pagination.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "discount-codes"
+                ],
+                "summary": "Get all",
+                "responses": {
+                    "200": {
+                        "description": "List of all items",
+                        "schema": {
+                            "$ref": "#/definitions/discount_codes.discountCodesResponseList"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create new item handler",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "discount-codes"
+                ],
+                "summary": "Create new item",
+                "parameters": [
+                    {
+                        "description": "Create input",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/discount_codes.discountCodesCreateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/discount_codes.discountCodesResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid request payload)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/discount-codes/pageable": {
+            "get": {
+                "description": "Retrieves a paginated list using pagination parameters.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "discount-codes"
+                ],
+                "summary": "Get paginated list",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page number (default: 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Number of items per page (default: 10)",
+                        "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort order, e.g., 'name,asc'",
+                        "name": "sort",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated list of DiscountCodes",
+                        "schema": {
+                            "$ref": "#/definitions/discount_codes.discountCodesResponseList"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid pagination parameters)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/discount-codes/{code}": {
+            "get": {
+                "description": "Retrieves the details based on the provided ID in the request path.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "discount-codes"
+                ],
+                "summary": "Get item by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Single item",
+                        "schema": {
+                            "$ref": "#/definitions/discount_codes.discountCodesResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid ID format)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Updates an item by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "discount-codes"
+                ],
+                "summary": "Update existing item",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update input",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/discount_codes.discountCodesUpdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/discount_codes.discountCodesResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Deletes an item by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "discount-codes"
+                ],
+                "summary": "Delete existing item",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "DiscountCodes ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content (Successfully deleted)"
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid ID format)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/import-batches": {
+            "get": {
+                "description": "Retrieves a list without pagination.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "import-batches"
+                ],
+                "summary": "Get all",
+                "responses": {
+                    "200": {
+                        "description": "List of all items",
+                        "schema": {
+                            "$ref": "#/definitions/import_batches.importBatchesResponseList"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create new item handler",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "import-batches"
+                ],
+                "summary": "Create new item",
+                "parameters": [
+                    {
+                        "description": "Create input",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/import_batches.importBatchesCreateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/import_batches.importBatchesResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid request payload)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/import-batches/pageable": {
+            "get": {
+                "description": "Retrieves a paginated list using pagination parameters.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "import-batches"
+                ],
+                "summary": "Get paginated list",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page number (default: 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Number of items per page (default: 10)",
+                        "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort order, e.g., 'name,asc'",
+                        "name": "sort",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated list of ImportBatches",
+                        "schema": {
+                            "$ref": "#/definitions/import_batches.importBatchesResponseList"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid pagination parameters)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/import-batches/{source_name}/{batch_no}": {
+            "get": {
+                "description": "Retrieves the details based on the provided ID in the request path.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "import-batches"
+                ],
+                "summary": "Get item by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Single item",
+                        "schema": {
+                            "$ref": "#/definitions/import_batches.importBatchesResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid ID format)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Updates an item by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "import-batches"
+                ],
+                "summary": "Update existing item",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update input",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/import_batches.importBatchesUpdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/import_batches.importBatchesResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Deletes an item by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "import-batches"
+                ],
+                "summary": "Delete existing item",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ImportBatches ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content (Successfully deleted)"
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid ID format)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/import-errors": {
+            "get": {
+                "description": "Retrieves a list without pagination.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "import-errors"
+                ],
+                "summary": "Get all",
+                "responses": {
+                    "200": {
+                        "description": "List of all items",
+                        "schema": {
+                            "$ref": "#/definitions/import_errors.importErrorsResponseList"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create new item handler",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "import-errors"
+                ],
+                "summary": "Create new item",
+                "parameters": [
+                    {
+                        "description": "Create input",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/import_errors.importErrorsCreateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/import_errors.importErrorsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid request payload)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/import-errors/pageable": {
+            "get": {
+                "description": "Retrieves a paginated list using pagination parameters.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "import-errors"
+                ],
+                "summary": "Get paginated list",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page number (default: 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Number of items per page (default: 10)",
+                        "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort order, e.g., 'name,asc'",
+                        "name": "sort",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated list of ImportErrors",
+                        "schema": {
+                            "$ref": "#/definitions/import_errors.importErrorsResponseList"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid pagination parameters)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
@@ -300,14 +2656,8 @@ const docTemplate = `{
                             "$ref": "#/definitions/order_items.orderItemsResponseList"
                         }
                     },
-                    "400": {
-                        "description": "Bad Request (Service failure)",
-                        "schema": {
-                            "$ref": "#/definitions/httputils.ErrorResponse"
-                        }
-                    },
                     "500": {
-                        "description": "Internal Server Error (Data processing failure)",
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
@@ -400,13 +2750,13 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Bad Request (Invalid pagination parameters or service failure)",
+                        "description": "Bad Request (Invalid pagination parameters)",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error (Data processing failure)",
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
@@ -446,8 +2796,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
                     },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
                     "500": {
-                        "description": "Internal Server Error (Deletion failed)",
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
@@ -485,14 +2841,20 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "201": {
-                        "description": "Created",
+                    "200": {
+                        "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/order_items.orderItemsResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
@@ -536,8 +2898,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
                     },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
                     "500": {
-                        "description": "Internal Server Error (Deletion failed)",
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
@@ -545,7 +2913,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/orders": {
+        "/api/v1/order-lines": {
             "get": {
                 "description": "Retrieves a list without pagination.",
                 "consumes": [
@@ -555,24 +2923,18 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "orders"
+                    "order-lines"
                 ],
                 "summary": "Get all",
                 "responses": {
                     "200": {
                         "description": "List of all items",
                         "schema": {
-                            "$ref": "#/definitions/orders.ordersResponseList"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request (Service failure)",
-                        "schema": {
-                            "$ref": "#/definitions/httputils.ErrorResponse"
+                            "$ref": "#/definitions/order_lines.orderLinesResponseList"
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error (Data processing failure)",
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
@@ -588,7 +2950,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "orders"
+                    "order-lines"
                 ],
                 "summary": "Create new item",
                 "parameters": [
@@ -598,7 +2960,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/orders.ordersCreateRequest"
+                            "$ref": "#/definitions/order_lines.orderLinesCreateRequest"
                         }
                     }
                 ],
@@ -606,7 +2968,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/orders.ordersResponse"
+                            "$ref": "#/definitions/order_lines.orderLinesResponse"
                         }
                     },
                     "400": {
@@ -624,7 +2986,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/orders/pageable": {
+        "/api/v1/order-lines/pageable": {
             "get": {
                 "description": "Retrieves a paginated list using pagination parameters.",
                 "consumes": [
@@ -634,7 +2996,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "orders"
+                    "order-lines"
                 ],
                 "summary": "Get paginated list",
                 "parameters": [
@@ -659,19 +3021,19 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Paginated list of Orders",
+                        "description": "Paginated list of OrderLines",
                         "schema": {
-                            "$ref": "#/definitions/orders.ordersResponseList"
+                            "$ref": "#/definitions/order_lines.orderLinesResponseList"
                         }
                     },
                     "400": {
-                        "description": "Bad Request (Invalid pagination parameters or service failure)",
+                        "description": "Bad Request (Invalid pagination parameters)",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error (Data processing failure)",
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
@@ -679,14 +3041,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/orders/{record_id}": {
+        "/api/v1/order-lines/{order_id}/{line_no}": {
             "get": {
                 "description": "Retrieves the details based on the provided ID in the request path.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "orders"
+                    "order-lines"
                 ],
                 "summary": "Get item by ID",
                 "parameters": [
@@ -702,7 +3064,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Single item",
                         "schema": {
-                            "$ref": "#/definitions/orders.ordersResponse"
+                            "$ref": "#/definitions/order_lines.orderLinesResponse"
                         }
                     },
                     "400": {
@@ -711,8 +3073,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
                     },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
                     "500": {
-                        "description": "Internal Server Error (Deletion failed)",
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
@@ -728,7 +3096,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "orders"
+                    "order-lines"
                 ],
                 "summary": "Update existing item",
                 "parameters": [
@@ -745,19 +3113,25 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/orders.ordersUpdateRequest"
+                            "$ref": "#/definitions/order_lines.orderLinesUpdateRequest"
                         }
                     }
                 ],
                 "responses": {
-                    "201": {
-                        "description": "Created",
+                    "200": {
+                        "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/orders.ordersResponse"
+                            "$ref": "#/definitions/order_lines.orderLinesResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
@@ -779,13 +3153,13 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "orders"
+                    "order-lines"
                 ],
                 "summary": "Delete existing item",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Orders ID",
+                        "description": "OrderLines ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -801,8 +3175,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
                     },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
                     "500": {
-                        "description": "Internal Server Error (Deletion failed)",
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
@@ -830,14 +3210,8 @@ const docTemplate = `{
                             "$ref": "#/definitions/products.productsResponseList"
                         }
                     },
-                    "400": {
-                        "description": "Bad Request (Service failure)",
-                        "schema": {
-                            "$ref": "#/definitions/httputils.ErrorResponse"
-                        }
-                    },
                     "500": {
-                        "description": "Internal Server Error (Data processing failure)",
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
@@ -930,13 +3304,13 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Bad Request (Invalid pagination parameters or service failure)",
+                        "description": "Bad Request (Invalid pagination parameters)",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error (Data processing failure)",
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
@@ -976,8 +3350,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
                     },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
                     "500": {
-                        "description": "Internal Server Error (Deletion failed)",
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
@@ -1015,14 +3395,20 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "201": {
-                        "description": "Created",
+                    "200": {
+                        "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/products.productsResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
@@ -1066,8 +3452,973 @@ const docTemplate = `{
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
                     },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
                     "500": {
-                        "description": "Internal Server Error (Deletion failed)",
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/public-orders": {
+            "get": {
+                "description": "Retrieves a list without pagination.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "public-orders"
+                ],
+                "summary": "Get all",
+                "responses": {
+                    "200": {
+                        "description": "List of all items",
+                        "schema": {
+                            "$ref": "#/definitions/orders.publicOrdersResponseList"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create new item handler",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "public-orders"
+                ],
+                "summary": "Create new item",
+                "parameters": [
+                    {
+                        "description": "Create input",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/orders.publicOrdersCreateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/orders.publicOrdersResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid request payload)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/public-orders/pageable": {
+            "get": {
+                "description": "Retrieves a paginated list using pagination parameters.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "public-orders"
+                ],
+                "summary": "Get paginated list",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page number (default: 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Number of items per page (default: 10)",
+                        "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort order, e.g., 'name,asc'",
+                        "name": "sort",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated list of PublicOrders",
+                        "schema": {
+                            "$ref": "#/definitions/orders.publicOrdersResponseList"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid pagination parameters)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/public-orders/{record_id}": {
+            "get": {
+                "description": "Retrieves the details based on the provided ID in the request path.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "public-orders"
+                ],
+                "summary": "Get item by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Single item",
+                        "schema": {
+                            "$ref": "#/definitions/orders.publicOrdersResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid ID format)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Updates an item by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "public-orders"
+                ],
+                "summary": "Update existing item",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update input",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/orders.publicOrdersUpdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/orders.publicOrdersResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Deletes an item by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "public-orders"
+                ],
+                "summary": "Delete existing item",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "PublicOrders ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content (Successfully deleted)"
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid ID format)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/publishers": {
+            "get": {
+                "description": "Retrieves a list without pagination.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "publishers"
+                ],
+                "summary": "Get all",
+                "responses": {
+                    "200": {
+                        "description": "List of all items",
+                        "schema": {
+                            "$ref": "#/definitions/publishers.publishersResponseList"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create new item handler",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "publishers"
+                ],
+                "summary": "Create new item",
+                "parameters": [
+                    {
+                        "description": "Create input",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/publishers.publishersCreateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/publishers.publishersResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid request payload)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/publishers/pageable": {
+            "get": {
+                "description": "Retrieves a paginated list using pagination parameters.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "publishers"
+                ],
+                "summary": "Get paginated list",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page number (default: 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Number of items per page (default: 10)",
+                        "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort order, e.g., 'name,asc'",
+                        "name": "sort",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated list of Publishers",
+                        "schema": {
+                            "$ref": "#/definitions/publishers.publishersResponseList"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid pagination parameters)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/publishers/{code}": {
+            "get": {
+                "description": "Retrieves the details based on the provided ID in the request path.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "publishers"
+                ],
+                "summary": "Get item by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Single item",
+                        "schema": {
+                            "$ref": "#/definitions/publishers.publishersResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid ID format)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Updates an item by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "publishers"
+                ],
+                "summary": "Update existing item",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update input",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/publishers.publishersUpdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/publishers.publishersResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Deletes an item by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "publishers"
+                ],
+                "summary": "Delete existing item",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Publishers ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content (Successfully deleted)"
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid ID format)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/stock-events": {
+            "get": {
+                "description": "Retrieves a list without pagination.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "stock-events"
+                ],
+                "summary": "Get all",
+                "responses": {
+                    "200": {
+                        "description": "List of all items",
+                        "schema": {
+                            "$ref": "#/definitions/stock_events.stockEventsResponseList"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create new item handler",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "stock-events"
+                ],
+                "summary": "Create new item",
+                "parameters": [
+                    {
+                        "description": "Create input",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/stock_events.stockEventsCreateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/stock_events.stockEventsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid request payload)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/stock-events/pageable": {
+            "get": {
+                "description": "Retrieves a paginated list using pagination parameters.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "stock-events"
+                ],
+                "summary": "Get paginated list",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page number (default: 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Number of items per page (default: 10)",
+                        "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort order, e.g., 'name,asc'",
+                        "name": "sort",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated list of StockEvents",
+                        "schema": {
+                            "$ref": "#/definitions/stock_events.stockEventsResponseList"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid pagination parameters)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/stock-levels": {
+            "get": {
+                "description": "Retrieves a list without pagination.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "stock-levels"
+                ],
+                "summary": "Get all",
+                "responses": {
+                    "200": {
+                        "description": "List of all items",
+                        "schema": {
+                            "$ref": "#/definitions/stock_levels.stockLevelsResponseList"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create new item handler",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "stock-levels"
+                ],
+                "summary": "Create new item",
+                "parameters": [
+                    {
+                        "description": "Create input",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/stock_levels.stockLevelsCreateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/stock_levels.stockLevelsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid request payload)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/stock-levels/pageable": {
+            "get": {
+                "description": "Retrieves a paginated list using pagination parameters.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "stock-levels"
+                ],
+                "summary": "Get paginated list",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page number (default: 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Number of items per page (default: 10)",
+                        "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort order, e.g., 'name,asc'",
+                        "name": "sort",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated list of StockLevels",
+                        "schema": {
+                            "$ref": "#/definitions/stock_levels.stockLevelsResponseList"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid pagination parameters)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/stock-levels/{warehouse_code}/{book_id}": {
+            "get": {
+                "description": "Retrieves the details based on the provided ID in the request path.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "stock-levels"
+                ],
+                "summary": "Get item by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Single item",
+                        "schema": {
+                            "$ref": "#/definitions/stock_levels.stockLevelsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid ID format)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Updates an item by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "stock-levels"
+                ],
+                "summary": "Update existing item",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update input",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/stock_levels.stockLevelsUpdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/stock_levels.stockLevelsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Deletes an item by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "stock-levels"
+                ],
+                "summary": "Delete existing item",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "StockLevels ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content (Successfully deleted)"
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid ID format)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
@@ -1095,14 +4446,8 @@ const docTemplate = `{
                             "$ref": "#/definitions/users.usersResponseList"
                         }
                     },
-                    "400": {
-                        "description": "Bad Request (Service failure)",
-                        "schema": {
-                            "$ref": "#/definitions/httputils.ErrorResponse"
-                        }
-                    },
                     "500": {
-                        "description": "Internal Server Error (Data processing failure)",
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
@@ -1195,13 +4540,13 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Bad Request (Invalid pagination parameters or service failure)",
+                        "description": "Bad Request (Invalid pagination parameters)",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error (Data processing failure)",
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
@@ -1241,8 +4586,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
                     },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
                     "500": {
-                        "description": "Internal Server Error (Deletion failed)",
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
@@ -1280,14 +4631,20 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "201": {
-                        "description": "Created",
+                    "200": {
+                        "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/users.usersResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
@@ -1331,8 +4688,291 @@ const docTemplate = `{
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
                     },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
                     "500": {
-                        "description": "Internal Server Error (Deletion failed)",
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/warehouses": {
+            "get": {
+                "description": "Retrieves a list without pagination.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "warehouses"
+                ],
+                "summary": "Get all",
+                "responses": {
+                    "200": {
+                        "description": "List of all items",
+                        "schema": {
+                            "$ref": "#/definitions/warehouses.warehousesResponseList"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create new item handler",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "warehouses"
+                ],
+                "summary": "Create new item",
+                "parameters": [
+                    {
+                        "description": "Create input",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/warehouses.warehousesCreateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/warehouses.warehousesResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid request payload)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/warehouses/pageable": {
+            "get": {
+                "description": "Retrieves a paginated list using pagination parameters.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "warehouses"
+                ],
+                "summary": "Get paginated list",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page number (default: 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Number of items per page (default: 10)",
+                        "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort order, e.g., 'name,asc'",
+                        "name": "sort",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated list of Warehouses",
+                        "schema": {
+                            "$ref": "#/definitions/warehouses.warehousesResponseList"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid pagination parameters)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/warehouses/{code}": {
+            "get": {
+                "description": "Retrieves the details based on the provided ID in the request path.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "warehouses"
+                ],
+                "summary": "Get item by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Single item",
+                        "schema": {
+                            "$ref": "#/definitions/warehouses.warehousesResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid ID format)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Updates an item by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "warehouses"
+                ],
+                "summary": "Update existing item",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Item ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update input",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/warehouses.warehousesUpdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/warehouses.warehousesResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Deletes an item by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "warehouses"
+                ],
+                "summary": "Delete existing item",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Warehouses ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content (Successfully deleted)"
+                    },
+                    "400": {
+                        "description": "Bad Request (Invalid ID format)",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputils.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/httputils.ErrorResponse"
                         }
@@ -1342,6 +4982,425 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "authors.authorsCreateRequest": {
+            "type": "object",
+            "properties": {
+                "active": {
+                    "type": "boolean"
+                },
+                "author_id": {
+                    "type": "string"
+                },
+                "biography": {
+                    "type": "string"
+                },
+                "born_on": {
+                    "type": "string"
+                },
+                "display_name": {
+                    "type": "string"
+                },
+                "legal_name": {
+                    "type": "string"
+                },
+                "metadata": {
+                    "type": "string"
+                }
+            }
+        },
+        "authors.authorsResponse": {
+            "type": "object",
+            "properties": {
+                "active": {
+                    "type": "boolean"
+                },
+                "author_id": {
+                    "type": "string"
+                },
+                "biography": {
+                    "type": "string"
+                },
+                "born_on": {
+                    "type": "string"
+                },
+                "display_name": {
+                    "type": "string"
+                },
+                "legal_name": {
+                    "type": "string"
+                },
+                "metadata": {
+                    "type": "string"
+                }
+            }
+        },
+        "authors.authorsResponseList": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "description": "Payload",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/authors.authorsResponse"
+                    }
+                },
+                "page": {
+                    "description": "Page information (if present)",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/pageable.Page"
+                        }
+                    ]
+                }
+            }
+        },
+        "authors.authorsUpdateRequest": {
+            "type": "object",
+            "properties": {
+                "active": {
+                    "type": "boolean"
+                },
+                "biography": {
+                    "type": "string"
+                },
+                "born_on": {
+                    "type": "string"
+                },
+                "display_name": {
+                    "type": "string"
+                },
+                "legal_name": {
+                    "type": "string"
+                },
+                "metadata": {
+                    "type": "string"
+                }
+            }
+        },
+        "book_authors.bookAuthorsCreateRequest": {
+            "type": "object",
+            "properties": {
+                "author_id": {
+                    "type": "string"
+                },
+                "book_id": {
+                    "type": "integer"
+                },
+                "contribution_order": {
+                    "type": "integer"
+                },
+                "notes": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                }
+            }
+        },
+        "book_authors.bookAuthorsResponse": {
+            "type": "object",
+            "properties": {
+                "author_id": {
+                    "type": "string"
+                },
+                "book_id": {
+                    "type": "integer"
+                },
+                "contribution_order": {
+                    "type": "integer"
+                },
+                "notes": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                }
+            }
+        },
+        "book_authors.bookAuthorsResponseList": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "description": "Payload",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/book_authors.bookAuthorsResponse"
+                    }
+                },
+                "page": {
+                    "description": "Page information (if present)",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/pageable.Page"
+                        }
+                    ]
+                }
+            }
+        },
+        "book_authors.bookAuthorsUpdateRequest": {
+            "type": "object",
+            "properties": {
+                "contribution_order": {
+                    "type": "integer"
+                },
+                "notes": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                }
+            }
+        },
+        "book_translations.bookTranslationsCreateRequest": {
+            "type": "object",
+            "properties": {
+                "book_id": {
+                    "type": "integer"
+                },
+                "language_code": {
+                    "type": "string"
+                },
+                "released_on": {
+                    "type": "string"
+                },
+                "translated_by": {
+                    "type": "string"
+                },
+                "translated_title": {
+                    "type": "string"
+                }
+            }
+        },
+        "book_translations.bookTranslationsResponse": {
+            "type": "object",
+            "properties": {
+                "book_id": {
+                    "type": "integer"
+                },
+                "language_code": {
+                    "type": "string"
+                },
+                "released_on": {
+                    "type": "string"
+                },
+                "translated_by": {
+                    "type": "string"
+                },
+                "translated_title": {
+                    "type": "string"
+                }
+            }
+        },
+        "book_translations.bookTranslationsResponseList": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "description": "Payload",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/book_translations.bookTranslationsResponse"
+                    }
+                },
+                "page": {
+                    "description": "Page information (if present)",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/pageable.Page"
+                        }
+                    ]
+                }
+            }
+        },
+        "book_translations.bookTranslationsUpdateRequest": {
+            "type": "object",
+            "properties": {
+                "released_on": {
+                    "type": "string"
+                },
+                "translated_by": {
+                    "type": "string"
+                },
+                "translated_title": {
+                    "type": "string"
+                }
+            }
+        },
+        "books.booksCreateRequest": {
+            "type": "object",
+            "properties": {
+                "archived_at": {
+                    "type": "string"
+                },
+                "attrs": {
+                    "type": "string"
+                },
+                "cover_image": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "description": {
+                    "type": "string"
+                },
+                "isbn13": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "string"
+                },
+                "published_on": {
+                    "type": "string"
+                },
+                "publisher_code": {
+                    "type": "string"
+                },
+                "rating": {
+                    "type": "string"
+                },
+                "subtitle": {
+                    "type": "string"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "title": {
+                    "type": "string"
+                },
+                "weight_grams": {
+                    "type": "integer"
+                }
+            }
+        },
+        "books.booksResponse": {
+            "type": "object",
+            "properties": {
+                "archived_at": {
+                    "type": "string"
+                },
+                "attrs": {
+                    "type": "string"
+                },
+                "book_id": {
+                    "type": "integer"
+                },
+                "cover_image": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "description": {
+                    "type": "string"
+                },
+                "isbn13": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "string"
+                },
+                "published_on": {
+                    "type": "string"
+                },
+                "publisher_code": {
+                    "type": "string"
+                },
+                "rating": {
+                    "type": "string"
+                },
+                "subtitle": {
+                    "type": "string"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "title": {
+                    "type": "string"
+                },
+                "title_search": {
+                    "type": "string"
+                },
+                "weight_grams": {
+                    "type": "integer"
+                }
+            }
+        },
+        "books.booksResponseList": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "description": "Payload",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/books.booksResponse"
+                    }
+                },
+                "page": {
+                    "description": "Page information (if present)",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/pageable.Page"
+                        }
+                    ]
+                }
+            }
+        },
+        "books.booksUpdateRequest": {
+            "type": "object",
+            "properties": {
+                "archived_at": {
+                    "type": "string"
+                },
+                "attrs": {
+                    "type": "string"
+                },
+                "cover_image": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "description": {
+                    "type": "string"
+                },
+                "isbn13": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "string"
+                },
+                "published_on": {
+                    "type": "string"
+                },
+                "publisher_code": {
+                    "type": "string"
+                },
+                "rating": {
+                    "type": "string"
+                },
+                "subtitle": {
+                    "type": "string"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "title": {
+                    "type": "string"
+                },
+                "weight_grams": {
+                    "type": "integer"
+                }
+            }
+        },
         "categories.categoriesCreateRequest": {
             "type": "object",
             "properties": {
@@ -1445,6 +5504,178 @@ const docTemplate = `{
                 }
             }
         },
+        "customers.customersCreateRequest": {
+            "type": "object",
+            "properties": {
+                "customer_id": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "full_name": {
+                    "type": "string"
+                },
+                "marketing_opt_in": {
+                    "type": "boolean"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "registered_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "customers.customersResponse": {
+            "type": "object",
+            "properties": {
+                "customer_id": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "full_name": {
+                    "type": "string"
+                },
+                "marketing_opt_in": {
+                    "type": "boolean"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "registered_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "customers.customersResponseList": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "description": "Payload",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/customers.customersResponse"
+                    }
+                },
+                "page": {
+                    "description": "Page information (if present)",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/pageable.Page"
+                        }
+                    ]
+                }
+            }
+        },
+        "customers.customersUpdateRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "full_name": {
+                    "type": "string"
+                },
+                "marketing_opt_in": {
+                    "type": "boolean"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "registered_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "discount_codes.discountCodesCreateRequest": {
+            "type": "object",
+            "properties": {
+                "active": {
+                    "type": "boolean"
+                },
+                "code": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "max_uses": {
+                    "type": "integer"
+                },
+                "percent_off": {
+                    "type": "string"
+                },
+                "valid_period": {
+                    "$ref": "#/definitions/pgtype.Range-time_Time"
+                }
+            }
+        },
+        "discount_codes.discountCodesResponse": {
+            "type": "object",
+            "properties": {
+                "active": {
+                    "type": "boolean"
+                },
+                "code": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "max_uses": {
+                    "type": "integer"
+                },
+                "percent_off": {
+                    "type": "string"
+                },
+                "valid_period": {
+                    "$ref": "#/definitions/pgtype.Range-time_Time"
+                }
+            }
+        },
+        "discount_codes.discountCodesResponseList": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "description": "Payload",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/discount_codes.discountCodesResponse"
+                    }
+                },
+                "page": {
+                    "description": "Page information (if present)",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/pageable.Page"
+                        }
+                    ]
+                }
+            }
+        },
+        "discount_codes.discountCodesUpdateRequest": {
+            "type": "object",
+            "properties": {
+                "active": {
+                    "type": "boolean"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "max_uses": {
+                    "type": "integer"
+                },
+                "percent_off": {
+                    "type": "string"
+                },
+                "valid_period": {
+                    "$ref": "#/definitions/pgtype.Range-time_Time"
+                }
+            }
+        },
         "httputils.ErrorDetail": {
             "type": "object",
             "properties": {
@@ -1467,6 +5698,167 @@ const docTemplate = `{
                 },
                 "message": {
                     "type": "string"
+                }
+            }
+        },
+        "import_batches.importBatchesCreateRequest": {
+            "type": "object",
+            "properties": {
+                "batch_no": {
+                    "type": "integer"
+                },
+                "file_name": {
+                    "type": "string"
+                },
+                "finished_at": {
+                    "type": "string"
+                },
+                "metadata": {
+                    "type": "string"
+                },
+                "row_count": {
+                    "type": "integer"
+                },
+                "source_name": {
+                    "type": "string"
+                },
+                "started_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "import_batches.importBatchesResponse": {
+            "type": "object",
+            "properties": {
+                "batch_no": {
+                    "type": "integer"
+                },
+                "file_name": {
+                    "type": "string"
+                },
+                "finished_at": {
+                    "type": "string"
+                },
+                "metadata": {
+                    "type": "string"
+                },
+                "row_count": {
+                    "type": "integer"
+                },
+                "source_name": {
+                    "type": "string"
+                },
+                "started_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "import_batches.importBatchesResponseList": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "description": "Payload",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/import_batches.importBatchesResponse"
+                    }
+                },
+                "page": {
+                    "description": "Page information (if present)",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/pageable.Page"
+                        }
+                    ]
+                }
+            }
+        },
+        "import_batches.importBatchesUpdateRequest": {
+            "type": "object",
+            "properties": {
+                "file_name": {
+                    "type": "string"
+                },
+                "finished_at": {
+                    "type": "string"
+                },
+                "metadata": {
+                    "type": "string"
+                },
+                "row_count": {
+                    "type": "integer"
+                },
+                "started_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "import_errors.importErrorsCreateRequest": {
+            "type": "object",
+            "properties": {
+                "batch_no": {
+                    "type": "integer"
+                },
+                "column_name": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "raw_payload": {
+                    "type": "string"
+                },
+                "row_no": {
+                    "type": "integer"
+                },
+                "source_name": {
+                    "type": "string"
+                }
+            }
+        },
+        "import_errors.importErrorsResponse": {
+            "type": "object",
+            "properties": {
+                "batch_no": {
+                    "type": "integer"
+                },
+                "column_name": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "raw_payload": {
+                    "type": "string"
+                },
+                "row_no": {
+                    "type": "integer"
+                },
+                "source_name": {
+                    "type": "string"
+                }
+            }
+        },
+        "import_errors.importErrorsResponseList": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "description": "Payload",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/import_errors.importErrorsResponse"
+                    }
+                },
+                "page": {
+                    "description": "Page information (if present)",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/pageable.Page"
+                        }
+                    ]
                 }
             }
         },
@@ -1569,7 +5961,191 @@ const docTemplate = `{
                 }
             }
         },
-        "orders.ordersCreateRequest": {
+        "order_lines.orderLinesCreateRequest": {
+            "type": "object",
+            "properties": {
+                "book_id": {
+                    "type": "integer"
+                },
+                "discount_amount": {
+                    "type": "string"
+                },
+                "line_no": {
+                    "type": "integer"
+                },
+                "note": {
+                    "type": "string"
+                },
+                "order_id": {
+                    "type": "integer"
+                },
+                "quantity": {
+                    "type": "integer"
+                },
+                "unit_price": {
+                    "type": "string"
+                }
+            }
+        },
+        "order_lines.orderLinesResponse": {
+            "type": "object",
+            "properties": {
+                "book_id": {
+                    "type": "integer"
+                },
+                "discount_amount": {
+                    "type": "string"
+                },
+                "line_no": {
+                    "type": "integer"
+                },
+                "note": {
+                    "type": "string"
+                },
+                "order_id": {
+                    "type": "integer"
+                },
+                "quantity": {
+                    "type": "integer"
+                },
+                "unit_price": {
+                    "type": "string"
+                }
+            }
+        },
+        "order_lines.orderLinesResponseList": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "description": "Payload",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/order_lines.orderLinesResponse"
+                    }
+                },
+                "page": {
+                    "description": "Page information (if present)",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/pageable.Page"
+                        }
+                    ]
+                }
+            }
+        },
+        "order_lines.orderLinesUpdateRequest": {
+            "type": "object",
+            "properties": {
+                "book_id": {
+                    "type": "integer"
+                },
+                "discount_amount": {
+                    "type": "string"
+                },
+                "note": {
+                    "type": "string"
+                },
+                "quantity": {
+                    "type": "integer"
+                },
+                "unit_price": {
+                    "type": "string"
+                }
+            }
+        },
+        "orders.bookstoreSalesOrdersCreateRequest": {
+            "type": "object",
+            "properties": {
+                "cancelled_at": {
+                    "type": "string"
+                },
+                "comment": {
+                    "type": "string"
+                },
+                "customer_id": {
+                    "type": "string"
+                },
+                "paid_at": {
+                    "type": "string"
+                },
+                "placed_at": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "orders.bookstoreSalesOrdersResponse": {
+            "type": "object",
+            "properties": {
+                "cancelled_at": {
+                    "type": "string"
+                },
+                "comment": {
+                    "type": "string"
+                },
+                "customer_id": {
+                    "type": "string"
+                },
+                "order_id": {
+                    "type": "integer"
+                },
+                "paid_at": {
+                    "type": "string"
+                },
+                "placed_at": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "orders.bookstoreSalesOrdersResponseList": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "description": "Payload",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/orders.bookstoreSalesOrdersResponse"
+                    }
+                },
+                "page": {
+                    "description": "Page information (if present)",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/pageable.Page"
+                        }
+                    ]
+                }
+            }
+        },
+        "orders.bookstoreSalesOrdersUpdateRequest": {
+            "type": "object",
+            "properties": {
+                "cancelled_at": {
+                    "type": "string"
+                },
+                "comment": {
+                    "type": "string"
+                },
+                "customer_id": {
+                    "type": "string"
+                },
+                "paid_at": {
+                    "type": "string"
+                },
+                "placed_at": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "orders.publicOrdersCreateRequest": {
             "type": "object",
             "properties": {
                 "description": {
@@ -1582,7 +6158,7 @@ const docTemplate = `{
                 }
             }
         },
-        "orders.ordersResponse": {
+        "orders.publicOrdersResponse": {
             "type": "object",
             "properties": {
                 "created_at": {
@@ -1611,14 +6187,14 @@ const docTemplate = `{
                 }
             }
         },
-        "orders.ordersResponseList": {
+        "orders.publicOrdersResponseList": {
             "type": "object",
             "properties": {
                 "data": {
                     "description": "Payload",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/orders.ordersResponse"
+                        "$ref": "#/definitions/orders.publicOrdersResponse"
                     }
                 },
                 "page": {
@@ -1631,7 +6207,7 @@ const docTemplate = `{
                 }
             }
         },
-        "orders.ordersUpdateRequest": {
+        "orders.publicOrdersUpdateRequest": {
             "type": "object",
             "properties": {
                 "description": {
@@ -1787,6 +6363,243 @@ const docTemplate = `{
                 }
             }
         },
+        "publishers.publishersCreateRequest": {
+            "type": "object",
+            "properties": {
+                "active": {
+                    "type": "boolean"
+                },
+                "code": {
+                    "description": "Natural publisher code, for example no_starch or manning.",
+                    "type": "string"
+                },
+                "country_code": {
+                    "type": "string"
+                },
+                "founded_on": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "website": {
+                    "type": "string"
+                }
+            }
+        },
+        "publishers.publishersResponse": {
+            "type": "object",
+            "properties": {
+                "active": {
+                    "type": "boolean"
+                },
+                "code": {
+                    "description": "Natural publisher code, for example no_starch or manning.",
+                    "type": "string"
+                },
+                "country_code": {
+                    "type": "string"
+                },
+                "founded_on": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "website": {
+                    "type": "string"
+                }
+            }
+        },
+        "publishers.publishersResponseList": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "description": "Payload",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/publishers.publishersResponse"
+                    }
+                },
+                "page": {
+                    "description": "Page information (if present)",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/pageable.Page"
+                        }
+                    ]
+                }
+            }
+        },
+        "publishers.publishersUpdateRequest": {
+            "type": "object",
+            "properties": {
+                "active": {
+                    "type": "boolean"
+                },
+                "country_code": {
+                    "type": "string"
+                },
+                "founded_on": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "website": {
+                    "type": "string"
+                }
+            }
+        },
+        "stock_events.stockEventsCreateRequest": {
+            "type": "object",
+            "properties": {
+                "book_id": {
+                    "type": "integer"
+                },
+                "delta_qty": {
+                    "type": "integer"
+                },
+                "happened_at": {
+                    "type": "string"
+                },
+                "payload": {
+                    "type": "string"
+                },
+                "reason": {
+                    "type": "string"
+                },
+                "warehouse_code": {
+                    "type": "string"
+                }
+            }
+        },
+        "stock_events.stockEventsResponse": {
+            "type": "object",
+            "properties": {
+                "book_id": {
+                    "type": "integer"
+                },
+                "delta_qty": {
+                    "type": "integer"
+                },
+                "happened_at": {
+                    "type": "string"
+                },
+                "payload": {
+                    "type": "string"
+                },
+                "reason": {
+                    "type": "string"
+                },
+                "warehouse_code": {
+                    "type": "string"
+                }
+            }
+        },
+        "stock_events.stockEventsResponseList": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "description": "Payload",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/stock_events.stockEventsResponse"
+                    }
+                },
+                "page": {
+                    "description": "Page information (if present)",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/pageable.Page"
+                        }
+                    ]
+                }
+            }
+        },
+        "stock_levels.stockLevelsCreateRequest": {
+            "type": "object",
+            "properties": {
+                "available_qty": {
+                    "type": "integer"
+                },
+                "book_id": {
+                    "type": "integer"
+                },
+                "last_counted_at": {
+                    "type": "string"
+                },
+                "reorder_threshold": {
+                    "type": "integer"
+                },
+                "reserved_qty": {
+                    "type": "integer"
+                },
+                "warehouse_code": {
+                    "type": "string"
+                }
+            }
+        },
+        "stock_levels.stockLevelsResponse": {
+            "type": "object",
+            "properties": {
+                "available_qty": {
+                    "type": "integer"
+                },
+                "book_id": {
+                    "type": "integer"
+                },
+                "last_counted_at": {
+                    "type": "string"
+                },
+                "reorder_threshold": {
+                    "type": "integer"
+                },
+                "reserved_qty": {
+                    "type": "integer"
+                },
+                "warehouse_code": {
+                    "type": "string"
+                }
+            }
+        },
+        "stock_levels.stockLevelsResponseList": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "description": "Payload",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/stock_levels.stockLevelsResponse"
+                    }
+                },
+                "page": {
+                    "description": "Page information (if present)",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/pageable.Page"
+                        }
+                    ]
+                }
+            }
+        },
+        "stock_levels.stockLevelsUpdateRequest": {
+            "type": "object",
+            "properties": {
+                "available_qty": {
+                    "type": "integer"
+                },
+                "last_counted_at": {
+                    "type": "string"
+                },
+                "reorder_threshold": {
+                    "type": "integer"
+                },
+                "reserved_qty": {
+                    "type": "integer"
+                }
+            }
+        },
         "users.usersCreateRequest": {
             "type": "object",
             "properties": {
@@ -1846,6 +6659,83 @@ const docTemplate = `{
             "properties": {
                 "email": {
                     "description": "Unique email address of the user.",
+                    "type": "string"
+                }
+            }
+        },
+        "warehouses.warehousesCreateRequest": {
+            "type": "object",
+            "properties": {
+                "active": {
+                    "type": "boolean"
+                },
+                "address": {
+                    "type": "string"
+                },
+                "code": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "timezone": {
+                    "type": "string"
+                }
+            }
+        },
+        "warehouses.warehousesResponse": {
+            "type": "object",
+            "properties": {
+                "active": {
+                    "type": "boolean"
+                },
+                "address": {
+                    "type": "string"
+                },
+                "code": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "timezone": {
+                    "type": "string"
+                }
+            }
+        },
+        "warehouses.warehousesResponseList": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "description": "Payload",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/warehouses.warehousesResponse"
+                    }
+                },
+                "page": {
+                    "description": "Page information (if present)",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/pageable.Page"
+                        }
+                    ]
+                }
+            }
+        },
+        "warehouses.warehousesUpdateRequest": {
+            "type": "object",
+            "properties": {
+                "active": {
+                    "type": "boolean"
+                },
+                "address": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "timezone": {
                     "type": "string"
                 }
             }

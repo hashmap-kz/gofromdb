@@ -37,17 +37,17 @@ type CreateDto struct {
 }
 
 type UpdateDto struct {
-	PublisherCode string
-	Isbn13        string
-	Title         string
+	PublisherCode *string
+	Isbn13        *string
+	Title         *string
 	Subtitle      *string
 	Description   *string
-	Price         string
+	Price         *string
 	WeightGrams   *int
 	Rating        *string
 	PublishedOn   *time.Time
-	Tags          []string
-	Attrs         string
-	CoverImage    []byte
+	Tags          *[]string
+	Attrs         *string
+	CoverImage    *[]byte
 	ArchivedAt    *time.Time
 }
