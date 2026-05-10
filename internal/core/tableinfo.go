@@ -7,12 +7,6 @@ import (
 	"github.com/hashmap-kz/gofromdb/internal/genpg"
 )
 
-var filters = map[string]struct{}{
-	"created_at": {},
-	"updated_at": {},
-	"guid":       {},
-}
-
 type Filters struct {
 	WithInsertableOnly bool
 	WithInternals      bool
@@ -43,17 +37,26 @@ type TableToStructInfo struct {
 	PrimaryKeys                 []TableToStructFieldInfo
 	HasPrimaryKey               bool
 	HasUpdateFields             bool
+
+	skipColumns map[string]struct{}
 }
 
-func GenStructs(connString string) ([]TableToStructInfo, error) {
+func (s *TableToStructInfo) isSkippedColumn(name string) bool {
+	_, ok := s.skipColumns[name]
+	return ok
+}
+
+func GenStructs(connString string, cfg Config) ([]TableToStructInfo, error) {
 	dbInfo, err := genpg.GetDBInfo(connString)
 	if err != nil {
 		return nil, fmt.Errorf("get db info: %w", err)
 	}
+
+	skipCols := cfg.skipSet()
 	var structs []TableToStructInfo
 
 	for t := range dbInfo {
-		oneStruct, err := makeOneStruct(t, dbInfo[t])
+		oneStruct, err := makeOneStruct(t, dbInfo[t], skipCols)
 		if err != nil {
 			return nil, fmt.Errorf("make struct for %s: %w", t, err)
 		}
@@ -88,20 +91,13 @@ func GenStructs(connString string) ([]TableToStructInfo, error) {
 	return structs, nil
 }
 
-func isInternalFieldToSkip(name string) bool {
-	if _, ok := filters[name]; ok {
-		return true
-	}
-	return false
-}
-
 func (s *TableToStructInfo) GetStructFields(filters Filters) []TableToStructFieldInfo {
 	var result []TableToStructFieldInfo
 	for _, f := range s.Fields {
 		if filters.WithInsertableOnly && !f.DbIsInsertable {
 			continue
 		}
-		if !filters.WithInternals && isInternalFieldToSkip(f.DbFieldName) {
+		if !filters.WithInternals && s.isSkippedColumn(f.DbFieldName) {
 			continue
 		}
 		if filters.WithoutPrimaryKeys && f.DbIsPrimaryKey {
@@ -158,7 +154,7 @@ func dbFieldNames(fields []TableToStructFieldInfo) []string {
 	return result
 }
 
-func makeOneStruct(relPath string, cols []genpg.ColumnInfo) (TableToStructInfo, error) {
+func makeOneStruct(relPath string, cols []genpg.ColumnInfo, skipCols map[string]struct{}) (TableToStructInfo, error) {
 	fields := []TableToStructFieldInfo{}
 
 	schema, table, err := getSchemaTable(relPath)
@@ -221,6 +217,7 @@ func makeOneStruct(relPath string, cols []genpg.ColumnInfo) (TableToStructInfo, 
 		Fields:                      fields,
 		PrimaryKeys:                 primaryKeys,
 		HasPrimaryKey:               len(primaryKeys) > 0,
+		skipColumns:                 skipCols,
 	}
 	info.HasUpdateFields = info.HasPrimaryKey && len(info.UpdateFields()) > 0
 	return info, nil

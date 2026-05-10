@@ -4,7 +4,12 @@ import (
 	"testing"
 )
 
-func TestIsInternalFieldToSkip(t *testing.T) {
+func defaultSkipCols() map[string]struct{} {
+	return Config{SkipColumns: []string{"created_at", "updated_at", "guid"}}.skipSet()
+}
+
+func TestIsSkippedColumn(t *testing.T) {
+	s := TableToStructInfo{skipColumns: defaultSkipCols()}
 	cases := []struct {
 		name string
 		want bool
@@ -18,8 +23,8 @@ func TestIsInternalFieldToSkip(t *testing.T) {
 		{"user_id", false},
 	}
 	for _, c := range cases {
-		if got := isInternalFieldToSkip(c.name); got != c.want {
-			t.Errorf("isInternalFieldToSkip(%q) = %v, want %v", c.name, got, c.want)
+		if got := s.isSkippedColumn(c.name); got != c.want {
+			t.Errorf("isSkippedColumn(%q) = %v, want %v", c.name, got, c.want)
 		}
 	}
 }
@@ -40,6 +45,7 @@ func TestGetStructFields_InsertableOnly(t *testing.T) {
 
 func TestGetStructFields_ExcludesInternals(t *testing.T) {
 	s := TableToStructInfo{
+		skipColumns: defaultSkipCols(),
 		Fields: []TableToStructFieldInfo{
 			{DbFieldName: "id"},
 			{DbFieldName: "name"},
@@ -50,8 +56,8 @@ func TestGetStructFields_ExcludesInternals(t *testing.T) {
 	}
 	got := s.GetStructFields(Filters{WithInternals: false})
 	for _, f := range got {
-		if isInternalFieldToSkip(f.DbFieldName) {
-			t.Errorf("result should not contain internal field %q", f.DbFieldName)
+		if s.isSkippedColumn(f.DbFieldName) {
+			t.Errorf("result should not contain skipped field %q", f.DbFieldName)
 		}
 	}
 	if len(got) != 2 {
@@ -61,6 +67,7 @@ func TestGetStructFields_ExcludesInternals(t *testing.T) {
 
 func TestGetStructFields_IncludesInternals(t *testing.T) {
 	s := TableToStructInfo{
+		skipColumns: defaultSkipCols(),
 		Fields: []TableToStructFieldInfo{
 			{DbFieldName: "id"},
 			{DbFieldName: "created_at"},
@@ -115,6 +122,7 @@ func TestInsertFields(t *testing.T) {
 
 func TestInsertFields_ExcludesInternals(t *testing.T) {
 	s := TableToStructInfo{
+		skipColumns: defaultSkipCols(),
 		Fields: []TableToStructFieldInfo{
 			{DbFieldName: "name", DbIsInsertable: true},
 			{DbFieldName: "created_at", DbIsInsertable: true},
@@ -123,8 +131,8 @@ func TestInsertFields_ExcludesInternals(t *testing.T) {
 	}
 	got := s.InsertFields()
 	for _, f := range got {
-		if isInternalFieldToSkip(f.DbFieldName) {
-			t.Errorf("InsertFields should not contain internal field %q", f.DbFieldName)
+		if s.isSkippedColumn(f.DbFieldName) {
+			t.Errorf("InsertFields should not contain skipped field %q", f.DbFieldName)
 		}
 	}
 }
@@ -164,6 +172,7 @@ func TestUpdateFields_ExcludesPrimaryKeysAndNonInsertable(t *testing.T) {
 
 func TestFullFields_IncludesInternals(t *testing.T) {
 	s := TableToStructInfo{
+		skipColumns: defaultSkipCols(),
 		Fields: []TableToStructFieldInfo{
 			{DbFieldName: "id"},
 			{DbFieldName: "name"},

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"log/slog"
@@ -36,7 +37,21 @@ func main() {
 		"postgresql connection string",
 	)
 	workers := flag.Int("workers", 2, "concurrency")
+	configPath := flag.String("config", "", "path to JSON config file")
 	flag.Parse()
+
+	var cfg core.Config
+	if *configPath != "" {
+		data, err := os.ReadFile(*configPath)
+		if err != nil {
+			slog.Error("failed to read config", slog.String("path", *configPath), slog.Any("err", err))
+			os.Exit(1)
+		}
+		if err := json.Unmarshal(data, &cfg); err != nil {
+			slog.Error("failed to parse config", slog.String("path", *configPath), slog.Any("err", err))
+			os.Exit(1)
+		}
+	}
 
 	outputPath := scaffoldDir
 	if *outputFlag != "" {
@@ -56,7 +71,7 @@ func main() {
 		slog.String("conn", *connString),
 	)
 
-	structs, err := core.GenStructs(*connString)
+	structs, err := core.GenStructs(*connString, cfg)
 	if err != nil {
 		slog.Error("failed to introspect database", slog.Any("err", err))
 		os.Exit(1)
