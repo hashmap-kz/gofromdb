@@ -16,6 +16,8 @@ entity structs, repositories, services, HTTP handlers, DTOs, and Swagger annotat
 
 **The result compiles and runs immediately.**
 
+![HTML](docs/assets/gofromdb-logo.svg)
+
 ---
 
 ## Purpose
