@@ -4,7 +4,7 @@ go 1.26.0
 
 require (
 	github.com/jackc/pgx/v5 v5.12.0
-	golang.org/x/sync v0.24.0
+	golang.org/x/sync v0.25.0
 	golang.org/x/tools v0.52.0
 	mvdan.cc/gofumpt v0.12.0
 )
