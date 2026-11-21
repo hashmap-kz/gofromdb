@@ -3,7 +3,7 @@ module github.com/hashmap-kz/gofromdb
 go 1.26.0
 
 require (
-	github.com/jackc/pgx/v5 v5.12.0
+	github.com/jackc/pgx/v5 v5.13.0
 	golang.org/x/sync v0.25.0
 	golang.org/x/tools v0.53.0
 	mvdan.cc/gofumpt v0.12.0
